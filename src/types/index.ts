@@ -1,4 +1,4 @@
-import type { City, CategoryId } from '@/constants'
+import type { City, CategoryId } from '@/lib/constants'
 
 export interface UserProfile {
   id: string
