@@ -1,9 +1,17 @@
-import Image from "next/image";
+import { db } from '@/lib/db'
+import { test } from '@/lib/db/schema'
 
-export default function Home() {
+export default async function HomePage() {
+  const rows = await db.select().from(test)
+
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-2xl font-semibold text-brand-primary">Sferus - платформа для поиска специалистов</h1>
+    <main>
+      <h1>Тест</h1>
+      {rows.map((row) => (
+        <div key={row.id}>
+          <p>{row.id} — {row.name}</p>
+        </div>
+      ))}
     </main>
-  );
+  )
 }
