@@ -1,12 +1,8 @@
-import {
-  pgTable,
-  serial,
-  text,
-  integer,
-  timestamp,
-} from 'drizzle-orm/pg-core';
+import { pgTable, bigint, text } from 'drizzle-orm/pg-core';
 
-export const test = pgTable('test', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),  
+export const cities = pgTable('cities', {
+  id: bigint('id', { mode: 'number' })
+    .primaryKey()
+    .generatedAlwaysAsIdentity(),
+  name: text('name').notNull(),
 });
