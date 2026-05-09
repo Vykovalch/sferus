@@ -46,6 +46,12 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* для палитры sferus */
+  --color-brand: #0d7a5f;
+  --color-brand-hover: #0a6149;
+  --color-brand-accent: #bada77;
+  --color-brand-accent-hover: #a8c565;
 }
 
 :root {
@@ -55,8 +61,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #0d7a5f;  /* для палитры sferus */
+  --primary-foreground: #ffffff; /* для палитры sferus */
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
