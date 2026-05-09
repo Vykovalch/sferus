@@ -1,13 +1,24 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Geist } from 'next/font/google'
 import './globals.css'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+const geist = Geist({ subsets: ['latin', 'cyrillic'] })
 
 export const metadata: Metadata = {
   title: 'Sferus — найдите специалиста в Приднестровье',
   description:
-    'Исполнители с отзывами из вашего города — для любой задачи. Без посредников и комиссий.',
+    'Платформа для поиска исполнителей и публикации заданий в Приднестровье. Ремонт, электрика, уборка, репетиторство и многое другое.',
+  keywords: 'специалист, исполнитель, услуги, Тирасполь, Приднестровье, ПМР',
+  openGraph: {
+    title: 'Sferus — найдите специалиста в Приднестровье',
+    description: 'Исполнители с отзывами из вашего города — для любой задачи',
+    url: 'https://sferus.md',
+    siteName: 'Sferus',
+    locale: 'ru_RU',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({
@@ -17,7 +28,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
-      <body className={inter.className}>{children}</body>
+      <body className={geist.className}>
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </body>
     </html>
   )
 }
