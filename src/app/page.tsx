@@ -6,7 +6,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <h1>Welcome to Sferus</h1>
+      <h1>Главная секция</h1>
     </main>
   )
 }
