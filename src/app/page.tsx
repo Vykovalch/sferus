@@ -6,12 +6,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <h1>Города</h1>
-      {rows.map((row) => (
-        <div key={row.id}>
-          <p>{row.id} — {row.name}</p>
-        </div>
-      ))}
+      <h1>Welcome to Sferus</h1>
     </main>
   )
 }
