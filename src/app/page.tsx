@@ -1,12 +1,19 @@
-import { db } from '@/lib/db'
-import { cities } from '@/lib/db/schema'
+import { HeroSection } from "@/components/home/HeroSection"
+import { HowItWorks } from "@/components/home/HowItWorks"
+import { PopularServices } from "@/components/home/PopularServices"
+import { TopListings } from "@/components/home/TopListings"
+import { ReviewsCarousel } from "@/components/home/ReviewsCarousel"
+import { CtaSection } from "@/components/home/CtaSection"
 
 export default async function HomePage() {
-  const rows = await db.select().from(cities)
-
   return (
-    <main>
-      <h1>Главная секция</h1>
-    </main>
+    <div className="">
+      <HeroSection />
+      <PopularServices />
+      <TopListings />
+      <HowItWorks />
+      <ReviewsCarousel />
+      <CtaSection />
+    </div>      
   )
 }

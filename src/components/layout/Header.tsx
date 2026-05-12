@@ -41,6 +41,7 @@ export function Header() {
             <Link href="/login">Войти</Link>
           </Button>
         </div>
+        {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Открыть меню" className="md:hidden">
