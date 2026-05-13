@@ -22,13 +22,13 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
           cx="24"
           cy="24"
           r="18"
-          stroke="#7EBFB3"
+          stroke="#0d7a5f"
           strokeWidth="2.5"
           fill="none"
           strokeDasharray="93.1 20"
           strokeDashoffset="-10"
         />
-        <circle cx="42" cy="24" r="5" fill="#ef4444" />
+        <circle cx="41" cy="24" r="5" fill="#ef4444" />
       </svg>
     );
   }
@@ -47,13 +47,13 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
         cx="24"
         cy="24"
         r="18"
-        stroke="#7EBFB3"
+        stroke="#0d7a5f"
         strokeWidth="2.5"
         fill="none"
         strokeDasharray="93.1 20"
         strokeDashoffset="-10"
       />
-      <circle cx="42" cy="24" r="5" fill="#ef4444" />
+      <circle cx="41" cy="24" r="5" fill="#ef4444" />
       <text
         x="52"
         y="32"
