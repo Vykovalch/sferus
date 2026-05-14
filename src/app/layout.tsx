@@ -29,9 +29,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={geist.className}>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   )
