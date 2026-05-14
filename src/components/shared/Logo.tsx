@@ -28,7 +28,7 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
           strokeDasharray="93.1 20"
           strokeDashoffset="-10"
         />
-        <circle cx="41" cy="24" r="5" fill="#ef4444" />
+        <circle cx="41" cy="24" r="5" fill="#0d7a5f" />
       </svg>
     );
   }
@@ -53,7 +53,7 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
         strokeDasharray="93.1 20"
         strokeDashoffset="-10"
       />
-      <circle cx="41" cy="24" r="5" fill="#ef4444" />
+      <circle cx="41" cy="24" r="5" fill="#0d7a5f" />
       <text
         x="52"
         y="32"
