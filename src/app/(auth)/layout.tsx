@@ -1,5 +1,8 @@
-// src/app/(auth)/layout.tsx
-import { AuthBrand } from '@/components/auth/AuthBrand'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Войти — Sferus',
+}
 
 export default function AuthLayout({
   children,
@@ -7,11 +10,8 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen grid md:grid-cols-2">
-      <AuthBrand />
-      <div className="flex items-center justify-center p-8">
-        {children}
-      </div>
+    <div className="min-h-screen grid lg:grid-cols-2">
+      {children}
     </div>
   )
 }

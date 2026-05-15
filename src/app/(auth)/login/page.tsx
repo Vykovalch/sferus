@@ -1,6 +1,16 @@
-// src/app/(auth)/login/page.tsx
+import type { Metadata } from 'next'
+import { AuthBrand } from '@/components/auth/AuthBrand'
 import { LoginForm } from '@/components/auth/LoginForm'
 
+export const metadata: Metadata = {
+  title: 'Войти — Sferus',
+}
+
 export default function LoginPage() {
-  return <LoginForm />
+  return (
+    <>
+      <AuthBrand />
+      <LoginForm />
+    </>
+  )
 }

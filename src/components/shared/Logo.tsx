@@ -17,16 +17,21 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
         aria-label="Sferus"
         role="img"
       >
-        <circle cx="24" cy="24" r="10" fill="#0d7a5f" />
-
-        <circle
-          cx="24"
-          cy="24"
-          r="18"
-          stroke="#0d7a5f"
-          strokeWidth="2.5"
-          fill="none"
-        />
+        <circle cx="24" cy="24" r="12" fill="#0d7a5f" />
+        <text
+          x="24"
+          y="22"
+          fontFamily="system-ui, -apple-system, sans-serif"
+          fontSize="24"
+          fontWeight="500"
+          fill="white"
+          textAnchor="middle"
+          dominantBaseline="central"
+        >
+          S
+        </text>
+        {/* Внешнее кольцо */}
+        <circle cx="24" cy="24" r="18" stroke="#0d7a5f" strokeWidth="2.5" fill="none" />
       </svg>
     );
   }
@@ -40,17 +45,21 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
       aria-label="Sferus"
       role="img"
     >
-      <circle cx="24" cy="24" r="10" fill="#0d7a5f" />
-
-        {/* Внешнее кольцо */}
-        <circle
-          cx="24"
-          cy="24"
-          r="18"
-          stroke="#0d7a5f"
-          strokeWidth="2.5"
-          fill="none"
-        />
+      <circle cx="24" cy="24" r="12" fill="#0d7a5f" />
+      <text
+        x="24"
+        y="22"
+        fontFamily="system-ui, -apple-system, sans-serif"
+        fontSize="24"
+        fontWeight="500"
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+      >
+        S
+      </text>
+      {/* Внешнее кольцо */}
+      <circle cx="24" cy="24" r="18" stroke="#0d7a5f" strokeWidth="2.5" fill="none" />
       <text
         x="52"
         y="32"

@@ -26,7 +26,7 @@ export function Header() {
           <Link href="/tasks" className="">
             Задания
           </Link>
-          <Link href="/how-it-works" className="">
+          <Link href="/#how-it-works" className="">
             Как это работает
           </Link>
         </nav>
