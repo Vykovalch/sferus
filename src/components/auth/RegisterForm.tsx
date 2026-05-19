@@ -1,27 +1,72 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Mail, Lock, Eye, EyeOff, User, Phone } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react'
+import { signUp } from '@/lib/auth-client'
 import { Logo } from '@/components/shared/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export function RegisterForm() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const formData = new FormData(e.currentTarget)
+    const password = formData.get('password') as string
+    const confirm = formData.get('confirm') as string
+
+    if (password !== confirm) {
+      setError('Пароли не совпадают')
+      setLoading(false)
+      return
+    }
+
+    if (password.length < 8) {
+      setError('Пароль должен быть не менее 8 символов')
+      setLoading(false)
+      return
+    }
+
+    const { error } = await signUp.email({
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      password,
+      callbackURL: '/',
+    })
+
+    if (error) {
+      setError(
+        error.code === 'USER_ALREADY_EXISTS'
+          ? 'Пользователь с таким email уже существует'
+          : 'Ошибка регистрации. Попробуйте снова'
+      )
+      setLoading(false)
+      return
+    }
+
+    router.push('/')
+    router.refresh()
+  }
 
   return (
     <div className="flex items-center justify-center p-8 bg-white">
       <div className="w-full max-w-md">
 
-        {/* Лого — только на мобильном */}
         <div className="lg:hidden flex justify-center mb-8">
           <Logo className="h-12" />
         </div>
 
-        {/* Заголовок */}
         <div className="mb-8">
           <h2 className="text-3xl font-semibold mb-2">Создать аккаунт</h2>
           <p className="text-gray-600">
@@ -29,72 +74,59 @@ export function RegisterForm() {
           </p>
         </div>
 
-        {/* Форма */}
-        <form className="space-y-5">
+        {error && (
+          <div className="mb-5 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
 
-          {/* Имя */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-semibold">
-              Имя и фамилия
-            </Label>
+            <Label htmlFor="name" className="text-sm font-semibold">Имя и фамилия</Label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="name"
+                name="name"
                 type="text"
                 placeholder="Александр Иванов"
+                autoComplete="name"
                 required
-                className="pl-10 border-gray-300 focus:border-[#0d7a5f] focus:ring-[#0d7a5f]"
+                className="pl-10 border-gray-300 focus:border-[#0d7a5f]"
               />
             </div>
           </div>
 
-          {/* Email */}
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-semibold">
-              Email
-            </Label>
+            <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="your@email.com"
+                autoComplete="email"
                 required
-                className="pl-10 border-gray-300 focus:border-[#0d7a5f] focus:ring-[#0d7a5f]"
+                className="pl-10 border-gray-300 focus:border-[#0d7a5f]"
               />
             </div>
           </div>
 
-          {/* Телефон */}
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-sm font-semibold">
-              Телефон
-            </Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+373 777 12345"
-                className="pl-10 border-gray-300 focus:border-[#0d7a5f] focus:ring-[#0d7a5f]"
-              />
-            </div>
-          </div>
-
-          {/* Пароль */}
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-semibold">
-              Пароль
-            </Label>
+            <Label htmlFor="password" className="text-sm font-semibold">Пароль</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Минимум 8 символов"
+                autoComplete="new-password"
                 required
-                className="pl-10 pr-10 border-gray-300 focus:border-[#0d7a5f] focus:ring-[#0d7a5f]"
+                minLength={8}
+                className="pl-10 pr-10 border-gray-300 focus:border-[#0d7a5f]"
               />
               <button
                 type="button"
@@ -107,19 +139,18 @@ export function RegisterForm() {
             </div>
           </div>
 
-          {/* Подтверждение пароля */}
           <div className="space-y-2">
-            <Label htmlFor="confirm" className="text-sm font-semibold">
-              Подтвердите пароль
-            </Label>
+            <Label htmlFor="confirm" className="text-sm font-semibold">Подтвердите пароль</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="confirm"
+                name="confirm"
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Повторите пароль"
+                autoComplete="new-password"
                 required
-                className="pl-10 pr-10 border-gray-300 focus:border-[#0d7a5f] focus:ring-[#0d7a5f]"
+                className="pl-10 pr-10 border-gray-300 focus:border-[#0d7a5f]"
               />
               <button
                 type="button"
@@ -132,15 +163,14 @@ export function RegisterForm() {
             </div>
           </div>
 
-          {/* Кнопка регистрации */}
           <Button
             type="submit"
+            disabled={loading}
             className="w-full bg-[#0d7a5f] hover:bg-[#0a6149] text-white shadow-md h-10"
           >
-            Зарегистрироваться
+            {loading ? 'Регистрация...' : 'Зарегистрироваться'}
           </Button>
 
-          {/* Разделитель */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
@@ -150,7 +180,6 @@ export function RegisterForm() {
             </div>
           </div>
 
-          {/* Google */}
           <Button
             type="button"
             variant="outline"
@@ -167,7 +196,6 @@ export function RegisterForm() {
 
         </form>
 
-        {/* Ссылка на вход */}
         <div className="mt-8 text-center text-sm text-gray-600">
           Уже есть аккаунт?{' '}
           <Link href="/login" className="text-[#0d7a5f] font-semibold hover:underline">

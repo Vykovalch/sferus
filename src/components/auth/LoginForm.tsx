@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { signIn } from '@/lib/auth-client'
 import { Logo } from '@/components/shared/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,18 +12,45 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 
 export function LoginForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const formData = new FormData(e.currentTarget)
+
+    const { error } = await signIn.email({
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+      callbackURL: callbackUrl,
+    })
+
+    if (error) {
+      setError('Неверный email или пароль')
+      setLoading(false)
+      return
+    }
+
+    router.push(callbackUrl)
+    router.refresh()
+  }
 
   return (
     <div className="flex items-center justify-center p-8 bg-white">
       <div className="w-full max-w-md">
 
-        {/* Лого — только на мобильном */}
         <div className="lg:hidden flex justify-center mb-8">
           <Logo className="h-12" />
         </div>
 
-        {/* Заголовок */}
         <div className="mb-8">
           <h2 className="text-3xl font-semibold mb-2">Добро пожаловать!</h2>
           <p className="text-gray-600">
@@ -29,39 +58,42 @@ export function LoginForm() {
           </p>
         </div>
 
-        {/* Форма */}
-        <form className="space-y-5">
+        {error && (
+          <div className="mb-5 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
 
-          {/* Email */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-semibold">
-              Email
-            </Label>
+            <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="your@email.com"
+                autoComplete="email"
                 required
-                className="pl-10 border-gray-300 focus:border-[#0d7a5f] focus:ring-[#0d7a5f]"
+                className="pl-10 border-gray-300 focus:border-[#0d7a5f]"
               />
             </div>
           </div>
 
-          {/* Пароль */}
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-semibold">
-              Пароль
-            </Label>
+            <Label htmlFor="password" className="text-sm font-semibold">Пароль</Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Введите пароль"
+                autoComplete="current-password"
                 required
-                className="pl-10 pr-10 border-gray-300 focus:border-[#0d7a5f] focus:ring-[#0d7a5f]"
+                className="pl-10 pr-10 border-gray-300 focus:border-[#0d7a5f]"
               />
               <button
                 type="button"
@@ -69,40 +101,31 @@ export function LoginForm() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
           </div>
 
-          {/* Запомнить + Забыли пароль */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Checkbox id="remember" />
+              <Checkbox id="remember" name="remember" />
               <Label htmlFor="remember" className="text-sm font-normal text-gray-700 cursor-pointer">
                 Запомнить меня
               </Label>
             </div>
-            <Link
-              href="/forgot-password"
-              className="text-sm text-[#0d7a5f] hover:underline"
-            >
+            <Link href="/forgot-password" className="text-sm text-[#0d7a5f] hover:underline">
               Забыли пароль?
             </Link>
           </div>
 
-          {/* Кнопка входа */}
           <Button
             type="submit"
+            disabled={loading}
             className="w-full bg-[#0d7a5f] hover:bg-[#0a6149] text-white shadow-md h-10"
           >
-            Войти
+            {loading ? 'Вход...' : 'Войти'}
           </Button>
 
-          {/* Разделитель */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
@@ -112,7 +135,6 @@ export function LoginForm() {
             </div>
           </div>
 
-          {/* Google */}
           <Button
             type="button"
             variant="outline"
@@ -129,13 +151,9 @@ export function LoginForm() {
 
         </form>
 
-        {/* Ссылка на регистрацию */}
         <div className="mt-8 text-center text-sm text-gray-600">
           Нет аккаунта?{' '}
-          <Link
-            href="/register"
-            className="text-[#0d7a5f] font-semibold hover:underline"
-          >
+          <Link href="/register" className="text-[#0d7a5f] font-semibold hover:underline">
             Зарегистрироваться
           </Link>
         </div>
