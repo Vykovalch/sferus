@@ -1,88 +1,75 @@
-"use client";
+import Link from 'next/link'
+import { MapPin } from 'lucide-react'
+import { headers } from 'next/headers'
+import { auth } from '@/lib/auth'
+import { Logo } from '@/components/shared/Logo'
+import { Button } from '@/components/ui/button'
+import { UserMenu } from '@/components/layout/UserMenu'
+import { MobileMenu } from '@/components/layout/MobileMenu'
 
-import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
-import { CityDropdown } from "@/components/shared/CityDropdown";
-import { Button } from "../ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
-import { Menu } from "lucide-react";
+export async function Header() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
 
-export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <Logo className="h-10 hidden sm:block" />
-            <Logo compact className="h-10 sm:hidden" />
-          </Link>
-          <CityDropdown />
-        </div>
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="/services" className="">
-            Услуги
-          </Link>
-          <Link href="/tasks" className="">
-            Задания
-          </Link>
-          <Link href="/#how-it-works" className="">
-            Как это работает
-          </Link>
-        </nav>
-        <div className="hidden items-center gap-2 md:flex">
-          <Button variant="default" asChild>
-            <Link href="/tasks/create">Создать задание</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/become-executor">Стать исполнителем</Link>
-          </Button>
-          <Button variant="ghost" asChild>
-            <Link href="/login">Войти</Link>
-          </Button>
-        </div>
-        {/* Mobile Menu */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Открыть меню" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-72 px-0">
-            <SheetHeader className="px-6 pb-2">
-              <SheetTitle asChild>
-                <Link href="/" className="flex items-center">
-                  <Logo className="h-8" />
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between gap-4">
+
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center">
+              <Logo className="h-10 hidden sm:block" />
+              <Logo compact className="h-10 sm:hidden" />
+            </Link>
+            <button
+              type="button"
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-[#0d7a5f] transition-colors cursor-pointer"
+            >
+              <MapPin className="h-3.5 w-3.5" />
+              <span>Тирасполь</span>
+            </button>
+          </div>
+
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/services" className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors">
+              Услуги
+            </Link>
+            <Link href="/tasks" className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors">
+              Задания
+            </Link>
+            <Link href="/#how-it-works" className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors">
+              Как это работает
+            </Link>
+          </nav>
+
+          <div className="hidden md:flex items-center gap-3">
+            {session ? (
+              <>
+                <Button asChild className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
+                  <Link href="/tasks/new">Создать задание</Link>
+                </Button>
+                <UserMenu session={session} />
+              </>
+            ) : (
+              <>
+                <Button asChild variant="outline" className="border-[#0d7a5f] text-[#0d7a5f] hover:bg-[#0d7a5f]/10">
+                  <Link href="/register">Стать исполнителем</Link>
+                </Button>
+                <Button asChild className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
+                  <Link href="/tasks/new">Создать задание</Link>
+                </Button>
+                <Link href="/login" className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors ml-1">
+                  Войти
                 </Link>
-              </SheetTitle>
-            </SheetHeader>
-            <Separator />
-            <nav className="flex flex-col gap-1 px-3 py-4" aria-label="Мобильная навигация">
-              <Link href="/services" className="">
-                Услуги
-              </Link>
-              <Link href="/tasks" className="">
-                Задания
-              </Link>
-              <Link href="/how-it-works" className="">
-                Как это работает
-              </Link>
-            </nav>
-            <Separator />
-            <div className="flex flex-col gap-2 px-4 py-4">
-              <Button className="w-full" asChild>
-                <Link href="/tasks/create">Создать задание</Link>
-              </Button>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/become-executor">Стать исполнителем</Link>
-              </Button>
-              <Button variant="ghost" className="w-full" asChild>
-                <Link href="/login">Войти</Link>
-              </Button>
-            </div>
-          </SheetContent>
-        </Sheet>
+              </>
+            )}
+          </div>
+
+          <MobileMenu session={session} />
+
+        </div>
       </div>
     </header>
-  );
+  )
 }

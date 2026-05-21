@@ -17,7 +17,7 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
         aria-label="Sferus"
         role="img"
       >
-        <circle cx="24" cy="24" r="12" fill="#0d7a5f" />
+        <circle cx="24" cy="24" r="12" fill="#1b273a" />
         <text
           x="24"
           y="22"
@@ -31,7 +31,7 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
           S
         </text>
         {/* Внешнее кольцо */}
-        <circle cx="24" cy="24" r="18" stroke="#0d7a5f" strokeWidth="2.5" fill="none" />
+        <circle cx="24" cy="24" r="18" stroke="#1b273a" strokeWidth="2.5" fill="none" />
       </svg>
     );
   }
@@ -45,7 +45,7 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
       aria-label="Sferus"
       role="img"
     >
-      <circle cx="24" cy="24" r="12" fill="#0d7a5f" />
+      <circle cx="24" cy="24" r="12" fill="#1b273a" />
       <text
         x="24"
         y="22"
@@ -59,7 +59,7 @@ export function Logo({ className, compact = false, footer = false }: LogoProps) 
         S
       </text>
       {/* Внешнее кольцо */}
-      <circle cx="24" cy="24" r="18" stroke="#0d7a5f" strokeWidth="2.5" fill="none" />
+      <circle cx="24" cy="24" r="18" stroke="#1b273a" strokeWidth="2.5" fill="none" />
       <text
         x="52"
         y="32"
