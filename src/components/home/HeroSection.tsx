@@ -12,14 +12,14 @@ export function HeroSection() {
       {/*Фон*/}
       <div className="absolute inset-0">
         <Image
-          src="/hero-bg.jpg"
+          src="/hero-bg5.png"
           alt="Инструменты и мастерская"
           fill
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-linear-to-br from-slate-900/80 via-gray-900/75 to-slate-900/80" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.25)_100%)]" />
+        {/* <div className="absolute inset-0 bg-linear-to-br from-slate-900/80 via-gray-900/75 to-slate-900/80" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.25)_100%)]" /> */}
       </div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">

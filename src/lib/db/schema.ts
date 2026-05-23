@@ -9,6 +9,7 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core'
 import { user } from './auth-schema'
+import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 
 export const cities = pgTable('cities', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
@@ -17,6 +18,7 @@ export const cities = pgTable('cities', {
 
 export const categories = pgTable('categories', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  parentId: bigint('parent_id', { mode: 'number' }).references((): AnyPgColumn => categories.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   icon: text('icon'),

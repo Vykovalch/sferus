@@ -8,6 +8,13 @@
       "when": 1779211556675,
       "tag": "0000_thick_moira_mactaggert",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779364475178,
+      "tag": "0001_even_secret_warriors",
+      "breakpoints": true
     }
   ]
 }
