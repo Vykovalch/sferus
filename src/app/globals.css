@@ -1,7 +1,8 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -45,12 +46,6 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-
-  /* для палитры sferus */
-  --color-brand: #1b4a90;
-  --color-brand-hover: #0a6149;
-  --color-brand-accent: #bada77;
-  --color-brand-accent-hover: #a8c565;
 }
 
 :root {
@@ -60,8 +55,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #1b4a90;  /* для палитры sferus */
-  --primary-foreground: #ffffff; /* для палитры sferus */
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -131,6 +126,5 @@
   }
   html {
     @apply font-sans;
-    scroll-behavior: smooth;
   }
 }
