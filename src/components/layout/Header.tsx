@@ -18,8 +18,8 @@ export async function Header() {
         <div className="flex h-16 items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center">
-              <Logo className="h-10 hidden sm:block" />
-              <Logo compact className="h-10 sm:hidden" />
+              <Logo className="h-10 w-auto hidden sm:block" />
+              <Logo compact className="h-10 w-auto sm:hidden" />
             </Link>
             <button
               type="button"

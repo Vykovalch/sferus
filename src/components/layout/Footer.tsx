@@ -28,7 +28,7 @@ export function Footer() {
 
           {/* Описание + контакты */}
           <div>
-            <Logo footer className="h-10 mb-4" />
+            <Logo variant="inverse" className="h-10 w-auto mb-4" />
             <p className="text-gray-400 mb-4 text-sm leading-relaxed">
               Платформа для поиска специалистов в Приднестровье
             </p>
