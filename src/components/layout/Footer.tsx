@@ -52,21 +52,21 @@ export function Footer() {
             {/* Соцсети */}
             <div className="flex items-center gap-3 mt-4">
               <a
-                href="#"
+                href="/"
                 title="Telegram"
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/50 border border-gray-600 hover:bg-[#0088cc] hover:border-[#0088cc] transition-colors group"
               >
                 <Send className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
               </a>
               <a
-                href="#"
+                href="/"
                 title="Viber"
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/50 border border-gray-600 hover:bg-[#665CAC] hover:border-[#665CAC] transition-colors group"
               >
                 <Phone className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
               </a>
               <a
-                href="#"
+                href="/"
                 title="WhatsApp"
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800/50 border border-gray-600 hover:bg-[#25D366] hover:border-[#25D366] transition-colors group"
               >

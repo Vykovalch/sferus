@@ -13,7 +13,7 @@ export function AuthBrand() {
 
       {/* Контент поверх фона */}
       <Link href="/" className="relative z-10">
-        <Logo footer className="h-12" />
+        <Logo variant="inverse" className="h-12 w-auto" />
       </Link>
 
       <div className="max-w-md relative z-10">
