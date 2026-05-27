@@ -4,7 +4,7 @@ import { Logo } from "@/components/shared/Logo";
 
 export function AuthBrand() {
   return (
-    <div className="hidden lg:flex flex-col justify-between p-12 text-white relative overflow-hidden">
+    <div className="dark hidden lg:flex flex-col justify-between p-12 text-white relative overflow-hidden">
       {/* Фон как в Hero */}
       <div className="absolute inset-0">
         <Image src="/hero-bg.jpg" alt="" fill className="object-cover" priority />

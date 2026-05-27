@@ -8,6 +8,14 @@ interface LogoProps {
 function LogoIcon({ letterColor }: { letterColor: string }) {
   return (
     <g id="sferus-graphic-icon">
+      <circle
+        cx="24"
+        cy="24"
+        r="18"
+        fill="var(--background)"
+        stroke="var(--brand)"
+        strokeWidth="2.5"
+      />
       <circle cx="24" cy="24" r="12" fill="var(--brand)" />
       {/* Буква S с жестким кроссбраузерным выравниванием */}
       <text
@@ -22,7 +30,6 @@ function LogoIcon({ letterColor }: { letterColor: string }) {
       >
         S
       </text>
-      <circle cx="24" cy="24" r="18" stroke="var(--brand)" strokeWidth="2.5" fill="none" />
     </g>
   );
 }
@@ -32,24 +39,24 @@ function LogoText({ textColor }: { textColor: string }) {
   return (
     <g id="sferus-text-letters" fill={textColor}>
       <text
-      x="52"
-      y="32"
-      fontFamily="system-ui, -apple-system, sans-serif"
-      fontSize="24"
-      fontWeight="500"
-      fill={textColor}
-      letterSpacing="-0.5"
-    >
-      sferus
-    </text>
+        x="52"
+        y="32"
+        fontFamily="system-ui, -apple-system, sans-serif"
+        fontSize="24"
+        fontWeight="500"
+        fill={textColor}
+        letterSpacing="-0.5"
+      >
+        sferus
+      </text>
     </g>
   );
 }
 
 // 3. Основной компонент
 export function Logo({ className, compact = false, variant = "default" }: LogoProps) {
-  const textColor = variant === "inverse" ? "var(--background)" : "currentColor";
-  const letterColor = variant === "inverse" ? "var(--foreground)" : "var(--primary-foreground)";
+  const textColor = variant === "inverse" ? "var(--foreground)" : "currentColor";
+  const letterColor = variant === "inverse" ? "var(--background)" : "var(--primary-foreground)";
 
   if (compact) {
     return (

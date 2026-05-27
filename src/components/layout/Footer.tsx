@@ -22,7 +22,7 @@ const companyLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white py-12 relative overflow-hidden">
+    <footer className="dark bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white py-12 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-8 md:gap-12">
 
