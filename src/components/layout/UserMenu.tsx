@@ -53,7 +53,7 @@ export function UserMenu({ session }: UserMenuProps) {
             {user.name.split(" ")[0]}
           </span>
 
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden lg:block" />
         </button>
       </DropdownMenuTrigger>
 
