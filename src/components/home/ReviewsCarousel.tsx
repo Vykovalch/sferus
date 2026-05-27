@@ -10,7 +10,6 @@ type Review = {
   role: string
   rating: number
   text: string
-  gradient: string
 }
 
 const reviews: Review[] = [
@@ -20,7 +19,6 @@ const reviews: Review[] = [
     role: 'Клиент • Тирасполь',
     rating: 5,
     text: 'Нашла отличного мастера для ремонта квартиры через Сферус. Все прошло быстро и качественно. Очень довольна результатом!',
-    gradient: 'from-[#7EBFB3] to-[#7EBFB3]',
   },
   {
     initials: 'ВС',
@@ -28,7 +26,6 @@ const reviews: Review[] = [
     role: 'Электрик • Бендеры',
     rating: 5,
     text: 'Работаю на платформе уже 3 месяца. Заказы приходят регулярно, клиенты адекватные. Отличный способ найти новых клиентов!',
-    gradient: 'from-[#9B8CB4] to-[#9B8CB4]',
   },
   {
     initials: 'МК',
@@ -36,7 +33,6 @@ const reviews: Review[] = [
     role: 'Клиент • Рыбница',
     rating: 5,
     text: 'Удобная платформа с проверенными специалистами. Заказывала уборку и ремонт сантехники — все на высшем уровне. Рекомендую!',
-    gradient: 'from-[#7EBFB3] to-[#9B8CB4]',
   },
   {
     initials: 'ДВ',
@@ -44,7 +40,6 @@ const reviews: Review[] = [
     role: 'Сантехник • Тирасполь',
     rating: 5,
     text: 'Благодаря Сферусу мой доход вырос на 40%. Удобный личный кабинет, хорошая статистика. Советую всем мастерам!',
-    gradient: 'from-[#9B8CB4] to-[#7EBFB3]',
   },
   {
     initials: 'ОН',
@@ -52,15 +47,13 @@ const reviews: Review[] = [
     role: 'Клиент • Дубоссары',
     rating: 5,
     text: 'Искала репетитора для дочери. Нашла за 10 минут! Очень удобный поиск и прозрачные цены. Спасибо за сервис!',
-    gradient: 'from-[#7EBFB3] to-[#7EBFB3]',
   },
   {
     initials: 'АИ',
     name: 'Александр Ильин',
-    role: 'Мастер по ремонту • Бендеры',
+    role: 'Мастер по ремонту •  Бендеры',
     rating: 5,
     text: 'Лучшая платформа для исполнителей в Приднестровье. Много заказов, никаких комиссий. Работаю с удовольствием!',
-    gradient: 'from-[#9B8CB4] to-[#9B8CB4]',
   },
 ]
 
@@ -75,21 +68,28 @@ export function ReviewsCarousel() {
 
   const visible = reviews.slice(current, current + VISIBLE)
 
+  // Создаем массив для точек навигации на основе реальных объектов отзывов,
+  // чтобы использовать их имена в качестве ключей вместо индексов i
+  const dotElements = reviews.slice(0, maxIndex + 1)
+
+  // Создаем фиксированный массив для звезд (от 1 до 5), чтобы уйти от индексов
+  const starValues = [1, 2, 3, 4, 5]
+
   return (
-    <section className="py-20 bg-gradient-to-br from-[#9B8CB4]/15 via-[#9B8CB4]/8 to-[#9B8CB4]/12">
+    <section className="py-20 bg-background border-b border-border">
       <div className="container mx-auto px-4">
 
         {/* Заголовок */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
+          <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-foreground mb-3">
             Отзывы наших пользователей
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Что говорят клиенты и исполнители о платформе Сферус
           </p>
         </div>
 
-        <div className="max-w-7xl mx-auto relative px-12">
+        <div className="max-w-7xl mx-auto relative px-0 sm:px-12">
 
           {/* Кнопка назад */}
           <button
@@ -97,37 +97,42 @@ export function ReviewsCarousel() {
             onClick={prev}
             disabled={current === 0}
             aria-label="Предыдущий отзыв"
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full border border-[#9B8CB4]/40 bg-white hover:bg-[#9B8CB4]/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 hidden sm:flex items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm hover:bg-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed z-10 cursor-pointer"
           >
-            <ChevronLeft className="h-5 w-5 text-[#9B8CB4]" />
+            <ChevronLeft className="h-5 w-5 text-muted-foreground" />
           </button>
 
-          {/* Карточки */}
+          {/* Карточки отзывов */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {visible.map((review) => (
+            {visible.map((review: Review) => (
               <Card
                 key={review.name}
-                className="flex flex-col rounded-xl hover:shadow-lg transition-all border-2 h-full"
+                className="flex flex-col rounded-xl border border-border bg-card text-card-foreground h-full transition-shadow duration-300 shadow-sm"
               >
-                <CardContent className="p-6">
+                <CardContent className="p-6 flex flex-col h-full">
                   <div className="flex items-start gap-4 mb-4">
-                    <div
-                      className={`w-12 h-12 rounded-full bg-gradient-to-br ${review.gradient} flex items-center justify-center text-white font-bold flex-shrink-0 shadow-md`}
-                    >
+                    <div className="w-11 h-11 rounded-full bg-brand/10 text-brand flex items-center justify-center font-semibold text-sm flex-shrink-0">
                       {review.initials}
                     </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-semibold">{review.name}</h4>
-                      <p className="text-sm text-gray-600">{review.role}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-foreground truncate">{review.name}</h4>
+                      <p className="text-xs text-muted-foreground truncate">{review.role}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 mb-3">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      // biome-ignore lint/suspicious/noArrayIndexKey: static stars list
-                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                  
+                  {/* Звездочки рейтинга: ключ завязан на имя автора + номер звезды (1-5) */}
+                  <div className="flex items-center gap-0.5 mb-3">
+                    {starValues.slice(0, review.rating).map((starNumber) => (
+                      <Star 
+                        key={`${review.name}-star-${starNumber}`} 
+                        className="h-4 w-4 fill-amber-400 text-amber-400" 
+                      />
                     ))}
                   </div>
-                  <p className="text-gray-700 leading-relaxed">{review.text}</p>
+                  
+                  <p className="text-sm text-foreground/90 leading-relaxed font-normal flex-1">
+                    {review.text}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -139,27 +144,29 @@ export function ReviewsCarousel() {
             onClick={next}
             disabled={current >= maxIndex}
             aria-label="Следующий отзыв"
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full border border-[#9B8CB4]/40 bg-white hover:bg-[#9B8CB4]/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 hidden sm:flex items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm hover:bg-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed z-10 cursor-pointer"
           >
-            <ChevronRight className="h-5 w-5 text-[#9B8CB4]" />
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
 
-          {/* Точки навигации */}
+          {/* Точки навигации: ключ завязан на уникальное имя отзыва, а индекс в onClick берется из indexOf */}
           <div className="flex justify-center gap-2 mt-10">
-            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-              <button
-                // biome-ignore lint/suspicious/noArrayIndexKey: static dots list
-                key={i}
-                type="button"
-                onClick={() => setCurrent(i)}
-                aria-label={`Перейти к отзыву ${i + 1}`}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  i === current
-                    ? 'bg-[#9B8CB4] opacity-100 scale-125'
-                    : 'bg-[#9B8CB4] opacity-40'
-                }`}
-              />
-            ))}
+            {dotElements.map((dotReview: Review) => {
+              const dotIndex = reviews.indexOf(dotReview)
+              return (
+                <button
+                  key={`dot-${dotReview.name}`}
+                  type="button"
+                  onClick={() => setCurrent(dotIndex)}
+                  aria-label={`Перейти к отзыву ${dotIndex + 1}`}
+                  className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
+                    dotIndex === current
+                      ? 'bg-brand w-5'
+                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                  }`}
+                />
+              )
+            })}
           </div>
 
         </div>

@@ -1,10 +1,16 @@
-const clientSteps = [
+type StepItem = {
+  n: number
+  title: string
+  desc: string
+}
+
+const clientSteps: StepItem[] = [
   { n: 1, title: 'Найдите исполнителя', desc: 'Используйте поиск или категории услуг' },
   { n: 2, title: 'Или создайте задание', desc: 'Опишите задачу, исполнители откликнутся сами' },
   { n: 3, title: 'Свяжитесь напрямую', desc: 'Договаривайтесь без посредников и комиссий' },
 ]
 
-const executorSteps = [
+const executorSteps: StepItem[] = [
   { n: 1, title: 'Зарегистрируйтесь', desc: 'Создайте профиль и расскажите об услугах' },
   { n: 2, title: 'Разместите объявление', desc: 'Клиенты найдут вас через поиск' },
   { n: 3, title: 'Откликайтесь на задания', desc: 'Предлагайте условия напрямую' },
@@ -12,51 +18,67 @@ const executorSteps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-16 scroll-mt-16 bg-gray-50">
+    <section id="how-it-works" className="py-20 bg-muted/40 border-b border-border scroll-mt-16">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-semibold text-center mb-4">
+        
+        {/* Главный заголовок пониженной жирности */}
+        <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center text-foreground mb-3">
           Как это работает
         </h2>
-        <p className="text-center text-gray-600 mb-12 text-lg">
+        <p className="text-center text-muted-foreground mb-16 text-lg max-w-md mx-auto">
           Выберите свой путь на платформе
         </p>
 
-        <div className="grid md:grid-cols-2 gap-8 md:gap-16 max-w-6xl mx-auto relative">
+        <div className="grid md:grid-cols-2 gap-12 md:gap-20 max-w-5xl mx-auto relative">
 
-          {/* Для клиентов */}
-          <div className="space-y-8">
-            <h3 className="text-2xl font-semibold text-center mb-8">Для клиентов</h3>
-            {clientSteps.map((step) => (
+          {/* Путь: Для клиентов */}
+          <div className="space-y-10">
+            <h3 className="text-xl sm:text-2xl font-medium text-foreground text-center md:text-left mb-6">
+              Для клиентов
+            </h3>
+            {clientSteps.map((step: StepItem) => (
               <div key={step.n} className="flex gap-4">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#8BC68F]/20 text-[#0d7a5f] border-2 border-[#8BC68F] font-bold text-lg">
+                  {/* Статичный аккуратный кружок шага в цветах бренда */}
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-brand/10 text-brand border border-brand/20 font-semibold text-lg">
                     {step.n}
                   </div>
                 </div>
-                <div>
-                  <h4 className="text-lg font-semibold mb-1">{step.title}</h4>
-                  <p className="text-gray-600">{step.desc}</p>
+                <div className="flex flex-col justify-center">
+                  <h4 className="text-lg font-semibold text-foreground mb-1">
+                    {step.title}
+                  </h4>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                    {step.desc}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Разделитель */}
-          <div className="hidden md:block absolute left-1/2 top-16 bottom-0 w-px bg-gradient-to-b from-[#7EBFB3]/50 via-[#5C9F7E]/50 to-[#7EBFB3]/50 -translate-x-1/2" />
+          {/* Минималистичный системный разделитель */}
+          <div className="hidden md:block absolute left-1/2 top-16 bottom-4 w-px bg-border -translate-x-1/2 opacity-70" />
 
-          {/* Для исполнителей */}
-          <div className="space-y-8">
-            <h3 className="text-2xl font-semibold text-center mb-8">Для исполнителей</h3>
-            {executorSteps.map((step) => (
+          {/* Путь: Для исполнителей */}
+          <div className="space-y-10">
+            <h3 className="text-xl sm:text-2xl font-medium text-foreground text-center md:text-left mb-6">
+              Для исполнителей
+            </h3>
+            {executorSteps.map((step: StepItem) => (
               <div key={step.n} className="flex gap-4">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#0d7a5f] text-white font-bold text-lg shadow-md">
+                  {/* Контрастный кружок шага для исполнителей */}
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-brand text-brand-foreground font-semibold text-lg shadow-sm">
                     {step.n}
                   </div>
                 </div>
-                <div>
-                  <h4 className="text-lg font-semibold mb-1">{step.title}</h4>
-                  <p className="text-gray-600">{step.desc}</p>
+                <div className="flex flex-col justify-center">
+                  <h4 className="text-lg font-semibold text-foreground mb-1">
+                    {step.title}
+                  </h4>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                    {step.desc}
+                  </p>
                 </div>
               </div>
             ))}

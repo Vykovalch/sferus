@@ -70,62 +70,77 @@ const listings: Listing[] = [
 
 export function TopListings() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-20 bg-background border-b border-border">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-semibold text-center mb-12">
+        
+        {/* Элегантный заголовок пониженной жирности */}
+        <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center text-foreground mb-12">
           Топ объявления
         </h2>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto">
-          {listings.map((listing) => {
+          {/* Исправлена ошибка линтера: явно указан тип (listing: Listing) */}
+          {listings.map((listing: Listing) => {
             const Icon = listing.icon
             return (
               <Link key={listing.id} href={`/services/${listing.id}`}>
-                <Card className="cursor-pointer border border-gray-300 hover:shadow-lg hover:border-[#0d7a5f] hover:-translate-y-0.5 transition-all duration-200 group">
-                  <div className="flex p-3 gap-3">
-                    {/* Изображение */}
-                    <div className="relative w-28 h-28 flex-shrink-0 overflow-hidden rounded-lg bg-[#0d7a5f]/10">
+                {/* Карточка переведена на переменные Shadcn и плавную анимацию бренда */}
+                <Card className="cursor-pointer bg-card text-card-foreground border border-border hover:shadow-xl hover:border-brand hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
+                  <div className="flex p-3 gap-4">
+                    
+                    {/* Контейнер изображения или заглушки */}
+                    <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded-xl bg-brand/5">
                       {listing.image ? (
                         <Image
                           src={listing.image}
                           alt={listing.title}
                           fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-300"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          {Icon && <Icon className="h-10 w-10 text-[#7EBFB3]" />}
+                        <div className="w-full h-full flex items-center justify-center text-brand">
+                          {Icon && <Icon className="h-10 w-10 stroke-[1.5]" />}
                         </div>
                       )}
                     </div>
 
-                    {/* Контент */}
-                    <div className="flex-1 flex flex-col py-1">
-                      <span className="inline-block w-fit px-2 py-0.5 bg-[#0d7a5f]/10 text-[#0d7a5f] text-xs font-medium rounded mb-2">
+                    {/* Текстовый контент */}
+                    <div className="flex-1 flex flex-col py-0.5">
+                      {/* Мягкий бейдж категории */}
+                      <span className="inline-block w-fit px-2.5 py-0.5 bg-brand/10 text-brand text-xs font-semibold rounded-md mb-2">
                         {listing.category}
                       </span>
-                      <h3 className="font-semibold text-base line-clamp-1 mb-3">
+                      
+                      {/* Название услуги с подсветкой при наведении */}
+                      <h3 className="font-semibold text-base text-foreground line-clamp-1 mb-2 group-hover:text-brand transition-colors duration-300">
                         {listing.title}
                       </h3>
-                      <div className="mt-auto space-y-2">
-                        <div className="space-y-1 text-xs text-gray-500">
+                      
+                      <div className="mt-auto space-y-2.5">
+                        {/* Локация и автор */}
+                        <div className="space-y-1 text-xs text-muted-foreground font-normal">
                           <div className="flex items-center gap-1.5">
-                            <User className="h-3.5 w-3.5" />
+                            <User className="h-3.5 w-3.5 opacity-70" />
                             <span>{listing.author}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5" />
+                            <MapPin className="h-3.5 w-3.5 opacity-70" />
                             <span>{listing.city}</span>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                        
+                        {/* Нижняя планка: Рейтинг и Цена */}
+                        <div className="flex items-center justify-between pt-2 border-t border-border/60">
                           <div className="flex items-center gap-1">
-                            <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                            <span className="font-semibold text-sm">{listing.rating}</span>
-                            <span className="text-xs text-gray-400">({listing.reviewsCount})</span>
+                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                            <span className="font-semibold text-sm text-foreground/90">{listing.rating}</span>
+                            <span className="text-xs text-muted-foreground">({listing.reviewsCount})</span>
                           </div>
-                          <p className="text-base font-bold text-[#0d7a5f]">{listing.price}</p>
+                          {/* Цена подсвечена цветом бренда */}
+                          <p className="text-base font-bold text-brand">{listing.price}</p>
                         </div>
                       </div>
+
                     </div>
                   </div>
                 </Card>
