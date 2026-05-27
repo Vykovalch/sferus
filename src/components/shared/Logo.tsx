@@ -55,8 +55,8 @@ function LogoText({ textColor }: { textColor: string }) {
 
 // 3. Основной компонент
 export function Logo({ className, compact = false, variant = "default" }: LogoProps) {
-  const textColor = variant === "inverse" ? "var(--background)" : "var(--foreground)";
-  const letterColor = variant === "inverse" ? "var(--foreground)" : "var(--primary-foreground)";
+  const textColor = "var(--foreground)";
+  const letterColor = "var(--primary-foreground)";
 
   if (compact) {
     return (
