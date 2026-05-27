@@ -48,6 +48,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 
   --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
 }
 
 :root {
@@ -82,7 +83,7 @@
   --chart-5: oklch(0.269 0 0);
 
   --radius: 0.75rem;
-  
+
   --sidebar: oklch(0.98 0.005 262);
   --sidebar-foreground: oklch(0.16 0.03 262);
   --sidebar-primary: oklch(0.62 0.22 262);
@@ -93,6 +94,7 @@
   --sidebar-ring: oklch(0.62 0.22 262);
 
   --brand: oklch(0.62 0.22 262);
+  --brand-foreground: oklch(100% 0 0);
 }
 
 .dark {
@@ -109,7 +111,7 @@
 
   --secondary: oklch(0.22 0.015 262);
   --secondary-foreground: oklch(0.985 0.004 262);
-  
+
   --muted: oklch(0.22 0.015 262);
   --muted-foreground: oklch(0.708 0.01 262);
   --accent: oklch(0.22 0.015 262);
@@ -136,6 +138,7 @@
   --sidebar-ring: oklch(0.66 0.19 262);
 
   --brand: oklch(0.66 0.19 262);
+  --brand-foreground: oklch(100% 0 0);
 }
 
 @layer base {

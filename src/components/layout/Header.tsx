@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { Logo } from "@/components/shared/Logo";
@@ -13,75 +12,68 @@ export async function Header() {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center">
-              <Logo className="h-10 w-auto hidden sm:block" />
-              <Logo compact className="h-10 w-auto sm:hidden" />
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
+              <Logo className="h-10 w-auto" />
             </Link>
-            <button
-              type="button"
-              className="flex items-center gap-1 text-sm text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-            >
-              <MapPin className="h-3.5 w-3.5" />
-              <span>Тирасполь</span>
-            </button>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
             <Link
               href="/services"
-              className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors"
+              className="text-base font-medium text-muted-foreground hover:text-brand transition-colors"
             >
               Услуги
             </Link>
             <Link
               href="/tasks"
-              className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors"
+              className="text-base font-medium text-muted-foreground hover:text-brand transition-colors"
             >
               Задания
             </Link>
             <Link
               href="/#how-it-works"
-              className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors"
+              className="text-base font-medium text-muted-foreground hover:text-brand transition-colors"
             >
               Как это работает
             </Link>
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-4">
             {session ? (
-              <>
-                <Button asChild className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
-                  <Link href="/tasks/new">Создать задание</Link>
-                </Button>
-                <UserMenu session={session} />
-              </>
-            ) : (
               <>
                 <Button
                   asChild
                   variant="outline"
-                  className="border-[#0d7a5f] text-[#0d7a5f] hover:bg-[#0d7a5f]/10"
+                  className="hidden md:inline-flex border-brand text-brand hover:bg-brand/10 font-medium"
                 >
-                  <Link href="/register">Стать исполнителем</Link>
+                  <Link href="/services/new">Создать услугу</Link>
                 </Button>
-                <Button asChild className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
+
+                <Button
+                  asChild
+                  className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground font-medium"
+                >
                   <Link href="/tasks/new">Создать задание</Link>
                 </Button>
-                <Link
-                  href="/login"
-                  className="text-base font-normal text-gray-700 hover:text-[#0d7a5f] transition-colors ml-1"
-                >
-                  Войти
-                </Link>
-              </>
-            )}
-          </div>
 
-          <MobileMenu session={session} />
+                <UserMenu session={session} />
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="text-base font-medium text-muted-foreground hover:text-brand transition-colors px-2"
+              >
+                Войти
+              </Link>
+            )}
+
+            {/* Мобильное бургер-меню: показывается только на экранах меньше md */}
+            <MobileMenu session={session} />
+          </div>
         </div>
       </div>
     </header>

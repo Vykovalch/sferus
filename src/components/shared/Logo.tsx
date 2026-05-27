@@ -17,13 +17,12 @@ function LogoIcon({ letterColor }: { letterColor: string }) {
         strokeWidth="2.5"
       />
       <circle cx="24" cy="24" r="12" fill="var(--brand)" />
-      {/* Буква S с жестким кроссбраузерным выравниванием */}
       <text
         x="24"
         y="24"
         dy="0.35em" /* Магический сдвиг, который компенсирует нижние метрики шрифта */
         fontFamily="system-ui, -apple-system, sans-serif"
-        fontSize="22" /* Чуть уменьшил, чтобы буква сидела внутри круга аккуратнее */
+        fontSize="22"
         fontWeight="600"
         fill={letterColor}
         textAnchor="middle"
@@ -40,10 +39,11 @@ function LogoText({ textColor }: { textColor: string }) {
     <g id="sferus-text-letters" fill={textColor}>
       <text
         x="52"
-        y="32"
+        y="24" 
+        dy="0.37em" 
         fontFamily="system-ui, -apple-system, sans-serif"
         fontSize="24"
-        fontWeight="500"
+        fontWeight="600" 
         fill={textColor}
         letterSpacing="-0.5"
       >
@@ -55,8 +55,8 @@ function LogoText({ textColor }: { textColor: string }) {
 
 // 3. Основной компонент
 export function Logo({ className, compact = false, variant = "default" }: LogoProps) {
-  const textColor = variant === "inverse" ? "var(--foreground)" : "currentColor";
-  const letterColor = variant === "inverse" ? "var(--background)" : "var(--primary-foreground)";
+  const textColor = variant === "inverse" ? "var(--background)" : "var(--foreground)";
+  const letterColor = variant === "inverse" ? "var(--foreground)" : "var(--primary-foreground)";
 
   if (compact) {
     return (
@@ -75,7 +75,7 @@ export function Logo({ className, compact = false, variant = "default" }: LogoPr
 
   return (
     <svg
-      viewBox="0 0 180 48"
+      viewBox="0 0 145 48" 
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
