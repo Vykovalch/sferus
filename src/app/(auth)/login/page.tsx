@@ -11,9 +11,14 @@ export default function LoginPage() {
   return (
     <>
       <AuthBrand />
-      <Suspense>
-        <LoginForm />
-      </Suspense>
+      
+      <div className="flex items-center justify-center p-6 sm:p-10 md:p-12 bg-background w-full">
+        <div className="w-full max-w-[400px] mx-auto">
+          <Suspense>
+            <LoginForm />
+          </Suspense>
+        </div>
+      </div>
     </>
   );
 }
