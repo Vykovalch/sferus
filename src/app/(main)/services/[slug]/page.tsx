@@ -1,8 +1,10 @@
-import { ChevronRight, MapPin, Star, Building2, User } from 'lucide-react'
-import { Hammer } from 'lucide-react'
+'use client'
+
+import { ChevronRight, MapPin, Star, Building2, User, Hammer } from 'lucide-react'
 import Link from 'next/link'
 import { CategorySidebar } from '@/components/services/CategorySidebar'
 import { ServiceCard } from '@/components/services/ServiceCard'
+import { Button } from '@/components/ui/button'
 
 // Временные данные — позже заменить на запросы к БД
 const mockServices = [
@@ -58,25 +60,31 @@ const mockServices = [
 
 export default function CategoryPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    // Изменено: Установлены системные цвета фона вместо bg-gray-50
+    <div className="min-h-screen bg-background text-foreground">
 
       {/* Шапка категории */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-5">
-          <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-4">
-            <Link href="/services" className="hover:text-[#0d7a5f] transition-colors">
+          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4 select-none">
+            <Link 
+              href="/services" 
+              className="hover:text-brand transition-colors font-medium cursor-pointer"
+            >
               Услуги
             </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-gray-900 font-medium">Строительство и ремонт</span>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
+            <span className="text-foreground font-medium">Строительство и ремонт</span>
           </nav>
+          
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-lg bg-[#0d7a5f]/10 flex items-center justify-center flex-shrink-0">
-              <Hammer className="h-5 w-5 text-[#0d7a5f]" />
+            {/* Иконка категории с безопасным брендовым фоном */}
+            <div className="w-11 h-11 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+              <Hammer className="h-5 w-5 text-brand" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Строительство и ремонт</h1>
-              <p className="text-sm text-gray-500">120 объявлений</p>
+              <h1 className="text-xl font-medium tracking-tight">Строительство и ремонт</h1>
+              <p className="text-xs text-muted-foreground mt-0.5">120 объявлений</p>
             </div>
           </div>
         </div>
@@ -85,39 +93,43 @@ export default function CategoryPage() {
       <div className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
 
-          {/* Сайдбар */}
+          {/* Сайдбар (скрыт на мобильных) */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
             <CategorySidebar />
           </aside>
 
-          {/* Контент */}
+          {/* Контентная область */}
           <div className="flex-1 min-w-0">
 
-            {/* Шапка контента */}
+            {/* Шапка контента (Панель сортировки) */}
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-gray-500">
-                Найдено <span className="font-semibold text-gray-900">120</span> объявлений
+              <p className="text-xs font-medium text-muted-foreground">
+                Найдено <span className="text-foreground font-semibold">120</span> объявлений
               </p>
-              <div className="flex items-center gap-3">
-                {/* Фильтры на мобильном */}
-                <button
+              <div className="flex items-center gap-2">
+                {/* Фильтры на мобильном переведены на Button */}
+                <Button
                   type="button"
-                  className="lg:hidden flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:border-[#0d7a5f] transition-colors bg-white"
+                  variant="outline"
+                  size="sm"
+                  className="lg:hidden h-9 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
                 >
                   Фильтры
-                </button>
-                {/* Сортировка */}
-                <button
+                </Button>
+                {/* Сортировка переведена на Button */}
+                <Button
                   type="button"
-                  className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:border-[#0d7a5f] transition-colors bg-white"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
                 >
                   По рейтингу
-                  <ChevronRight className="h-3.5 w-3.5 rotate-90 text-gray-400" />
-                </button>
+                  <ChevronRight className="h-3.5 w-3.5 rotate-90 text-muted-foreground/60" />
+                </Button>
               </div>
             </div>
 
-            {/* Карточки */}
+            {/* Сетка карточек */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {mockServices.map((service) => (
                 <ServiceCard key={service.id} service={service} />
@@ -125,33 +137,41 @@ export default function CategoryPage() {
             </div>
 
             {/* Пагинация */}
-            <div className="flex items-center justify-center gap-2 mt-8">
-              <button
+            <div className="flex items-center justify-center gap-2 mt-10 select-none">
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 disabled
-                className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-400 disabled:cursor-not-allowed"
+                className="h-9 border-input text-muted-foreground"
               >
                 Назад
-              </button>
+              </Button>
+              
               {[1, 2, 3, 4, 5].map((page) => (
-                <button
+                <Button
                   key={page}
                   type="button"
-                  className={`w-9 h-9 text-sm rounded-lg border transition-colors ${
+                  variant={page === 1 ? 'default' : 'outline'}
+                  size="sm"
+                  className={`w-9 h-9 p-0 font-medium cursor-pointer transition-colors ${
                     page === 1
-                      ? 'bg-[#0d7a5f] border-[#0d7a5f] text-white'
-                      : 'border-gray-200 text-gray-600 hover:border-[#0d7a5f] hover:text-[#0d7a5f]'
+                      ? 'bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm'
+                      : 'border-input text-muted-foreground hover:bg-muted hover:text-foreground'
                   }`}
                 >
                   {page}
-                </button>
+                </Button>
               ))}
-              <button
+              
+              <Button
                 type="button"
-                className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-600 hover:border-[#0d7a5f] hover:text-[#0d7a5f] transition-colors"
+                variant="outline"
+                size="sm"
+                className="h-9 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
               >
                 Вперёд
-              </button>
+              </Button>
             </div>
 
           </div>

@@ -25,7 +25,7 @@ const categories = [
   'Ритуальные услуги',
 ]
 
-const cities = ['Все', 'Тирасполь', 'Бендеры', 'Рыбница', 'Дубоссары', 'Слободзея']
+const cities = ['Все', 'Тирасполь', 'Бендеры', 'Рыбница', 'Дубоссары', 'Слободея']
 
 const statuses = [
   { value: 'open', label: 'Открытые' },
@@ -44,18 +44,20 @@ export function TasksSidebar() {
   const visibleCats = showAllCats ? categories : categories.slice(0, VISIBLE_CATS)
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 select-none">
 
-      {/* Категории */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-gray-100">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Категория</h3>
+      {/* Блок: Категории */}
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            Категория
+          </h3>
         </div>
         <div className="py-1">
           {visibleCats.map((cat) => (
             <label
               key={cat}
-              className="flex items-center gap-2.5 px-4 py-2 cursor-pointer"
+              className="flex items-center gap-2.5 px-4 py-2 cursor-pointer group transition-colors hover:bg-muted/40"
             >
               <input
                 type="radio"
@@ -63,10 +65,12 @@ export function TasksSidebar() {
                 value={cat}
                 checked={activeCategory === cat}
                 onChange={() => setActiveCategory(cat)}
-                className="accent-[#0d7a5f] flex-shrink-0"
+                className="h-4 w-4 border-input text-brand bg-background focus:ring-brand accent-brand cursor-pointer flex-shrink-0"
               />
-              <span className={`text-sm leading-snug ${
-                activeCategory === cat ? 'text-[#0d7a5f] font-medium' : 'text-gray-700'
+              <span className={`text-sm leading-snug transition-colors ${
+                activeCategory === cat 
+                  ? 'text-brand font-medium' 
+                  : 'text-muted-foreground group-hover:text-foreground'
               }`}>
                 {cat}
               </span>
@@ -75,17 +79,19 @@ export function TasksSidebar() {
           <button
             type="button"
             onClick={() => setShowAllCats((v) => !v)}
-            className="w-full text-left px-4 py-2 text-xs text-gray-400 hover:text-[#0d7a5f] transition-colors"
+            className="w-full text-left px-4 py-2 text-xs font-medium text-muted-foreground hover:text-brand cursor-pointer transition-colors"
           >
             {showAllCats ? 'Скрыть ↑' : 'Все категории ↓'}
           </button>
         </div>
       </div>
 
-      {/* Город */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-gray-100">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Город</h3>
+      {/* Блок: Город */}
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            Город
+          </h3>
         </div>
         <div className="p-3 flex flex-wrap gap-1.5">
           {cities.map((city) => (
@@ -93,10 +99,10 @@ export function TasksSidebar() {
               key={city}
               type="button"
               onClick={() => setActiveCity(city)}
-              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+              className={`px-3 py-1 text-xs rounded-full border transition-all cursor-pointer font-medium ${
                 activeCity === city
-                  ? 'bg-[#0d7a5f] border-[#0d7a5f] text-white'
-                  : 'border-gray-200 text-gray-600 hover:border-[#0d7a5f] hover:text-[#0d7a5f]'
+                  ? 'bg-brand border-brand text-brand-foreground shadow-sm'
+                  : 'border-input bg-background text-muted-foreground hover:border-brand/50 hover:text-foreground'
               }`}
             >
               {city}
@@ -105,16 +111,18 @@ export function TasksSidebar() {
         </div>
       </div>
 
-      {/* Статус */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-gray-100">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Статус</h3>
+      {/* Блок: Статус */}
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            Статус
+          </h3>
         </div>
         <div className="py-1">
           {statuses.map((status) => (
             <label
               key={status.value}
-              className="flex items-center gap-2.5 px-4 py-2 cursor-pointer"
+              className="flex items-center gap-2.5 px-4 py-2 cursor-pointer group transition-colors hover:bg-muted/40"
             >
               <input
                 type="radio"
@@ -122,10 +130,12 @@ export function TasksSidebar() {
                 value={status.value}
                 checked={activeStatus === status.value}
                 onChange={() => setActiveStatus(status.value)}
-                className="accent-[#0d7a5f] flex-shrink-0"
+                className="h-4 w-4 border-input text-brand bg-background focus:ring-brand accent-brand cursor-pointer flex-shrink-0"
               />
-              <span className={`text-sm ${
-                activeStatus === status.value ? 'text-[#0d7a5f] font-medium' : 'text-gray-700'
+              <span className={`text-sm transition-colors ${
+                activeStatus === status.value 
+                  ? 'text-brand font-medium' 
+                  : 'text-muted-foreground group-hover:text-foreground'
               }`}>
                 {status.label}
               </span>

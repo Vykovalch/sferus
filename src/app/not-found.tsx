@@ -1,23 +1,43 @@
+'use client'
+
 import Link from 'next/link'
-import { Home} from 'lucide-react'
+import { Home } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-      <p className="text-6xl font-500 text-muted-foreground">404</p>
-      <h1 className="mt-4 text-2xl font-500">Страница не найдена</h1>
-      <p className="mt-2 text-muted-foreground">
-        Возможно страница была удалена или вы ошиблись в адресе
+    // Изменено: Обычный div вместо main, чтобы не ломать HTML-семантику внутри RootLayout
+    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-12 text-center bg-background text-foreground animate-in fade-in duration-300">
+      
+      {/* Большой системный код ошибки */}
+      <p className="text-7xl font-bold tracking-tighter text-muted-foreground/30 select-none">
+        404
       </p>
-      <div className="mt-8 flex gap-3">
-        <Link
-          href="/"
-          className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm hover:bg-accent"
+      
+      {/* Заголовок */}
+      <h1 className="mt-4 text-2xl font-medium tracking-tight">
+        Страница не найдена
+      </h1>
+      
+      {/* Описание */}
+      <p className="mt-2 text-sm text-muted-foreground max-w-sm leading-relaxed">
+        Возможно, эта страница была удалена, перемещена или вы ошиблись при вводе адреса.
+      </p>
+      
+      <div className="mt-8">
+        {/* Изменено: Ссылка обернута в кнопку из UI-кита с помощью пропса asChild */}
+        <Button
+          variant="outline"
+          asChild
+          className="gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer shadow-sm transition-colors"
         >
-          <Home size={16} />
-          На главную
-        </Link>
+          <Link href="/">
+            <Home className="h-4 w-4" />
+            На главную
+          </Link>
+        </Button>
       </div>
-    </main>
+
+    </div>
   )
 }

@@ -86,26 +86,26 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
   }
 
   return (
-    <div className="flex gap-6 items-start">
+    <div className="flex gap-6 items-start min-h-screen bg-background text-foreground">
 
       {/* Форма */}
       <form onSubmit={handleSubmit} className="flex-1 min-w-0 flex flex-col gap-4">
 
         {error && (
-          <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
             {error}
           </div>
         )}
 
         {/* Основная информация */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100">
+        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Основная информация
           </h2>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title" className="text-sm font-medium text-gray-700 mb-1.5 block">
-                Заголовок объявления <span className="text-red-500">*</span>
+              <Label htmlFor="title" className="text-sm font-medium text-foreground mb-1.5 block">
+                Заголовок объявления <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="title"
@@ -116,13 +116,13 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
                 onChange={(e) => setTitle(e.target.value)}
                 required
                 maxLength={100}
-                className="border-gray-300 focus:border-[#0d7a5f]"
+                className="border-border focus-visible:border-brand"
               />
-              <p className="text-xs text-gray-400 mt-1">{title.length}/100 символов</p>
+              <p className="text-xs text-muted-foreground mt-1">{title.length}/100 символов</p>
             </div>
             <div>
-              <Label htmlFor="description" className="text-sm font-medium text-gray-700 mb-1.5 block">
-                Описание <span className="text-red-500">*</span>
+              <Label htmlFor="description" className="text-sm font-medium text-foreground mb-1.5 block">
+                Описание <span className="text-destructive">*</span>
               </Label>
               <textarea
                 id="description"
@@ -132,9 +132,9 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={5}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-[#0d7a5f] focus:outline-none resize-none"
+                className="flex w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Подробное описание привлечёт больше клиентов
               </p>
             </div>
@@ -142,14 +142,14 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
         </div>
 
         {/* Категория и город */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100">
+        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Категория и местоположение
           </h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="category" className="text-sm font-medium text-gray-700 mb-1.5 block">
-                Категория <span className="text-red-500">*</span>
+              <Label htmlFor="category" className="text-sm font-medium text-foreground mb-1.5 block">
+                Категория <span className="text-destructive">*</span>
               </Label>
               <select
                 id="category"
@@ -157,17 +157,17 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-[#0d7a5f] focus:outline-none bg-white"
+                className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
               >
-                <option value="">Выберите категорию</option>
+                <option value="" className="bg-background">Выберите категорию</option>
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat} className="bg-background">{cat}</option>
                 ))}
               </select>
             </div>
             <div>
-              <Label htmlFor="city" className="text-sm font-medium text-gray-700 mb-1.5 block">
-                Город <span className="text-red-500">*</span>
+              <Label htmlFor="city" className="text-sm font-medium text-foreground mb-1.5 block">
+                Город <span className="text-destructive">*</span>
               </Label>
               <select
                 id="city"
@@ -175,11 +175,11 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 required
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-[#0d7a5f] focus:outline-none bg-white"
+                className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
               >
-                <option value="">Выберите город</option>
+                <option value="" className="bg-background">Выберите город</option>
                 {cities.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c} className="bg-background">{c}</option>
                 ))}
               </select>
             </div>
@@ -187,14 +187,14 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
         </div>
 
         {/* Стоимость */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100">
+        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Стоимость услуги
           </h2>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="price" className="text-sm font-medium text-gray-700 mb-1.5 block">
-                Цена <span className="text-red-500">*</span>
+              <Label htmlFor="price" className="text-sm font-medium text-foreground mb-1.5 block">
+                Цена <span className="text-destructive">*</span>
               </Label>
               <div className="flex items-center gap-2">
                 <Input
@@ -205,29 +205,29 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   required
-                  className="border-gray-300 focus:border-[#0d7a5f]"
+                  className="border-border focus-visible:border-brand"
                 />
-                <span className="text-sm text-gray-500 flex-shrink-0">руб.</span>
+                <span className="text-sm text-muted-foreground flex-shrink-0">руб.</span>
                 <select
                   value={priceUnit}
                   onChange={(e) => setPriceUnit(e.target.value)}
-                  className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-[#0d7a5f] focus:outline-none bg-white flex-shrink-0"
+                  className="flex h-9 rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer flex-shrink-0"
                 >
                   {priceUnits.map((u) => (
-                    <option key={u.value} value={u.value}>{u.label}</option>
+                    <option key={u.value} value={u.value} className="bg-background">{u.label}</option>
                   ))}
                 </select>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
-                Клиент увидит: <span className="text-gray-600">{priceDisplay}</span>
+              <p className="text-xs text-muted-foreground mt-1">
+                Клиент увидит: <span className="text-foreground font-medium">{priceDisplay}</span>
               </p>
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">
+              <Label className="text-sm font-medium text-foreground mb-2 block">
                 Выезд на дом / объект
               </Label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { value: true, label: 'Да, выезжаю' },
                   { value: false, label: 'Только у себя' },
@@ -236,17 +236,17 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
                     key={String(opt.value)}
                     type="button"
                     onClick={() => setHomeVisit(opt.value)}
-                    className={`flex items-center gap-2.5 px-4 py-3 border rounded-lg text-sm transition-colors ${
+                    className={`flex items-center gap-2.5 px-4 py-3 border rounded-lg text-sm transition-all cursor-pointer ${
                       homeVisit === opt.value
-                        ? 'border-[#0d7a5f] bg-[#0d7a5f]/5 text-[#0d7a5f] font-medium'
-                        : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                        ? 'border-brand bg-brand/5 text-brand font-medium'
+                        : 'border-border text-muted-foreground hover:border-border/80 hover:bg-card/50'
                     }`}
                   >
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                      homeVisit === opt.value ? 'border-[#0d7a5f]' : 'border-gray-300'
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                      homeVisit === opt.value ? 'border-brand' : 'border-border'
                     }`}>
                       {homeVisit === opt.value && (
-                        <div className="w-2 h-2 rounded-full bg-[#0d7a5f]" />
+                        <div className="w-2 h-2 rounded-full bg-brand" />
                       )}
                     </div>
                     {opt.label}
@@ -258,20 +258,20 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
         </div>
 
         {/* Фото работ */}
-        <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-1 pb-3 border-b border-gray-100">
-            Фото работ
-            <span className="text-xs font-normal text-gray-400 ml-2">необязательно</span>
+        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-foreground mb-1 pb-3 border-b border-border/60 flex items-center justify-between">
+            <span>Фото работ</span>
+            <span className="text-xs font-normal text-muted-foreground">необязательно</span>
           </h2>
-          <p className="text-xs text-gray-400 mt-3 mb-3">
+          <p className="text-xs text-muted-foreground mt-3 mb-3">
             Объявления с фото получают в 3 раза больше откликов
           </p>
 
           {photos.length < 5 && (
-            <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-200 rounded-xl py-8 cursor-pointer hover:border-[#0d7a5f] hover:bg-[#0d7a5f]/2 transition-colors">
-              <Upload className="h-8 w-8 text-gray-300 mb-2" />
-              <span className="text-sm text-gray-500 mb-1">Нажмите для загрузки фото</span>
-              <span className="text-xs text-gray-400">JPG или PNG, до 5 МБ каждое</span>
+            <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-border rounded-xl py-8 cursor-pointer hover:border-brand hover:bg-brand/5 transition-all group">
+              <Upload className="h-8 w-8 text-muted-foreground/60 mb-2 group-hover:text-brand transition-colors" />
+              <span className="text-sm text-muted-foreground mb-1 group-hover:text-foreground transition-colors">Нажмите для загрузки фото</span>
+              <span className="text-xs text-muted-foreground/60">JPG или PNG, до 5 МБ каждое</span>
               <input
                 type="file"
                 accept="image/*"
@@ -285,13 +285,13 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
           {photos.length > 0 && (
             <div className="flex gap-2 flex-wrap mt-3">
               {photos.map((photo, index) => (
-                <div key={photo} className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-200 group">
+                <div key={photo} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
                   {/* biome-ignore lint/performance/noImgElement: preview only */}
                   <img src={photo} alt={`Фото ${index + 1}`} className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => removePhoto(index)}
-                    className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                     aria-label="Удалить фото"
                   >
                     <X className="h-3 w-3 text-white" />
@@ -299,8 +299,8 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
                 </div>
               ))}
               {photos.length < 5 && (
-                <label className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:border-[#0d7a5f] transition-colors">
-                  <span className="text-2xl text-gray-300">+</span>
+                <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-brand hover:bg-brand/5 text-muted-foreground/60 hover:text-brand transition-all">
+                  <span className="text-2xl font-light">+</span>
                   <input type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
                 </label>
               )}
@@ -314,14 +314,14 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
             type="button"
             variant="outline"
             asChild
-            className="border-gray-300 text-gray-600"
+            className="border-border text-muted-foreground hover:text-foreground cursor-pointer font-medium"
           >
             <Link href="/services">Отмена</Link>
           </Button>
           <Button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-[#0d7a5f] hover:bg-[#0a6149] text-white"
+            className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
           >
             {loading ? 'Публикация...' : 'Опубликовать объявление'}
           </Button>
@@ -331,51 +331,51 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
 
       {/* Превью + советы */}
       <div className="hidden lg:block w-56 flex-shrink-0 sticky top-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <div className="bg-background border border-border rounded-xl p-4 shadow-sm">
 
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Предпросмотр
           </p>
 
-          <div className="border border-gray-200 rounded-lg overflow-hidden mb-4">
-            <div className="h-24 bg-gradient-to-br from-[#0d7a5f]/6 to-[#0d7a5f]/3 flex items-center justify-center relative">
-              <span className="text-4xl font-bold text-[#0d7a5f]/15">
+          <div className="border border-border rounded-lg overflow-hidden mb-4 bg-card/30">
+            <div className="h-24 bg-gradient-to-br from-brand/10 to-brand/5 flex items-center justify-center relative">
+              <span className="text-4xl font-bold text-brand/20">
                 {title.charAt(0) || '?'}
               </span>
               {category && (
-                <span className="absolute top-2 left-2 bg-white/90 text-[#0d7a5f] text-xs px-2 py-0.5 rounded-full border border-[#0d7a5f]/20">
+                <span className="absolute top-2 left-2 bg-background/95 text-brand text-[10px] px-2 py-0.5 rounded-full border border-brand/20 font-medium max-w-[90%] truncate">
                   {category}
                 </span>
               )}
             </div>
             <div className="p-3">
-              <p className="text-xs font-medium text-gray-900 leading-snug mb-2 line-clamp-2">
+              <p className="text-xs font-medium text-foreground leading-snug mb-2 line-clamp-2">
                 {title || 'Заголовок объявления'}
               </p>
               <div className="flex items-center gap-1.5 mb-2">
-                <div className="w-5 h-5 rounded-full bg-[#0d7a5f]/10 flex items-center justify-center text-xs font-semibold text-[#0d7a5f] flex-shrink-0">
+                <div className="w-5 h-5 rounded-full bg-brand/10 flex items-center justify-center text-[10px] font-bold text-brand flex-shrink-0">
                   {userInitials}
                 </div>
-                <span className="text-xs text-gray-500 truncate">{userName.split(' ')[0]}</span>
+                <span className="text-xs text-muted-foreground truncate">{userName.split(' ')[0]}</span>
               </div>
-              <div className="flex items-center justify-between border-t border-gray-100 pt-2">
-                <span className="text-xs font-semibold text-[#0d7a5f]">{priceDisplay}</span>
-                {city && <span className="text-xs text-gray-400">{city}</span>}
+              <div className="flex items-center justify-between border-t border-border/60 pt-2 gap-1">
+                <span className="text-[11px] font-bold text-brand truncate max-w-[65%]">{priceDisplay}</span>
+                {city && <span className="text-[11px] text-muted-foreground flex-shrink-0">{city}</span>}
               </div>
             </div>
           </div>
 
-          <div className="bg-[#0d7a5f]/5 rounded-lg p-3">
-            <p className="text-xs font-semibold text-[#0d7a5f] mb-2">Советы</p>
+          <div className="bg-brand/5 rounded-lg p-3 border border-brand/10">
+            <p className="text-xs font-semibold text-brand mb-2">Советы</p>
             <ul className="space-y-1.5">
               {[
                 'Фото работ привлекает в 3 раза больше клиентов',
                 'Укажите опыт и гарантии на работу',
                 'Реалистичная цена привлечёт больше откликов',
               ].map((tip) => (
-                <li key={tip} className="flex items-start gap-1.5 text-xs text-gray-600">
-                  <CheckCircle className="h-3 w-3 text-[#0d7a5f] flex-shrink-0 mt-0.5" />
-                  {tip}
+                <li key={tip} className="flex items-start gap-1.5 text-xs text-muted-foreground leading-normal">
+                  <CheckCircle className="h-3 w-3 text-brand flex-shrink-0 mt-0.5" />
+                  <span>{tip}</span>
                 </li>
               ))}
             </ul>

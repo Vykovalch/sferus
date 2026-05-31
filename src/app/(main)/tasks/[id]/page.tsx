@@ -17,7 +17,7 @@ const mockTask = {
   deadline: '2 недели',
   status: 'open' as TaskStatus,
   createdAt: '5 часов назад',
-  userId: 'user_123', // ID автора задания
+  userId: 'user_123',
   author: {
     name: 'Марина Ковалёва',
     initials: 'МК',
@@ -53,10 +53,11 @@ const statusLabels: Record<TaskStatus, string> = {
   done: 'Завершено',
 }
 
+// Изменено: Используем семантические цвета темы
 const statusColors: Record<TaskStatus, string> = {
-  open: 'bg-green-50 text-green-700',
-  in_progress: 'bg-blue-50 text-blue-700',
-  done: 'bg-gray-100 text-gray-600',
+  open: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  in_progress: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+  done: 'bg-muted text-muted-foreground',
 }
 
 export default async function TaskDetailPage() {
@@ -70,131 +71,131 @@ export default async function TaskDetailPage() {
   const myResponse = mockTask.responses.find((r) => r.userId === currentUserId)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
 
       {/* Хлебные крошки */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1.5 text-sm text-gray-500 flex-wrap">
-            <Link href="/tasks" className="hover:text-[#0d7a5f] transition-colors">Задания</Link>
-            <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
-            <span className="text-gray-900 font-medium line-clamp-1">{mockTask.title}</span>
+          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
+            <Link href="/tasks" className="hover:text-brand transition-colors cursor-pointer font-medium">Задания</Link>
+            <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
+            <span className="text-foreground font-medium line-clamp-1">{mockTask.title}</span>
           </nav>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <div className="flex gap-6 items-start">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
 
           {/* Основной контент */}
-          <div className="flex-1 min-w-0 flex flex-col gap-4">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
 
             {/* Основной блок */}
-            <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
 
               {/* Заголовок + бюджет */}
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <h1 className="text-xl font-semibold text-gray-900 leading-snug">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+                <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
                   {mockTask.title}
                 </h1>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-2xl font-bold text-[#0d7a5f]">{mockTask.budget}</div>
+                <div className="sm:text-right flex-shrink-0">
+                  <div className="text-2xl font-bold text-brand">{mockTask.budget}</div>
                 </div>
               </div>
 
               {/* Бейджи */}
-              <div className="flex items-center gap-2 flex-wrap mb-5">
-                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[mockTask.status]}`}>
+              <div className="flex items-center gap-2 flex-wrap mb-6">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[mockTask.status]}`}>
                   {statusLabels[mockTask.status]}
                 </span>
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
                   {mockTask.category}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <MapPin className="h-3 w-3" />
                   {mockTask.city}
                 </span>
               </div>
 
               {/* Описание */}
-              <h2 className="text-sm font-semibold text-gray-900 mb-2">Описание задания</h2>
-              <p className="text-sm text-gray-600 leading-relaxed mb-5">{mockTask.description}</p>
+              <h2 className="text-sm font-medium text-foreground mb-2">Описание задания</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6">{mockTask.description}</p>
 
               {/* Детали */}
-              <div className="border-t border-gray-100 pt-5 mb-5">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">Детали</h2>
-                <div className="grid grid-cols-3 gap-4">
+              <div className="border-t border-border pt-5 mb-6">
+                <h2 className="text-sm font-medium text-foreground mb-3">Детали</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Бюджет</p>
-                    <p className="text-sm font-medium text-gray-900">{mockTask.budget}</p>
+                    <p className="text-xs text-muted-foreground mb-0.5">Бюджет</p>
+                    <p className="text-sm font-medium text-foreground">{mockTask.budget}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Срок</p>
-                    <p className="text-sm font-medium text-gray-900">{mockTask.deadline}</p>
+                    <p className="text-xs text-muted-foreground mb-0.5">Срок</p>
+                    <p className="text-sm font-medium text-foreground">{mockTask.deadline}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Город</p>
-                    <p className="text-sm font-medium text-gray-900">{mockTask.city}</p>
+                    <p className="text-xs text-muted-foreground mb-0.5">Город</p>
+                    <p className="text-sm font-medium text-foreground">{mockTask.city}</p>
                   </div>
                 </div>
               </div>
 
               {/* Заказчик */}
-              <div className="border-t border-gray-100 pt-5">
-                <h2 className="text-sm font-semibold text-gray-900 mb-3">Заказчик</h2>
+              <div className="border-t border-border pt-5">
+                <h2 className="text-sm font-medium text-foreground mb-3">Заказчик</h2>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-[#0d7a5f]/10 flex items-center justify-center text-sm font-bold text-[#0d7a5f] flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-sm font-bold text-brand flex-shrink-0">
                     {mockTask.author.initials}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{mockTask.author.name}</p>
-                    <p className="text-xs text-gray-400">На платформе с {mockTask.author.memberSince}</p>
+                    <p className="text-sm font-medium text-foreground">{mockTask.author.name}</p>
+                    <p className="text-xs text-muted-foreground">На платформе с {mockTask.author.memberSince}</p>
                   </div>
                 </div>
-                <div className="flex gap-4 text-sm text-gray-500">
-                  <span>Заданий: <span className="font-semibold text-gray-900">{mockTask.author.tasksCount}</span></span>
-                  <span>Завершено: <span className="font-semibold text-gray-900">{mockTask.author.completedCount}</span></span>
+                <div className="flex gap-4 text-xs md:text-sm text-muted-foreground">
+                  <span>Заданий: <span className="font-medium text-foreground">{mockTask.author.tasksCount}</span></span>
+                  <span>Завершено: <span className="font-medium text-foreground">{mockTask.author.completedCount}</span></span>
                 </div>
               </div>
 
             </div>
 
-            {/* Блок откликов — зависит от роли */}
-            <div className="bg-white border border-gray-200 rounded-xl p-5">
+            {/* Блок откликов */}
+            <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
 
               {/* Автор задания — видит все отклики */}
               {isOwner && (
                 <>
-                  <h2 className="text-sm font-semibold text-gray-900 mb-4">
+                  <h2 className="text-sm font-medium text-foreground mb-4">
                     Отклики ({mockTask.responses.length})
                   </h2>
                   <div className="flex flex-col gap-3">
                     {mockTask.responses.map((response) => (
-                      <div key={response.id} className="border border-gray-200 rounded-xl p-4 hover:border-[#0d7a5f] transition-colors">
+                      <div key={response.id} className="border border-border rounded-xl p-4 hover:border-brand/50 transition-colors bg-card/50">
                         <div className="flex items-start justify-between gap-4 mb-3">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-full bg-[#0d7a5f]/10 flex items-center justify-center text-xs font-bold text-[#0d7a5f] flex-shrink-0">
+                            <div className="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-xs font-bold text-brand flex-shrink-0">
                               {response.author.initials}
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-900">{response.author.name}</p>
-                              <div className="flex items-center gap-1 text-xs text-gray-400">
-                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                <span>{response.author.rating}</span>
+                              <p className="text-sm font-medium text-foreground">{response.author.name}</p>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                <span className="text-foreground font-medium">{response.author.rating}</span>
                                 <span>· {response.author.reviewsCount} отзывов</span>
                               </div>
                             </div>
                           </div>
-                          <span className="text-base font-bold text-[#0d7a5f] flex-shrink-0">
+                          <span className="text-base font-bold text-brand flex-shrink-0">
                             {response.price}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600 leading-relaxed mb-3">{response.text}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">{response.text}</p>
                         <div className="flex items-center gap-2">
-                          <Button size="sm" className="h-8 px-4 text-xs bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
+                          <Button size="sm" className="h-8 px-4 text-xs bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
                             Принять отклик
                           </Button>
-                          <Button size="sm" variant="outline" asChild className="h-8 px-4 text-xs border-[#0d7a5f] text-[#0d7a5f]">
+                          <Button size="sm" variant="outline" asChild className="h-8 px-4 text-xs border-input hover:bg-muted text-foreground cursor-pointer font-medium transition-colors">
                             <Link href={`/profile/${response.userId}`}>Профиль</Link>
                           </Button>
                         </div>
@@ -208,16 +209,16 @@ export default async function TaskDetailPage() {
               {!isOwner && hasResponded && myResponse && (
                 <>
                   <div className="flex items-center gap-2 mb-4">
-                    <CheckCircle className="h-5 w-5 text-[#0d7a5f]" />
-                    <h2 className="text-sm font-semibold text-gray-900">Вы уже откликнулись</h2>
+                    <CheckCircle className="h-5 w-5 text-emerald-500" />
+                    <h2 className="text-sm font-medium text-foreground">Вы уже откликнулись</h2>
                   </div>
-                  <div className="border border-[#0d7a5f]/30 rounded-xl p-4 bg-[#0d7a5f]/4">
+                  <div className="border border-brand/20 rounded-xl p-4 bg-brand/5">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm font-medium text-gray-900">Ваш отклик</p>
-                      <span className="text-sm font-bold text-[#0d7a5f]">{myResponse.price}</span>
+                      <p className="text-sm font-medium text-foreground">Ваш отклик</p>
+                      <span className="text-sm font-bold text-brand">{myResponse.price}</span>
                     </div>
-                    <p className="text-sm text-gray-600 leading-relaxed mb-3">{myResponse.text}</p>
-                    <Button size="sm" variant="outline" className="h-8 px-4 text-xs border-[#0d7a5f] text-[#0d7a5f]">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">{myResponse.text}</p>
+                    <Button size="sm" variant="outline" className="h-8 px-4 text-xs border-input hover:bg-muted text-foreground cursor-pointer font-medium transition-colors">
                       Редактировать отклик
                     </Button>
                   </div>
@@ -227,15 +228,15 @@ export default async function TaskDetailPage() {
               {/* Гость или пользователь без отклика */}
               {!isOwner && !hasResponded && (
                 <>
-                  <h2 className="text-sm font-semibold text-gray-900 mb-2">
+                  <h2 className="text-sm font-medium text-foreground mb-1">
                     Откликов: {mockTask.responses.length}
                   </h2>
-                  <p className="text-sm text-gray-500 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Откликнитесь на задание чтобы предложить свои условия заказчику
                   </p>
                   {!session ? (
-                    <Button asChild className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
-                      <Link href="/login?callbackUrl=/tasks/1">Войдите чтобы откликнуться</Link>
+                    <Button asChild className="bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
+                      <Link href={`/login?callbackUrl=/tasks/${mockTask.id}`}>Войдите чтобы откликнуться</Link>
                     </Button>
                   ) : (
                     <RespondButton taskId={mockTask.id} />
@@ -247,67 +248,65 @@ export default async function TaskDetailPage() {
 
           </div>
 
-          {/* Сайдбар */}
+          {/* Правый Сайдбар (Десктоп) */}
           <div className="hidden lg:flex flex-col gap-4 w-60 flex-shrink-0 sticky top-6">
-            <div className="bg-white border border-gray-200 rounded-xl p-5">
+            <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
 
-              {/* Кнопка отклика — только не владельцу и не откликнувшемуся */}
+              {/* Кнопка действия */}
               {!isOwner && !hasResponded && (
                 session ? (
                   <RespondButton taskId={mockTask.id} className="w-full mb-4" />
                 ) : (
-                  <Button asChild className="w-full mb-4 bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
-                    <Link href="/login?callbackUrl=/tasks/1">Откликнуться</Link>
+                  <Button asChild className="w-full mb-4 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
+                    <Link href={`/login?callbackUrl=/tasks/${mockTask.id}`}>Откликнуться</Link>
                   </Button>
                 )
               )}
 
-              {/* Уже откликнулся */}
+              {/* Чекбокс отклика */}
               {!isOwner && hasResponded && (
-                <div className="flex items-center gap-2 mb-4 p-3 bg-[#0d7a5f]/8 rounded-lg">
-                  <CheckCircle className="h-4 w-4 text-[#0d7a5f]" />
-                  <span className="text-sm text-[#0d7a5f] font-medium">Вы откликнулись</span>
+                <div className="flex items-center gap-2 mb-4 p-3 bg-emerald-500/10 rounded-lg">
+                  <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Вы откликнулись</span>
                 </div>
               )}
 
-              {/* Мета */}
+              {/* Мета-информация */}
               <div className="space-y-2.5">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4 text-muted-foreground/70 flex-shrink-0" />
                   <span>Опубликовано {mockTask.createdAt}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Users className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+                  <Users className="h-4 w-4 text-muted-foreground/70 flex-shrink-0" />
                   <span>{mockTask.responses.length} откликов</span>
                 </div>
               </div>
 
               {/* Похожие задания */}
               {mockTask.similarTasks.length > 0 && (
-                <>
-                  <div className="border-t border-gray-100 mt-4 pt-4">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                      Похожие задания
-                    </p>
-                    <div className="flex flex-col gap-2">
-                      {mockTask.similarTasks.map((task) => (
-                        <Link
-                          key={task.id}
-                          href={`/tasks/${task.id}`}
-                          className="block p-3 border border-gray-200 rounded-lg hover:border-[#0d7a5f] transition-colors group"
-                        >
-                          <p className="text-xs font-medium text-gray-900 group-hover:text-[#0d7a5f] transition-colors mb-1 line-clamp-2">
-                            {task.title}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-gray-400">
-                            <span>{task.city}</span>
-                            <span className="text-[#0d7a5f] font-medium">{task.budget}</span>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+                <div className="border-t border-border mt-4 pt-4">
+                  <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                    Похожие задания
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {mockTask.similarTasks.map((task) => (
+                      <Link
+                        key={task.id}
+                        href={`/tasks/${task.id}`}
+                        className="block p-3 border border-border rounded-lg hover:border-brand/40 bg-card/30 transition-colors group cursor-pointer"
+                      >
+                        <p className="text-xs font-medium text-foreground group-hover:text-brand transition-colors mb-1 line-clamp-2">
+                          {task.title}
+                        </p>
+                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                          <span>{task.city}</span>
+                          <span className="text-brand font-medium">{task.budget}</span>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-                </>
+                </div>
               )}
 
             </div>

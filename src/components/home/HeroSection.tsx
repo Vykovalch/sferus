@@ -4,13 +4,21 @@ import { CityDropdown } from "@/components/shared/CityDropdown";
 
 export function HeroSection() {
   return (
-    <section className="relative py-16 md:py-28 overflow-hidden bg-background border-b border-border">
+    <section className="relative py-16 md:py-28 overflow-hidden bg-secondary dark:bg-zinc-900 border-b border-border">
+      {/* 
+        ФОН СЕКЦИИ: 
+        1. Сама секция получила легкий общий тон (bg-secondary/30), чтобы визуально отделиться от белого тела сайта.
+        2. Внутрь добавляем глубокое, сочное свечение бренда, которое теперь сияет НАД подложкой.
+      */}
       <div
-        className="absolute inset-0 z-0 bg-gradient-to-b from-muted/50 via-muted/20 to-background overflow-hidden"
+        className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none"
         aria-hidden="true"
       >
-        <div className="absolute top-[-20%] left-[30%] w-[800px] h-[350px] rounded-full bg-brand/5 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background via-background/60 to-transparent z-1" />
+        {/* Концентрированное сочное свечение по центру */}
+        <div className="absolute top-[-40%] left-[15%] md:left-[25%] w-[700px] md:w-[1000px] h-[500px] rounded-full bg-brand/15 blur-[100px] md:blur-[130px]" />
+        
+        {/* Дополнительный мягкий блик справа для баланса */}
+        <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-brand/10 blur-[100px]" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -24,7 +32,8 @@ export function HeroSection() {
           </h1>
 
           <div className="mb-8 md:mb-10 max-w-2xl mx-auto">
-            <div className="flex flex-col md:flex-row items-stretch bg-background p-2 rounded-2xl md:rounded-full border border-border shadow-xl dark:shadow-black/40 gap-2 md:gap-0">
+            {/* Белая плашка формы теперь идеально контрастирует с цветным фоном Hero */}
+            <div className="flex flex-col md:flex-row items-stretch bg-card p-2 rounded-2xl md:rounded-full border border-border shadow-xl dark:shadow-black/40 gap-2 md:gap-0">
               <div className="relative flex-1 flex items-center">
                 <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
                 <input
@@ -42,9 +51,10 @@ export function HeroSection() {
                 <CityDropdown />
               </div>
 
+              {/* Кнопка */}
               <button
                 type="button"
-                className="px-8 py-3 md:py-4 bg-ring hover:bg-ring/90 text-primary-foreground rounded-xl md:rounded-full shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 font-bold text-base cursor-pointer"
+                className="px-8 py-3 md:py-4 bg-brand hover:bg-brand/90 text-brand-foreground rounded-xl md:rounded-full shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 font-bold text-base cursor-pointer"
               >
                 <Search className="h-4 w-4 stroke-[2.5]" />
                 <span>Найти</span>

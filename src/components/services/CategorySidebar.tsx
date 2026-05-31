@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 const subcategories = [
-  { name: 'Все', count: 120 },
+  { name: 'Все подкатегории', count: 120 },
   { name: 'Электрика', count: 34 },
   { name: 'Сантехника', count: 28 },
   { name: 'Отделка', count: 22 },
@@ -15,55 +15,73 @@ const subcategories = [
 const cities = ['Все', 'Тирасполь', 'Бендеры', 'Рыбница', 'Дубоссары', 'Слободзея']
 
 const executorTypes = [
-  { value: 'all', label: 'Все' },
+  { value: 'all', label: 'Все исполнители' },
   { value: 'individual', label: 'Частный специалист' },
   { value: 'company', label: 'Компания' },
 ]
 
 export function CategorySidebar() {
-  const [activeSubcat, setActiveSubcat] = useState('Все')
+  const [activeSubcat, setActiveSubcat] = useState('Все подкатегории')
   const [activeCity, setActiveCity] = useState('Все')
   const [executorType, setExecutorType] = useState('all')
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 select-none">
 
-      {/* Подкатегории */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-gray-100">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Подкатегории</h3>
+      {/* Блок: Подкатегории */}
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            Подкатегория
+          </h3>
         </div>
-        <nav className="py-1">
+        <div className="py-1">
           {subcategories.map((sub) => (
-            <button
+            <label
               key={sub.name}
-              type="button"
-              onClick={() => setActiveSubcat(sub.name)}
-              className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors ${
-                activeSubcat === sub.name
-                  ? 'bg-[#0d7a5f]/8 text-[#0d7a5f] font-medium'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
+              className="flex items-center justify-between px-4 py-2 cursor-pointer group transition-colors hover:bg-muted/40"
             >
-              <span>{sub.name}</span>
-              <span className={`text-xs ${activeSubcat === sub.name ? 'text-[#0d7a5f]/70' : 'text-gray-400'}`}>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <input
+                  type="radio"
+                  name="subcategory"
+                  value={sub.name}
+                  checked={activeSubcat === sub.name}
+                  onChange={() => setActiveSubcat(sub.name)}
+                  className="h-4 w-4 border-input text-brand bg-background focus:ring-brand accent-brand cursor-pointer flex-shrink-0"
+                />
+                <span className={`text-sm leading-snug truncate transition-colors ${
+                  activeSubcat === sub.name 
+                    ? 'text-brand font-medium' 
+                    : 'text-muted-foreground group-hover:text-foreground'
+                }`}>
+                  {sub.name}
+                </span>
+              </div>
+              <span className={`text-xs pl-2 flex-shrink-0 transition-colors ${
+                activeSubcat === sub.name 
+                  ? 'text-brand/70 font-medium' 
+                  : 'text-muted-foreground/60 group-hover:text-muted-foreground'
+              }`}>
                 {sub.count}
               </span>
-            </button>
+            </label>
           ))}
-        </nav>
+        </div>
       </div>
 
-      {/* Тип исполнителя */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-gray-100">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Исполнитель</h3>
+      {/* Блок: Исполнитель */}
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            Исполнитель
+          </h3>
         </div>
-        <div className="p-3 space-y-1">
+        <div className="py-1">
           {executorTypes.map((type) => (
             <label
               key={type.value}
-              className="flex items-center gap-2.5 px-1 py-1.5 cursor-pointer"
+              className="flex items-center gap-2.5 px-4 py-2 cursor-pointer group transition-colors hover:bg-muted/40"
             >
               <input
                 type="radio"
@@ -71,9 +89,13 @@ export function CategorySidebar() {
                 value={type.value}
                 checked={executorType === type.value}
                 onChange={() => setExecutorType(type.value)}
-                className="accent-[#0d7a5f]"
+                className="h-4 w-4 border-input text-brand bg-background focus:ring-brand accent-brand cursor-pointer flex-shrink-0"
               />
-              <span className={`text-sm ${executorType === type.value ? 'text-[#0d7a5f] font-medium' : 'text-gray-700'}`}>
+              <span className={`text-sm leading-snug transition-colors ${
+                executorType === type.value 
+                  ? 'text-brand font-medium' 
+                  : 'text-muted-foreground group-hover:text-foreground'
+              }`}>
                 {type.label}
               </span>
             </label>
@@ -81,10 +103,12 @@ export function CategorySidebar() {
         </div>
       </div>
 
-      {/* Город */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-gray-100">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Город</h3>
+      {/* Блок: Город */}
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 border-b border-border">
+          <h3 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+            Город
+          </h3>
         </div>
         <div className="p-3 flex flex-wrap gap-1.5">
           {cities.map((city) => (
@@ -92,10 +116,10 @@ export function CategorySidebar() {
               key={city}
               type="button"
               onClick={() => setActiveCity(city)}
-              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+              className={`px-3 py-1 text-xs rounded-full border transition-all cursor-pointer font-medium ${
                 activeCity === city
-                  ? 'bg-[#0d7a5f] border-[#0d7a5f] text-white'
-                  : 'border-gray-200 text-gray-600 hover:border-[#0d7a5f] hover:text-[#0d7a5f]'
+                  ? 'bg-brand border-brand text-brand-foreground shadow-sm'
+                  : 'border-input bg-background text-muted-foreground hover:border-brand/50 hover:text-foreground'
               }`}
             >
               {city}

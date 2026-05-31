@@ -21,8 +21,8 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
 
   if (images.length === 0) {
     return (
-      <div className="w-full h-52 bg-gradient-to-br from-[#0d7a5f]/6 to-[#0d7a5f]/3 rounded-xl flex items-center justify-center">
-        <span className="text-7xl font-bold text-[#0d7a5f]/15 select-none">{title.charAt(0)}</span>
+      <div className="w-full h-52 bg-gradient-to-br from-brand/10 to-brand/5 border border-border rounded-xl flex items-center justify-center">
+        <span className="text-7xl font-bold text-brand/15 select-none">{title.charAt(0)}</span>
       </div>
     );
   }
@@ -35,7 +35,7 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
         <button
           type="button"
           onClick={() => openLightbox(0)}
-          className="relative flex-1 h-52 rounded-xl overflow-hidden cursor-zoom-in group"
+          className="relative flex-1 h-52 rounded-xl overflow-hidden cursor-zoom-in group border border-border"
         >
           <Image
             src={images[0]}
@@ -44,7 +44,7 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
           {images.length > 1 && (
-            <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-md">
+            <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm text-foreground border border-border text-xs px-2 py-1 rounded-md shadow-sm font-medium">
               1 / {images.length}
             </div>
           )}
@@ -58,7 +58,7 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
                 key={img}
                 type="button"
                 onClick={() => openLightbox(index + 1)}
-                className="relative h-[calc(104px-4px)] rounded-xl overflow-hidden cursor-zoom-in group flex-1"
+                className="relative h-[calc(104px-4px)] rounded-xl overflow-hidden cursor-zoom-in group flex-1 border border-border"
               >
                 <Image
                   src={img}
@@ -68,8 +68,8 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
                 />
                 {/* Оверлей если фото больше 3 */}
                 {index === 1 && images.length > 3 && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-white text-base font-semibold">+{images.length - 3}</span>
+                  <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] flex items-center justify-center">
+                    <span className="text-foreground text-base font-semibold">+{images.length - 3}</span>
                   </div>
                 )}
               </button>

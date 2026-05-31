@@ -15,23 +15,30 @@ export default async function CreateServicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-
+    // Изменено: Установлены системные цвета фона и текста (как в CreateTaskPage)
+    <div className="min-h-screen bg-background text-foreground">
+      
       {/* Хлебные крошки */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1.5 text-sm text-gray-500">
-            <Link href="/services" className="hover:text-[#0d7a5f] transition-colors">Услуги</Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-gray-900 font-medium">Разместить объявление</span>
+          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Link
+              href="/services"
+              className="hover:text-brand transition-colors cursor-pointer font-medium"
+            >
+              Услуги
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
+            <span className="text-foreground font-medium">Разместить объявление</span>
           </nav>
         </div>
       </div>
 
+      {/* Контейнер для формы создания услуги */}
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         <CreateServiceForm userName={session.user.name} />
       </div>
-
+      
     </div>
   )
 }

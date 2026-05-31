@@ -57,19 +57,22 @@ const mockTasks = [
 
 export default function TasksPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    // Изменено: переведено на bg-background для работы с темами
+    <div className="min-h-screen bg-background text-foreground">
 
-      {/* Шапка */}
-      <div className="bg-white border-b border-gray-200">
+      {/* Шапка страницы */}
+      <div className="bg-background border-b border-border">
         <div className="container mx-auto px-4 py-5">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">Задания</h1>
-              <p className="text-sm text-gray-500 mt-0.5">
+              {/* Изменено: font-medium и tracking-tight для премиального вида */}
+              <h1 className="text-xl font-medium tracking-tight text-foreground">Задания</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
                 Открытые задания от клиентов — откликайтесь и предлагайте условия
               </p>
             </div>
-            <Button asChild className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white">
+            {/* Изменено: кнопка приведена к системному bg-brand */}
+            <Button asChild className="bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer self-start sm:self-auto">
               <Link href="/tasks/new">+ Создать задание</Link>
             </Button>
           </div>
@@ -84,32 +87,34 @@ export default function TasksPage() {
             <TasksSidebar />
           </aside>
 
-          {/* Контент */}
+          {/* Контентная область */}
           <div className="flex-1 min-w-0">
 
-            {/* Шапка контента */}
+            {/* Панель сортировки и фильтров */}
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-gray-500">
-                Найдено <span className="font-semibold text-gray-900">50</span> заданий
+              <p className="text-sm text-muted-foreground">
+                Найдено <span className="font-medium text-foreground">50</span> заданий
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
+                {/* Мобильная кнопка фильтров */}
                 <button
                   type="button"
-                  className="lg:hidden flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:border-[#0d7a5f] transition-colors bg-white"
+                  className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm border border-input rounded-lg hover:bg-muted hover:text-foreground transition-colors bg-background text-muted-foreground cursor-pointer font-medium"
                 >
                   Фильтры
                 </button>
+                {/* Кнопка сортировки */}
                 <button
                   type="button"
-                  className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:border-[#0d7a5f] transition-colors bg-white"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-input rounded-lg hover:bg-muted hover:text-foreground transition-colors bg-background text-muted-foreground cursor-pointer font-medium"
                 >
-                  Сначала новые
-                  <ChevronRight className="h-3.5 w-3.5 rotate-90 text-gray-400" />
+                  <span>Сначала новые</span>
+                  <ChevronRight className="h-3.5 w-3.5 rotate-90 text-muted-foreground/70" />
                 </button>
               </div>
             </div>
 
-            {/* Список заданий */}
+            {/* Список карточек */}
             <div className="flex flex-col gap-3">
               {mockTasks.map((task) => (
                 <TaskCard key={task.id} task={task} />
@@ -117,11 +122,11 @@ export default function TasksPage() {
             </div>
 
             {/* Пагинация */}
-            <div className="flex items-center justify-center gap-2 mt-8">
+            <div className="flex items-center justify-center gap-1.5 mt-8">
               <button
                 type="button"
                 disabled
-                className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-400 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 Назад
               </button>
@@ -129,10 +134,10 @@ export default function TasksPage() {
                 <button
                   key={page}
                   type="button"
-                  className={`w-9 h-9 text-sm rounded-lg border transition-colors ${
+                  className={`w-8.5 h-8.5 text-sm rounded-lg border transition-colors cursor-pointer font-medium flex items-center justify-center ${
                     page === 1
-                      ? 'bg-[#0d7a5f] border-[#0d7a5f] text-white'
-                      : 'border-gray-200 text-gray-600 hover:border-[#0d7a5f] hover:text-[#0d7a5f]'
+                      ? 'bg-brand border-brand text-brand-foreground shadow-sm'
+                      : 'border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground'
                   }`}
                 >
                   {page}
@@ -140,7 +145,7 @@ export default function TasksPage() {
               ))}
               <button
                 type="button"
-                className="px-4 py-2 text-sm rounded-lg border border-gray-200 text-gray-600 hover:border-[#0d7a5f] hover:text-[#0d7a5f] transition-colors"
+                className="px-3 py-1.5 text-sm rounded-lg border border-input text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer font-medium"
               >
                 Вперёд
               </button>

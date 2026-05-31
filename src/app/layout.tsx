@@ -4,7 +4,10 @@ import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 
-const geist = Geist({ subsets: ['latin', 'cyrillic'] })
+const geist = Geist({ 
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-sans', // Изменено: Добавлена CSS-переменная для интеграции с Tailwind
+})
 
 export const metadata: Metadata = {
   title: 'Sferus — найдите специалиста в Приднестровье',
@@ -27,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <body className={geist.className}>
         {children}
       </body>
