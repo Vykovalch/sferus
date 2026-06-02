@@ -2,211 +2,193 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import Link from "next/link";
+import { Megaphone, Eye, MessageSquare, Plus, Edit3, Power, PowerOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Bell, Lock, Shield, Eye, Save } from "lucide-react";
 
-export default async function SettingsPage() {
+// В реальном приложении эти данные будут запрашиваться из БД на основе session.user.id
+const myListings = [
+  {
+    id: 1,
+    title: "Электромонтажные работы",
+    price: "от 80 руб./час",
+    views: 45,
+    responses: 8,
+    active: true,
+  },
+  {
+    id: 2,
+    title: "Установка видеонаблюдения",
+    price: "от 200 руб.",
+    views: 23,
+    responses: 3,
+    active: true,
+  },
+  {
+    id: 3,
+    title: "Подключение электроплит",
+    price: "от 50 руб.",
+    views: 12,
+    responses: 1,
+    active: false,
+  },
+];
+
+export default async function MyServicesPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    redirect("/login?callbackUrl=/dashboard/settings");
+    // Перенаправляем на логин, а после успешного входа возвращаем на текущую страницу
+    redirect("/login?callbackUrl=/dashboard/services");
   }
+
+  // Считаем быструю статистику только по услугам
+  const totalServices = myListings.length;
+  const activeServices = myListings.filter((l) => l.active).length;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
+      {/* Боковое меню кабинета */}
       <DashboardSidebar user={session.user} />
 
       <main className="flex-1 min-w-0 p-6 overflow-auto">
-        <div className="max-w-3xl">
+        <div className="max-w-5xl">
           {/* Шапка страницы */}
-          <div className="mb-6">
-            <h1 className="text-xl font-semibold text-gray-900 mb-1">Настройки аккаунта</h1>
-            <p className="text-sm text-gray-500">
-              Управление безопасностью, уведомлениями и приватностью вашего профиля
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {/* Секция 1: Уведомления */}
-            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                <Bell className="h-4 w-4 text-[#0d7a5f]" />
-                <h2 className="text-sm font-semibold text-gray-900">Уведомления</h2>
-              </div>
-
-              <div className="space-y-4">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d7a5f] focus:ring-[#0d7a5f]"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-[#0d7a5f] transition-colors">
-                      Новые отклики на задания
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Получать уведомления, когда специалисты предлагают свои услуги к вашим задачам
-                    </p>
-                  </div>
-                </label>
-
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d7a5f] focus:ring-[#0d7a5f]"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-[#0d7a5f] transition-colors">
-                      Сообщения из чатов
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Уведомлять о новых личных сообщениях от клиентов или исполнителей
-                    </p>
-                  </div>
-                </label>
-
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d7a5f] focus:ring-[#0d7a5f]"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-[#0d7a5f] transition-colors">
-                      Уведомления в Telegram
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Дублировать важные системные события в наш Telegram-бот (требуется привязка)
-                    </p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {/* Секция 2: Безопасность (Смена пароля) */}
-            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                <Lock className="h-4 w-4 text-[#0d7a5f]" />
-                <h2 className="text-sm font-semibold text-gray-900">Безопасность и пароль</h2>
-              </div>
-
-              <form className="space-y-4 max-w-md">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Текущий пароль
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#0d7a5f] focus:ring-1 focus:ring-[#0d7a5f]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Новый пароль
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Минимум 8 символов"
-                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#0d7a5f] focus:ring-1 focus:ring-[#0d7a5f]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Повторите новый пароль
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#0d7a5f] focus:ring-1 focus:ring-[#0d7a5f]"
-                  />
-                </div>
-
-                <Button
-                  type="button"
-                  size="sm"
-                  className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white"
-                >
-                  Обновить пароль
-                </Button>
-              </form>
-            </div>
-
-            {/* Секция 3: Приватность */}
-            <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                <Eye className="h-4 w-4 text-[#0d7a5f]" />
-                <h2 className="text-sm font-semibold text-gray-900">Приватность данных</h2>
-              </div>
-
-              <div className="space-y-4">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d7a5f] focus:ring-[#0d7a5f]"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-[#0d7a5f] transition-colors">
-                      Показывать мой номер телефона незарегистрированным пользователям
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Если отключено, ваш телефон из ПМР увидят только авторизованные
-                      клиенты/мастера
-                    </p>
-                  </div>
-                </label>
-
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="mt-1 h-4 w-4 rounded border-gray-300 text-[#0d7a5f] focus:ring-[#0d7a5f]"
-                  />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-[#0d7a5f] transition-colors">
-                      Отображать статус «В сети»
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Другие пользователи будут видеть, когда вы заходили на сайт последний раз
-                    </p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {/* Секция 4: Удаление аккаунта */}
-            <div className="bg-red-50/40 border border-red-100 rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <Shield className="h-4 w-4 text-red-600" />
-                <h2 className="text-sm font-semibold text-red-900">Опасная зона</h2>
-              </div>
-              <p className="text-xs text-gray-500 mb-4">
-                Удаление аккаунта приведет к безвозвратному удалению всех ваших услуг,
-                опубликованных заданий, отзывов и истории откликов.
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900 mb-1">Мои услуги</h1>
+              <p className="text-sm text-gray-500">
+                Управление вашими объявлениями и услугами в Приднестровье
               </p>
-              <Button
-                size="sm"
-                variant="destructive"
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                Удалить аккаунт
-              </Button>
             </div>
-          </div>
 
-          {/* Общая кнопка сохранения для чекбоксов */}
-          <div className="mt-6 flex justify-end">
-            <Button className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white flex items-center gap-2 shadow-sm">
-              <Save className="h-4 w-4" />
-              Сохранить настройки
+            {/* Кнопка создания услуги вынесена в топ для удобства */}
+            <Button
+              asChild
+              className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white self-start sm:self-auto shadow-sm"
+            >
+              <Link href="/services/new" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Добавить услугу
+              </Link>
             </Button>
           </div>
+
+          {/* Мини-статистика по услугам */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+              <p className="text-sm font-medium text-gray-500 mb-1">Всего услуг</p>
+              <p className="text-2xl font-bold text-gray-900">{totalServices}</p>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+              <p className="text-sm font-medium text-gray-500 mb-1">Активных объявлений</p>
+              <p className="text-2xl font-bold text-[#0d7a5f]">{activeServices}</p>
+            </div>
+          </div>
+
+          {/* Список услуг */}
+          {myListings.length === 0 ? (
+            <div className="bg-white border border-dashed border-gray-200 rounded-xl p-8 text-center">
+              <Megaphone className="h-8 w-8 text-gray-400 mx-auto mb-3" />
+              <p className="text-sm font-medium text-gray-900 mb-1">
+                У вас еще нет опубликованных услуг
+              </p>
+              <p className="text-xs text-gray-500 mb-4">
+                Создайте первую услугу, чтобы клиенты могли вас найти.
+              </p>
+              <Button
+                asChild
+                variant="outline"
+                className="border-[#0d7a5f] text-[#0d7a5f] hover:bg-[#0d7a5f]/5"
+              >
+                <Link href="/services/new">Создать объявление</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {myListings.map((listing) => (
+                <div
+                  key={listing.id}
+                  className="bg-white border border-gray-200 rounded-xl p-5 flex flex-col justify-between shadow-sm transition-all hover:shadow-md"
+                >
+                  <div>
+                    {/* Верхняя часть карточки (Иконка + Статус) */}
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="w-12 h-12 rounded-xl bg-[#0d7a5f]/10 flex items-center justify-center text-xl font-bold text-[#0d7a5f] flex-shrink-0">
+                        {listing.title.charAt(0)}
+                      </div>
+
+                      <span
+                        className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                          listing.active
+                            ? "bg-green-50 text-green-700 border border-green-200/50"
+                            : "bg-gray-100 text-gray-600 border border-gray-200"
+                        }`}
+                      >
+                        {listing.active ? "Активно" : "Скрыто"}
+                      </span>
+                    </div>
+
+                    {/* Название и цена */}
+                    <h3
+                      className="text-base font-semibold text-gray-900 line-clamp-1 mb-1"
+                      title={listing.title}
+                    >
+                      {listing.title}
+                    </h3>
+                    <p className="text-sm font-medium text-[#0d7a5f] mb-4">{listing.price}</p>
+                  </div>
+
+                  {/* Нижняя часть карточки (Статистика + Действия) */}
+                  <div className="border-t border-gray-100 pt-4 mt-2 flex items-center justify-between gap-2">
+                    {/* Метрики */}
+                    <div className="flex gap-4 text-xs text-gray-500">
+                      <span className="flex items-center gap-1.5" title="Просмотры">
+                        <Eye className="h-4 w-4 text-gray-400" />
+                        {listing.views}
+                      </span>
+                      <span className="flex items-center gap-1.5" title="Отклики">
+                        <MessageSquare className="h-4 w-4 text-gray-400" />
+                        {listing.responses}
+                      </span>
+                    </div>
+
+                    {/* Кнопки управления услугой */}
+                    <div className="flex items-center gap-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-gray-500 hover:text-gray-900"
+                        title={
+                          listing.active ? "Деактивировать (скрыть)" : "Активировать (показать)"
+                        }
+                      >
+                        {listing.active ? (
+                          <PowerOff className="h-4 w-4" />
+                        ) : (
+                          <Power className="h-4 w-4" />
+                        )}
+                      </Button>
+
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        asChild
+                        className="h-8 w-8 text-gray-500 hover:text-[#0d7a5f]"
+                        title="Редактировать услугу"
+                      >
+                        <Link href={`/services/${listing.id}/edit`}>
+                          <Edit3 className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
