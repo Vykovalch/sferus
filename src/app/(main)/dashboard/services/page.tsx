@@ -44,23 +44,16 @@ export default async function MyServicesPage() {
     redirect("/login?callbackUrl=/dashboard/services");
   }
 
-  // Считаем быструю статистику только по услугам
-  const totalServices = myListings.length;
-  const activeServices = myListings.filter((l) => l.active).length;
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Боковое меню кабинета */}
-      <DashboardSidebar user={session.user} />
-
       <main className="flex-1 min-w-0 p-6 overflow-auto">
         <div className="max-w-5xl">
-          {/* Шапка страницы */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
               <h1 className="text-xl font-semibold text-gray-900 mb-1">Мои услуги</h1>
               <p className="text-sm text-gray-500">
-                Управление вашими объявлениями и услугами в Приднестровье
+                Управление вашими объявлениями и услугами
               </p>
             </div>
 
@@ -76,19 +69,6 @@ export default async function MyServicesPage() {
             </Button>
           </div>
 
-          {/* Мини-статистика по услугам */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-medium text-gray-500 mb-1">Всего услуг</p>
-              <p className="text-2xl font-bold text-gray-900">{totalServices}</p>
-            </div>
-            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-              <p className="text-sm font-medium text-gray-500 mb-1">Активных объявлений</p>
-              <p className="text-2xl font-bold text-[#0d7a5f]">{activeServices}</p>
-            </div>
-          </div>
-
-          {/* Список услуг */}
           {myListings.length === 0 ? (
             <div className="bg-white border border-dashed border-gray-200 rounded-xl p-8 text-center">
               <Megaphone className="h-8 w-8 text-gray-400 mx-auto mb-3" />
