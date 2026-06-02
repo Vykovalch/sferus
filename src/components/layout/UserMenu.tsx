@@ -2,7 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { User, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
+import {
+  User,
+  ClipboardList,
+  FileText,
+  Send,
+  Heart,
+  Settings,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import type { Session } from "@/lib/auth";
 import {
@@ -57,38 +66,67 @@ export function UserMenu({ session }: UserMenuProps) {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-48 shadow-xl">
-        <div className="px-2 py-1.5">
+      <DropdownMenuContent align="end" className="w-52 shadow-xl">
+        {/* Шапка с именем и почтой */}
+        <div className="px-3 py-2">
           <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
         </div>
-        <DropdownMenuSeparator className="bg-border" />
 
+        <DropdownMenuSeparator />
+
+        {/* Профиль */}
         <DropdownMenuItem asChild>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 cursor-pointer text-foreground hover:text-brand"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Личный кабинет
+          <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+            <User className="h-4 w-4 text-muted-foreground" />
+            Мой профиль
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        {/* Активность */}
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/services" className="flex items-center gap-2 cursor-pointer">
+            <ClipboardList className="h-4 w-4 text-muted-foreground" />
+            Мои услуги
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link
-            href="/dashboard/settings"
-            className="flex items-center gap-2 cursor-pointer text-foreground hover:text-brand"
-          >
-            <User className="h-4 w-4" />
-            Настройки профиля
+          <Link href="/dashboard/tasks" className="flex items-center gap-2 cursor-pointer">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            Мои задания
           </Link>
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator className="bg-border" />
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/responses" className="flex items-center gap-2 cursor-pointer">
+            <Send className="h-4 w-4 text-muted-foreground" />
+            Мои отклики
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/favorites" className="flex items-center gap-2 cursor-pointer">
+            <Heart className="h-4 w-4 text-muted-foreground" />
+            Избранное
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        {/* Настройки и выход */}
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/settings" className="flex items-center gap-2 cursor-pointer">
+            <Settings className="h-4 w-4 text-muted-foreground" />
+            Настройки
+          </Link>
+        </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={handleSignOut}
-          className="flex items-center gap-2 text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer"
+          className="flex items-center gap-2 text-muted-foreground focus:text-muted-foreground cursor-pointer"
         >
           <LogOut className="h-4 w-4" />
           Выйти
