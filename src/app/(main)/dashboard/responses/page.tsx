@@ -3,127 +3,83 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import Link from "next/link";
-import { Megaphone, ListChecks, Star, MessageSquare, Eye, ArrowRight, MapPin } from "lucide-react";
+import {
+  MessageSquare,
+  MapPin,
+  Search,
+  ArrowUpRight,
+  CheckCircle2,
+  XCircle,
+  Clock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const stats = [
-  {
-    label: "Активных объявлений",
-    value: 3,
-    icon: Megaphone,
-    color: "text-[#0d7a5f]",
-    bg: "bg-[#0d7a5f]/10",
-  },
-  {
-    label: "Открытых заданий",
-    value: 2,
-    icon: ListChecks,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-  },
-  {
-    label: "Средний рейтинг",
-    value: "4.9",
-    icon: Star,
-    color: "text-yellow-500",
-    bg: "bg-yellow-50",
-    sub: "127 отзывов",
-  },
-  {
-    label: "Новых откликов",
-    value: 3,
-    icon: MessageSquare,
-    color: "text-red-500",
-    bg: "bg-red-50",
-    sub: "Требуют внимания",
-  },
-];
-
-const myListings = [
+// Данные откликов текущего специалиста на чужие задания
+const myResponses = [
   {
     id: 1,
-    title: "Электромонтажные работы",
-    price: "от 80 руб./час",
-    views: 45,
-    responses: 8,
-    active: true,
+    taskTitle: "Ремонт стиральной машины Indesit (не сливает воду)",
+    customerName: "Игорь В.",
+    city: "Бендеры",
+    myPrice: "350 руб.",
+    status: "pending" as const, // на рассмотрении
+    createdAt: "Вчера, 18:20",
+    taskId: 101,
   },
   {
     id: 2,
-    title: "Установка видеонаблюдения",
-    price: "от 200 руб.",
-    views: 23,
-    responses: 3,
-    active: true,
+    taskTitle: "Перенос розеток и выключателей в кухне",
+    customerName: "Анна Николаевна",
+    city: "Тирасполь",
+    myPrice: "400 руб.",
+    status: "accepted" as const, // принят заказчиком
+    createdAt: "3 дня назад",
+    taskId: 102,
   },
   {
     id: 3,
-    title: "Подключение электроплит",
-    price: "от 50 руб.",
-    views: 12,
-    responses: 1,
-    active: false,
+    taskTitle: "Разработка лендинга для доставки еды",
+    customerName: "Дмитрий",
+    city: "Удаленно",
+    myPrice: "1200 руб.",
+    status: "declined" as const, // отклонен или выбран другой мастер
+    createdAt: "1 неделя назад",
+    taskId: 103,
   },
 ];
 
-const myTasks = [
-  {
-    id: 1,
-    title: "Нужна сиделка для пожилого человека",
-    city: "Тирасполь",
-    budget: "до 300 руб.",
-    responsesCount: 5,
-    status: "open" as const,
-  },
-  {
-    id: 2,
-    title: "Репетитор по математике для дочери",
-    city: "Тирасполь",
-    budget: "до 150 руб.",
-    responsesCount: 3,
-    status: "in_progress" as const,
-  },
-];
-
-const newResponses = [
-  {
-    id: 1,
-    executorName: "Елена Лазарева",
-    executorInitials: "ЕЛ",
-    taskTitle: "Нужна сиделка для пожилого человека",
-    price: "250 руб.",
-  },
-  {
-    id: 2,
-    executorName: "Андрей Михайлов",
-    executorInitials: "АМ",
-    taskTitle: "Нужна сиделка для пожилого человека",
-    price: "280 руб.",
-  },
-  {
-    id: 3,
-    executorName: "Ольга Федорова",
-    executorInitials: "ОФ",
-    taskTitle: "Репетитор по математике для дочери",
-    price: "120 руб.",
-  },
-];
-
-const statusLabels = { open: "Открыто", in_progress: "В работе", done: "Завершено" };
-const statusColors = {
-  open: "bg-green-50 text-green-700",
-  in_progress: "bg-blue-50 text-blue-700",
-  done: "bg-gray-100 text-gray-600",
+const statusLabels = {
+  pending: "На рассмотрении",
+  accepted: "Вы приняты",
+  declined: "Отклонен",
 };
 
-export default async function DashboardPage() {
+const statusColors = {
+  pending: "bg-amber-50 text-amber-700 border-amber-200/60",
+  accepted: "bg-green-50 text-green-700 border-green-200/60",
+  declined: "bg-gray-100 text-gray-500 border-gray-200",
+};
+
+const statusIcons = {
+  pending: Clock,
+  accepted: CheckCircle2,
+  declined: XCircle,
+};
+
+export default async function MyResponsesPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (!session) {
-    redirect("/login?callbackUrl=/dashboard");
+    redirect("/login?callbackUrl=/dashboard/responses");
   }
+
+  // Быстрая статистика для специалиста
+  const totalResponses = myResponses.length;
+  const acceptedResponses = myResponses.filter((r) => r.status === "accepted").length;
+  const pendingResponses = myResponses.filter((r) => r.status === "pending").length;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -131,174 +87,176 @@ export default async function DashboardPage() {
 
       <main className="flex-1 min-w-0 p-6 overflow-auto">
         <div className="max-w-5xl">
-          {/* Заголовок */}
+          {/* Шапка страницы */}
           <div className="mb-6">
-            <h1 className="text-xl font-semibold text-gray-900 mb-1">
-              Добро пожаловать, {session.user.name.split(" ")[0]}!
-            </h1>
-            <p className="text-sm text-gray-500">Вот что происходит с вашим аккаунтом</p>
+            <h1 className="text-xl font-semibold text-gray-900 mb-1">Мои отклики</h1>
+            <p className="text-sm text-gray-500">
+              История ваших предложений к заданиям заказчиков и их текущий статус
+            </p>
           </div>
 
-          {/* Статистика */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            {stats.map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <div key={stat.label} className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div
-                    className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center mb-3`}
-                  >
-                    <Icon className={`h-4 w-4 ${stat.color}`} />
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900 mb-0.5">{stat.value}</p>
-                  <p className="text-xs text-gray-500">{stat.label}</p>
-                  {stat.sub && <p className="text-xs text-amber-500 mt-1">{stat.sub}</p>}
+          {/* Метрики эффективности откликов */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+              <p className="text-[11px] sm:text-xs font-medium text-gray-500 mb-1 truncate">
+                Всего откликов
+              </p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{totalResponses}</p>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+              <p className="text-[11px] sm:text-xs font-medium text-gray-500 mb-1 truncate">
+                Ожидают ответа
+              </p>
+              <p className="text-xl sm:text-2xl font-bold text-amber-600">{pendingResponses}</p>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+              <p className="text-[11px] sm:text-xs font-medium text-gray-500 mb-1 truncate">
+                Успешные (принятые)
+              </p>
+              <p className="text-xl sm:text-2xl font-bold text-[#0d7a5f]">{acceptedResponses}</p>
+            </div>
+          </div>
+
+          {/* Табы фильтрации */}
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="bg-gray-100 p-1 mb-4 inline-flex">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">
+                Все
+              </TabsTrigger>
+              <TabsTrigger value="pending" className="text-xs sm:text-sm">
+                Ожидают
+              </TabsTrigger>
+              <TabsTrigger value="accepted" className="text-xs sm:text-sm">
+                Принятые
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Вкладка: Все */}
+            <TabsContent value="all" className="mt-0">
+              {myResponses.length === 0 ? (
+                <EmptyState />
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {myResponses.map((response) => (
+                    <ResponseCard key={response.id} response={response} />
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </TabsContent>
 
-          {/* Мои объявления */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-gray-900">Мои объявления</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {myListings.map((listing) => (
-                <div
-                  key={listing.id}
-                  className="bg-white border border-gray-200 rounded-xl p-4 flex gap-3"
-                >
-                  <div className="w-12 h-12 rounded-lg bg-[#0d7a5f]/8 flex items-center justify-center text-xl font-bold text-[#0d7a5f]/20 flex-shrink-0">
-                    {listing.title.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate mb-1">
-                      {listing.title}
-                    </p>
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <div
-                        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${listing.active ? "bg-green-500" : "bg-gray-300"}`}
-                      />
-                      <span className="text-xs text-gray-400">
-                        {listing.active ? "Активно" : "Скрыто"} · {listing.price}
-                      </span>
-                    </div>
-                    <div className="flex gap-3 text-xs text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        {listing.views}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" />
-                        {listing.responses}
-                      </span>
-                    </div>
-                  </div>
+            {/* Вкладка: Ожидают ответа */}
+            <TabsContent value="pending" className="mt-0">
+              {myResponses.filter((r) => r.status === "pending").length === 0 ? (
+                <EmptyState text="Нет откликов на рассмотрении" />
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {myResponses
+                    .filter((r) => r.status === "pending")
+                    .map((response) => (
+                      <ResponseCard key={response.id} response={response} />
+                    ))}
                 </div>
-              ))}
-              <Link
-                href="/services/new"
-                className="bg-white border border-dashed border-gray-200 rounded-xl p-4 flex items-center justify-center gap-2 text-sm text-[#0d7a5f] hover:border-[#0d7a5f] hover:bg-[#0d7a5f]/4 transition-colors"
-              >
-                + Новое объявление
-              </Link>
-            </div>
-          </div>
+              )}
+            </TabsContent>
 
-          {/* Мои задания */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-gray-900">Мои задания</h2>
-            </div>
-            <div className="flex flex-col gap-2">
-              {myTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-3"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate mb-1">{task.title}</p>
-                    <div className="flex items-center gap-3 text-xs text-gray-400">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {task.city}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" />
-                        {task.responsesCount} откликов
-                      </span>
-                    </div>
-                  </div>
-                  <span
-                    className={`text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${statusColors[task.status]}`}
-                  >
-                    {statusLabels[task.status]}
-                  </span>
-                  <span className="text-sm font-semibold text-[#0d7a5f] flex-shrink-0">
-                    {task.budget}
-                  </span>
+            {/* Вкладка: Принятые */}
+            <TabsContent value="accepted" className="mt-0">
+              {myResponses.filter((r) => r.status === "accepted").length === 0 ? (
+                <EmptyState text="Вас пока еще не выбрали исполнителем" />
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {myResponses
+                    .filter((r) => r.status === "accepted")
+                    .map((response) => (
+                      <ResponseCard key={response.id} response={response} />
+                    ))}
                 </div>
-              ))}
-              <Link
-                href="/tasks/new"
-                className="bg-white border border-dashed border-gray-200 rounded-xl px-4 py-3 flex items-center justify-center gap-2 text-sm text-[#0d7a5f] hover:border-[#0d7a5f] hover:bg-[#0d7a5f]/4 transition-colors"
-              >
-                + Создать задание
-              </Link>
-            </div>
-          </div>
-
-          {/* Новые отклики */}
-          {newResponses.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-semibold text-gray-900">
-                  Новые отклики на мои задания
-                  <span className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                    {newResponses.length}
-                  </span>
-                </h2>
-              </div>
-              <div className="flex flex-col gap-2">
-                {newResponses.map((response) => (
-                  <div
-                    key={response.id}
-                    className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center gap-3"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-[#0d7a5f]/10 flex items-center justify-center text-xs font-bold text-[#0d7a5f] flex-shrink-0">
-                      {response.executorInitials}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{response.executorName}</p>
-                      <p className="text-xs text-gray-400 truncate">
-                        На задание: {response.taskTitle}
-                      </p>
-                    </div>
-                    <span className="text-sm font-semibold text-[#0d7a5f] flex-shrink-0">
-                      {response.price}
-                    </span>
-                    <Button
-                      size="sm"
-                      className="h-7 px-3 text-xs bg-[#0d7a5f] hover:bg-[#0a6149] text-white flex-shrink-0"
-                    >
-                      Принять
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      asChild
-                      className="h-7 px-3 text-xs border-[#0d7a5f] text-[#0d7a5f] flex-shrink-0"
-                    >
-                      <Link href={`/profile/${response.executorName}`}>Профиль</Link>
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
+    </div>
+  );
+}
+
+{
+  /* Компонент карточки отклика */
+}
+function ResponseCard({ response }: { response: (typeof myResponses)[0] }) {
+  const StatusIcon = statusIcons[response.status];
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm hover:border-gray-300 transition-colors">
+      <div className="flex-1 min-w-0">
+        {/* Инфо-лайн (Статус + Дата публикации отклика) */}
+        <div className="flex items-center gap-2 mb-2">
+          <span
+            className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium border flex items-center gap-1.5 ${statusColors[response.status]}`}
+          >
+            <StatusIcon className="h-3 w-3 flex-shrink-0" />
+            {statusLabels[response.status]}
+          </span>
+          <span className="text-xs text-gray-400">Отправлено {response.createdAt}</span>
+        </div>
+
+        {/* Название задания, на которое откликнулись */}
+        <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-1.5 line-clamp-1 sm:line-clamp-none">
+          {response.taskTitle}
+        </h3>
+
+        {/* Данные о заказчике и локации */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+          <span className="text-gray-700">
+            Заказчик: <span className="font-medium">{response.customerName}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <MapPin className="h-3.5 w-3.5 text-gray-400" />
+            {response.city}
+          </span>
+        </div>
+      </div>
+
+      {/* Правая часть: Предложенная цена и кнопка перехода */}
+      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-gray-100 flex-shrink-0">
+        <div className="text-left sm:text-right">
+          <p className="text-[11px] text-gray-400 mb-0.5">Ваше предложение</p>
+          <p className="text-base font-semibold text-[#0d7a5f]">{response.myPrice}</p>
+        </div>
+
+        <Button
+          size="sm"
+          variant="outline"
+          asChild
+          className="h-8 text-xs border-gray-200 text-gray-700 hover:text-[#0d7a5f] hover:border-[#0d7a5f]/40"
+        >
+          <Link href={`/tasks/${response.taskId}`}>
+            Открыть задачу
+            <ArrowUpRight className="h-3.5 w-3.5 ml-1 text-gray-400 group-hover:text-[#0d7a5f]" />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+{
+  /* Заглушка пустого экрана */
+}
+function EmptyState({ text = "Вы еще не откликались на задания" }: { text?: string }) {
+  return (
+    <div className="bg-white border border-dashed border-gray-200 rounded-xl p-8 text-center my-2">
+      <MessageSquare className="h-8 w-8 text-gray-400 mx-auto mb-3" />
+      <p className="text-sm font-medium text-gray-900 mb-1">{text}</p>
+      <p className="text-xs text-gray-500 mb-4">
+        Перейдите на ленту задач, чтобы найти подходящую работу.
+      </p>
+      <Button asChild className="bg-[#0d7a5f] hover:bg-[#0a6149] text-white text-xs h-9">
+        <Link href="/tasks" className="flex items-center gap-1.5">
+          <Search className="h-3.5 w-3.5" />
+          Найти задания
+        </Link>
+      </Button>
     </div>
   );
 }
