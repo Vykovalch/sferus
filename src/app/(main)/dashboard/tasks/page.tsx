@@ -1,33 +1,72 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import Link from "next/link";
+import { Plus, MessageSquare, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
-export default function TasksPage() {
-  const tasks = [{ id: 1, title: "Починить розетку на кухне", budget: "50 руб.", count: 2 }];
+const mockTasks = [
+  { id: 1, title: "Разработка сайта-визитки для стоматологии", budget: "до 800 руб.", responses: 7, status: "open" as const },
+  { id: 2, title: "Нужен электрик для замены проводки", budget: "до 500 руб.", responses: 3, status: "in_progress" as const },
+  { id: 3, title: "Уборка офиса 200 кв.м.", budget: "до 300 руб./раз", responses: 5, status: "done" as const },
+];
+
+const statusLabels = { open: "Открыто", in_progress: "В работе", done: "Завершено" };
+const statusColors = {
+  open: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  in_progress: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  done: "bg-muted text-muted-foreground",
+};
+
+export default async function MyTasksPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/login?callbackUrl=/dashboard/tasks");
 
   return (
-    <div className="container mx-auto max-w-xl p-4 py-8 space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold">Мои задания</h1>
-        <Button size="sm">+ Создать задание</Button>
-      </div>
-      <div className="space-y-2">
-        {tasks.map((task) => (
-          <Card key={task.id}>
-            <CardContent className="p-4 flex justify-between items-center">
-              <div>
-                <p className="font-medium text-sm">{task.title}</p>
-                <p className="text-xs text-muted-foreground">Бюджет: {task.budget}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary">Отклики: {task.count}</Badge>
-                <Button size="sm" variant="outline">
-                  Смотреть
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-medium text-foreground">Мои задания</h1>
+          <Button asChild className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer">
+            <Link href="/tasks/new" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Создать
+            </Link>
+          </Button>
+        </div>
+
+        {mockTasks.length === 0 ? (
+          <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
+            <FileText className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
+            <p className="text-sm font-medium text-foreground mb-1">Нет созданных заданий</p>
+            <p className="text-xs text-muted-foreground mb-4">Создайте задание — исполнители откликнутся сами</p>
+            <Button asChild variant="outline" className="border-brand text-brand hover:bg-brand/5 cursor-pointer">
+              <Link href="/tasks/new">Создать задание</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {mockTasks.map((t) => (
+              <Link key={t.id} href={`/tasks/${t.id}`} className="block">
+                <div className="bg-background border border-border rounded-xl p-4 shadow-sm hover:border-brand/40 hover:shadow-md transition-all">
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <p className="text-sm font-medium text-foreground leading-snug">{t.title}</p>
+                    <span className="text-sm font-bold text-brand whitespace-nowrap flex-shrink-0">{t.budget}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[t.status]}`}>
+                      {statusLabels[t.status]}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <MessageSquare className="h-3.5 w-3.5" />
+                      {t.responses} откликов
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
