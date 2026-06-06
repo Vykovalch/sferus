@@ -3,8 +3,10 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { nextCookies } from 'better-auth/next-js'
 import { Resend } from 'resend'
 import { db } from '@/lib/db'
-import { user, session, account, verification } from '@/lib/db/schema'
+import { generateUsername } from '@/lib/username'
+import { user, session, account, verification, profiles } from '@/lib/db/schema'
 import { VerificationEmail } from '@/emails/VerificationEmail'
+import { ResetPasswordEmail } from '@/emails/ResetPasswordEmail'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -14,12 +16,20 @@ export const auth = betterAuth({
     schema: { user, session, account, verification },
   }),
 
-  // URL приложения — нужен для формирования callback URL в OAuth
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
 
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+
+    sendResetPassword: async ({ user: u, url }) => {
+      await resend.emails.send({
+        from: 'Sferus <onboarding@resend.dev>',
+        to: u.email,
+        subject: 'Сброс пароля — Sferus',
+        react: ResetPasswordEmail({ name: u.name, resetUrl: url }),
+      })
+    },
   },
 
   emailVerification: {
@@ -39,8 +49,20 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      // Google всегда возвращает verified email — пропускаем шаг верификации
-      // better-auth автоматически ставит emailVerified: true для OAuth пользователей
+    },
+  },
+
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (u) => {
+          const username = await generateUsername(u.name)
+          await db.insert(profiles).values({
+            userId: u.id,
+            username,
+          })
+        },
+      },
     },
   },
 

@@ -77,9 +77,9 @@ export function UserMenu({ session }: UserMenuProps) {
 
         {/* Профиль */}
         <DropdownMenuItem asChild>
-          <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+          <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
             <User className="h-4 w-4 text-muted-foreground" />
-            Мой профиль
+            Профиль
           </Link>
         </DropdownMenuItem>
 

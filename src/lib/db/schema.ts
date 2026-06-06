@@ -16,6 +16,17 @@ export const cities = pgTable('cities', {
   name: text('name').notNull(),
 })
 
+export const profiles = pgTable('profiles', {
+  id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+  userId: text('user_id').notNull().unique().references(() => user.id, { onDelete: 'cascade' }),
+  username: text('username').notNull().unique(),
+  bio: text('bio'),
+  phone: text('phone'),
+  avatar: text('avatar'),
+  cityId: bigint('city_id', { mode: 'number' }).references(() => cities.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 export const categories = pgTable('categories', {
   id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   parentId: bigint('parent_id', { mode: 'number' }).references((): AnyPgColumn => categories.id, { onDelete: 'cascade' }),
@@ -43,7 +54,7 @@ export const tasks = pgTable('tasks', {
   title: text('title').notNull(),
   description: text('description').notNull(),
   budget: bigint('budget', { mode: 'number' }),
-  status: integer('status').default(1), // 1 - open, 2 - in progress, 3 - completed, 4 - cancelled
+  status: integer('status').default(1),
   categoryId: bigint('category_id', { mode: 'number' }).references(() => categories.id),
   cityId: bigint('city_id', { mode: 'number' }).references(() => cities.id),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
