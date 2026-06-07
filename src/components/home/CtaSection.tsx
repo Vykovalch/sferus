@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 export function CtaSection() {
   return (
     // Используем muted/50 для красивого разделения с предыдущей белой секцией отзывов
-    <section className="py-16 md:py-20 bg-muted/50 border-b border-border">
+    <section className="py-16 md:py-20">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
 

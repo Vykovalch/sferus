@@ -70,7 +70,7 @@ const listings: Listing[] = [
 
 export function TopListings() {
   return (
-    <section className="py-20 bg-background border-b border-border">
+    <section className="py-20">
       <div className="container mx-auto px-4">
         
         {/* Элегантный заголовок пониженной жирности */}

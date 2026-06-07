@@ -12,7 +12,7 @@ const categories = [
 
 export function PopularServices() {
   return (
-    <section className="py-20 bg-background border-b border-border">
+    <section className="py-20">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center text-foreground mb-12">
           Популярные услуги
@@ -22,7 +22,7 @@ export function PopularServices() {
             const Icon = cat.icon
             return (
               <Link key={cat.name} href={`/services?category=${cat.slug}`} className="h-full">
-                <Card className="cursor-pointer bg-card text-card-foreground border border-brand/15 h-full group hover:shadow-xl hover:border-brand hover:-translate-y-1 transition-all duration-300">
+                <Card className="cursor-pointer bg-card text-card-foreground h-full group shadow-sm hover:shadow-xl hover:-translate-y-1 transition-shadow duration-300">
                   <CardContent className="p-6 text-center flex flex-col items-center justify-center h-full">
                     
                     <div className="p-3 bg-brand/5 rounded-2xl text-brand group-hover:bg-brand group-hover:text-brand-foreground transition-all duration-300 mb-4">
@@ -46,7 +46,7 @@ export function PopularServices() {
           })}
 
           <Link href="/services" className="h-full">
-            <Card className="cursor-pointer border border-dashed border-brand/20 bg-card text-card-foreground h-full group relative overflow-hidden hover:shadow-xl hover:border-brand hover:-translate-y-1 transition-all duration-300">
+            <Card className="cursor-pointer bg-card text-card-foreground h-full group relative overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-shadow duration-300">
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-brand/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
               
               <CardContent className="p-6 text-center relative z-10 flex flex-col items-center justify-center h-full">

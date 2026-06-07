@@ -4,28 +4,12 @@ import { CityDropdown } from "@/components/shared/CityDropdown";
 
 export function HeroSection() {
   return (
-    <section className="relative py-16 md:py-28 overflow-hidden bg-secondary dark:bg-zinc-900 border-b border-border">
-      {/* 
-        ФОН СЕКЦИИ: 
-        1. Сама секция получила легкий общий тон (bg-secondary/30), чтобы визуально отделиться от белого тела сайта.
-        2. Внутрь добавляем глубокое, сочное свечение бренда, которое теперь сияет НАД подложкой.
-      */}
-      <div
-        className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none"
-        aria-hidden="true"
-      >
-        {/* Концентрированное сочное свечение по центру */}
-        <div className="absolute top-[-40%] left-[15%] md:left-[25%] w-[700px] md:w-[1000px] h-[500px] rounded-full bg-brand/15 blur-[100px] md:blur-[130px]" />
-        
-        {/* Дополнительный мягкий блик справа для баланса */}
-        <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-brand/10 blur-[100px]" />
-      </div>
-
+    <section className="relative py-16 md:py-28 overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-8 md:mb-10 text-foreground/80 font-light">
             Найдите специалиста <br className="hidden sm:inline" />
-            <span className="relative inline-block mt-1 sm:mt-2 font-semibold text-foreground">
+            <span className="relative inline-block mt-1 sm:mt-2 font-light" style={{ color: '#57C285', padding: '0 0.5rem' }}>
               в Приднестровье
               <span className="absolute -bottom-1.5 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-border to-transparent opacity-60" />
             </span>

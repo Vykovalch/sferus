@@ -76,7 +76,7 @@ export function ReviewsCarousel() {
   const starValues = [1, 2, 3, 4, 5]
 
   return (
-    <section className="py-20 bg-background border-b border-border">
+    <section className="py-20">
       <div className="container mx-auto px-4">
 
         {/* Заголовок */}
