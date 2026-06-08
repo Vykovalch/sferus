@@ -63,7 +63,6 @@ export async function Header() {
                 <UserMenu session={session} />
               </>
             ) : (
-              // Видна на всех размерах экрана — быстрый вход без открытия бургера
               <Link
                 href="/login"
                 className="text-base font-medium text-muted-foreground hover:text-brand transition-colors px-2"

@@ -13,7 +13,7 @@ export function MobileMenu({ session }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="md:hidden flex items-center">
+    <div className="md:hidden flex items-center relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -24,8 +24,8 @@ export function MobileMenu({ session }: MobileMenuProps) {
       </button>
 
       {open && (
-        <div className="absolute top-16 left-0 right-0 bg-background border-b border-border shadow-xl z-40">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
+        <div className="absolute top-8 left-auto right-0 w-screen max-w-xs bg-background border border-border rounded-xl shadow-xl z-40">
+          <nav className="px-4 py-4 flex flex-col gap-1">
             <Link
               href="/services"
               onClick={() => setOpen(false)}
@@ -48,7 +48,6 @@ export function MobileMenu({ session }: MobileMenuProps) {
               Как это работает
             </Link>
 
-            {/* Для авторизованных — кнопки создания, которые скрыты на мобильном в хедере */}
             {session && (
               <div className="border-t border-border mt-2 pt-4 flex flex-col gap-3">
                 <Link
