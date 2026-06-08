@@ -12,7 +12,7 @@ export async function Header() {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between gap-4">
           <div className="flex items-center">
@@ -63,6 +63,7 @@ export async function Header() {
                 <UserMenu session={session} />
               </>
             ) : (
+              // Видна на всех размерах экрана — быстрый вход без открытия бургера
               <Link
                 href="/login"
                 className="text-base font-medium text-muted-foreground hover:text-brand transition-colors px-2"
@@ -71,7 +72,6 @@ export async function Header() {
               </Link>
             )}
 
-            {/* Мобильное бургер-меню: показывается только на экранах меньше md */}
             <MobileMenu session={session} />
           </div>
         </div>
