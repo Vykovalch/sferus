@@ -6,6 +6,7 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-hero-bg: var(--hero-bg);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
@@ -47,101 +48,118 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+  /* Фирменные цвета палитры Dori Consultant */
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  --color-brand-heading: var(--brand-heading);
 }
 
 :root {
-  --background: oklch(0.9851 0 0);
-  --foreground: oklch(0.16 0.03 262);
+  
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.48 0.005 85); /* #666666 (Мягкий серый текст описаний) */
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.03 262);
+  /* Эксклюзивный фон, который применяется только в HeroSection — #FCFAF6 */
+  --hero-bg: oklch(0.988 0.004 85); /* #FCFAF6 */
+
+  /* Карточки и всплывающие элементы */
+  --card: oklch(1 0 0); /* #FFFFFF */
+  --card-foreground: oklch(0.48 0.005 85);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.03 262);
+  --popover-foreground: oklch(0.48 0.005 85);
 
-  --primary: oklch(0.2 0.04 262);
-  --primary-foreground: oklch(0.98 0 0);
+  /* Primary (Кнопки действия, фокусы) — Коралловый #FA5454 */
+  --primary: oklch(0.64 0.19 25);
+  --primary-foreground: oklch(1 0 0); /* Белый текст на кнопках */
 
-  --secondary: oklch(0.94 0.01 262);
-  --secondary-foreground: oklch(0.2 0.04 262);
+  /* Secondary (Элементы навигации и второстепенные блоки) — Изумрудный #05454E */
+  --secondary: oklch(0.32 0.07 202);
+  --secondary-foreground: oklch(1 0 0);
 
-  --muted: oklch(0.95 0.01 262);
-  --muted-foreground: oklch(0.45 0.02 262);
-  --accent: oklch(0.95 0.01 262);
-  --accent-foreground: oklch(0.2 0.04 262);
+  /* Приглушенные зоны (Светло-серый #F5F5F5) */
+  --muted: oklch(0.96 0.002 85); /* #F5F5F5 */
+  --muted-foreground: oklch(0.55 0.005 85);
+  --accent: oklch(0.96 0.002 85);
+  --accent-foreground: oklch(0.32 0.07 202);
 
   --destructive: oklch(0.58 0.23 27);
-  
-  --border: oklch(0.92 0.01 262);
-  --input: oklch(0.92 0.01 262);
-  --ring: oklch(0.62 0.22 262);
 
-  --chart-1: oklch(0.62 0.22 262);
-  --chart-2: oklch(0.556 0 0);
+  /* Границы и контуры */
+  --border: oklch(0.92 0.003 85);
+  --input: oklch(0.92 0.003 85);
+  --ring: oklch(0.64 0.19 25); /* Кольцо фокуса коралловое */
+
+  --chart-1: oklch(0.64 0.19 25);
+  --chart-2: oklch(0.32 0.07 202);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
   --radius: 0.75rem;
 
-  --sidebar: oklch(0.98 0.005 262);
-  --sidebar-foreground: oklch(0.16 0.03 262);
-  --sidebar-primary: oklch(0.62 0.22 262);
+  /* Боковая панель (Шикарный контрастный изумрудный стиль) */
+  --sidebar: oklch(0.25 0.06 202); /* Глубокий темный изумруд */
+  --sidebar-foreground: oklch(0.95 0.01 202);
+  --sidebar-primary: oklch(0.64 0.19 25);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.94 0.01 262);
-  --sidebar-accent-foreground: oklch(0.2 0.04 262);
-  --sidebar-border: oklch(0.89 0.015 262);
-  --sidebar-ring: oklch(0.62 0.22 262);
+  --sidebar-accent: oklch(0.32 0.07 202);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.2 0.05 202);
+  --sidebar-ring: oklch(0.64 0.19 25);
 
-  --brand: oklch(0.62 0.22 262);
-  --brand-foreground: oklch(100% 0 0);
+  /* Семантические алиасы */
+  --brand: oklch(0.64 0.19 25); /* Коралловый #FA5454 */
+  --brand-foreground: oklch(1 0 0);
+  --brand-heading: oklch(0.32 0.07 202); /* Изумрудный #05454E */
 }
 
 .dark {
-  /* Комфортный темно-серый фон с едва заметным фирменным отливом */
-  --background: oklch(0.14 0.01 262);
-  --foreground: oklch(0.985 0.004 262);
+  /* Комфортная темная тема с благородным изумрудным отливом */
+  --background: oklch(0.16 0.02 202);
+  --foreground: oklch(0.92 0.01 85);
 
-  /* Карточки чуть светлее фона для создания глубины (эффект приподнятости) */
-  --card: oklch(0.19 0.01 262);
-  --card-foreground: oklch(0.985 0.004 262);
-  --popover: oklch(0.19 0.01 262);
-  --popover-foreground: oklch(0.985 0.004 262);
+  /* В темной теме фон Hero сливается с общим, чтобы не дробить интерфейс ночью */
+  --hero-bg: oklch(0.16 0.02 202);
 
-  --primary: oklch(0.922 0.008 262);
-  --primary-foreground: oklch(0.13 0.015 262);
+  --card: oklch(0.2 0.02 202);
+  --card-foreground: oklch(0.92 0.01 85);
+  --popover: oklch(0.2 0.02 202);
+  --popover-foreground: oklch(0.92 0.01 85);
 
-  --secondary: oklch(0.24 0.01 262);
-  --secondary-foreground: oklch(0.985 0.004 262);
+  --primary: oklch(0.68 0.17 25);
+  --primary-foreground: oklch(1 0 0);
 
-  --muted: oklch(0.24 0.01 262);
-  --muted-foreground: oklch(0.708 0.01 262);
-  --accent: oklch(0.24 0.01 262);
-  --accent-foreground: oklch(0.985 0.004 262);
+  --secondary: oklch(0.28 0.05 202);
+  --secondary-foreground: oklch(0.95 0.01 202);
 
-  --destructive: oklch(0.704 0.191 22.216);
+  --muted: oklch(0.24 0.03 202);
+  --muted-foreground: oklch(0.7 0.01 85);
+  --accent: oklch(0.24 0.03 202);
+  --accent-foreground: oklch(0.95 0.01 202);
+
+  --destructive: oklch(0.54 0.21 27);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.66 0.19 262);
+  --ring: oklch(0.68 0.17 25);
 
-  --chart-1: oklch(0.66 0.19 262);
-  --chart-2: oklch(0.556 0 0);
+  --chart-1: oklch(0.68 0.17 25);
+  --chart-2: oklch(0.35 0.06 202);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
-  --sidebar: oklch(0.19 0.01 262);
-  --sidebar-foreground: oklch(0.985 0.004 262);
-  --sidebar-primary: oklch(0.66 0.19 262);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.24 0.01 262);
-  --sidebar-accent-foreground: oklch(0.985 0.004 262);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.66 0.19 262);
+  --sidebar: oklch(0.14 0.02 202);
+  --sidebar-foreground: oklch(0.92 0.01 85);
+  --sidebar-primary: oklch(0.68 0.17 25);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.24 0.03 202);
+  --sidebar-accent-foreground: oklch(0.92 0.01 85);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.68 0.17 25);
 
-  --brand: oklch(0.66 0.19 262);
-  --brand-foreground: oklch(100% 0 0);
+  --brand: oklch(0.68 0.17 25);
+  --brand-foreground: oklch(1 0 0);
+  --brand-heading: oklch(0.95 0.01 202);
 }
 
 @layer base {
@@ -153,5 +171,16 @@
   }
   html {
     @apply font-sans;
+  }
+
+  /* Автоматическое переопределение цвета крупных заголовков */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--brand-heading);
+    @apply font-semibold tracking-tight;
   }
 }

@@ -21,8 +21,7 @@ export function HowItWorks() {
     <section id="how-it-works" className="py-20 scroll-mt-16">
       <div className="container mx-auto px-4">
         
-        {/* Главный заголовок пониженной жирности */}
-        <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center text-foreground mb-3">
+        <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center mb-3">
           Как это работает
         </h2>
         <p className="text-center text-muted-foreground mb-16 text-lg max-w-md mx-auto">
@@ -33,7 +32,7 @@ export function HowItWorks() {
 
           {/* Путь: Для клиентов */}
           <div className="space-y-10">
-            <h3 className="text-xl sm:text-2xl font-medium text-foreground text-center md:text-left mb-6">
+            <h3 className="text-xl sm:text-2xl font-medium text-center md:text-left mb-6">
               Для клиентов
             </h3>
             {clientSteps.map((step: StepItem) => (
@@ -61,7 +60,7 @@ export function HowItWorks() {
 
           {/* Путь: Для исполнителей */}
           <div className="space-y-10">
-            <h3 className="text-xl sm:text-2xl font-medium text-foreground text-center md:text-left mb-6">
+            <h3 className="text-xl sm:text-2xl font-medium text-center md:text-left mb-6">
               Для исполнителей
             </h3>
             {executorSteps.map((step: StepItem) => (

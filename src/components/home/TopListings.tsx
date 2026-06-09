@@ -74,7 +74,7 @@ export function TopListings() {
       <div className="container mx-auto px-4">
         
         {/* Элегантный заголовок пониженной жирности */}
-        <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center text-foreground mb-12">
+        <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center mb-12">
           Топ объявления
         </h2>
         

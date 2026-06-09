@@ -81,7 +81,7 @@ export function ReviewsCarousel() {
 
         {/* Заголовок */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-foreground mb-3">
+          <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-3">
             Отзывы наших пользователей
           </h2>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">

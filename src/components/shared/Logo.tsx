@@ -1,88 +1,42 @@
 interface LogoProps {
   className?: string;
-  compact?: boolean;
   variant?: "default" | "inverse";
 }
 
-// 1. Простой и быстрый функциональный компонент для иконки
-function LogoIcon({ letterColor }: { letterColor: string }) {
-  return (
-    <g id="sferus-graphic-icon">
-      <circle
-        cx="24"
-        cy="24"
-        r="18"
-        fill="var(--background)"
-        stroke="var(--brand)"
-        strokeWidth="2.5"
-      />
-      <circle cx="24" cy="24" r="12" fill="var(--brand)" />
-      <text
-        x="24"
-        y="24"
-        dy="0.35em" /* Магический сдвиг, который компенсирует нижние метрики шрифта */
-        fontFamily="system-ui, -apple-system, sans-serif"
-        fontSize="22"
-        fontWeight="600"
-        fill={letterColor}
-        textAnchor="middle"
-      >
-        S
-      </text>
-    </g>
-  );
-}
-
-// 2. Такой же легкий компонент для текстовой части
 function LogoText({ textColor }: { textColor: string }) {
   return (
     <g id="sferus-text-letters" fill={textColor}>
       <text
-        x="52"
-        y="24" 
-        dy="0.37em" 
+        x="0"
+        y="32"
         fontFamily="system-ui, -apple-system, sans-serif"
-        fontSize="24"
-        fontWeight="600" 
-        fill={textColor}
-        letterSpacing="-0.5"
+        fontSize="26"
+        fontWeight="600"
+        fill={textColor} /* Цвет применяется напрямую к заливке букв */
+        letterSpacing="0.5"
+        transform="scale(1.3, 1.35)"
       >
-        sferus
+        Sferus
       </text>
     </g>
   );
 }
 
-// 3. Основной компонент
-export function Logo({ className, compact = false, variant = "default" }: LogoProps) {
-  const textColor = "var(--foreground)";
-  const letterColor = "var(--primary-foreground)";
-
-  if (compact) {
-    return (
-      <svg
-        viewBox="0 0 48 48"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className={className}
-        aria-label="Sferus"
-        role="img"
-      >
-        <LogoIcon letterColor={letterColor} />
-      </svg>
-    );
-  }
+// 2. Основной компонент
+export function Logo({ className, variant = "default" }: LogoProps) {
+  /* Изменено: теперь по умолчанию (default) жестко задан цвет rgba(255, 255, 255, 0.9),
+     который идеально совпадает с цветом ссылок навигации в Header */
+  const textColor = variant === "inverse" ? "#ffffff" : "rgba(255, 255, 255, 0.9)";
 
   return (
     <svg
-      viewBox="0 0 145 48" 
+      viewBox="0 0 100 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-label="Sferus"
       role="img"
     >
-      <LogoIcon letterColor={letterColor} />
       <LogoText textColor={textColor} />
     </svg>
   );

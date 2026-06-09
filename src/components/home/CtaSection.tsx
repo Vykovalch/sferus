@@ -13,7 +13,7 @@ export function CtaSection() {
           {/* Для клиентов */}
           <Card className="border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-300">
             <CardContent className="p-8 md:p-10 flex flex-col h-full">
-              <h3 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground mb-3">
+              <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-3">
                 Нужен специалист?
               </h3>
               <p className="text-sm md:text-base text-muted-foreground mb-8 flex-grow">
@@ -35,7 +35,7 @@ export function CtaSection() {
           {/* Для исполнителей */}
           <Card className="border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-300">
             <CardContent className="p-8 md:p-10 flex flex-col h-full">
-              <h3 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground mb-3">
+              <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-3">
                 Принимаете заказы?
               </h3>
               <p className="text-sm md:text-base text-muted-foreground mb-8 flex-grow">
