@@ -2,7 +2,6 @@ import { HeroSection } from "@/components/home/HeroSection"
 import { HowItWorks } from "@/components/home/HowItWorks"
 import { PopularServices } from "@/components/home/PopularServices"
 import { TopListings } from "@/components/home/TopListings"
-import { ReviewsCarousel } from "@/components/home/ReviewsCarousel"
 import { CtaSection } from "@/components/home/CtaSection"
 
 export default async function HomePage() {
@@ -12,7 +11,7 @@ export default async function HomePage() {
       <PopularServices />
       <TopListings />
       <HowItWorks />
-      <ReviewsCarousel />
+      {/* <ReviewsCarousel /> */}
       <CtaSection />
     </div>      
   )
