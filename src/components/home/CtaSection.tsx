@@ -6,10 +6,9 @@ import { Button } from '@/components/ui/button'
 export function CtaSection() {
   return (
     // Используем muted/50 для красивого разделения с предыдущей белой секцией отзывов
-    <section className="py-16 md:py-20">
+    <section className="py-20 md:py-20 bg-muted/40">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-
           {/* Для клиентов */}
           <Card className="border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-300">
             <CardContent className="p-8 md:p-10 flex flex-col h-full">
@@ -54,9 +53,8 @@ export function CtaSection() {
               </Button>
             </CardContent>
           </Card>
-
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -18,7 +18,7 @@ const executorSteps: StepItem[] = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 scroll-mt-16 bg-background">
+    <section id="how-it-works" className="py-20 scroll-mt-16 bg-secondary/4">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center mb-3">
           Как это работает

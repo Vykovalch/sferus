@@ -29,10 +29,9 @@ const companyLinks: FooterLink[] = [
 
 export function Footer() {
   return (
-    <footer className="dark bg-zinc-950 text-zinc-50 py-12 md:py-16 border-t border-zinc-800">
+    <footer className="dark text-zinc-50 py-12 md:py-16 border-t border-zinc-800 bg-[#272727]">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-8 md:gap-12">
-
           {/* Описание + контакты */}
           <div className="flex flex-col space-y-4">
             <div>
@@ -42,7 +41,7 @@ export function Footer() {
                 Платформа для поиска специалистов в Приднестровье
               </p>
             </div>
-            
+
             {/* Исправлено: все контакты переведены на стандартный text-sm */}
             <div className="space-y-2 text-sm">
               <a
@@ -144,7 +143,6 @@ export function Footer() {
               ))}
             </ul>
           </div>
-
         </div>
 
         {/* Копирайт */}
@@ -153,5 +151,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
