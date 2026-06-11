@@ -1,5 +1,5 @@
 import { ArrowRight, Hammer, Wrench, Home, Car, Monitor } from "lucide-react";
-import { CategoryCard } from "@/components/services/CategoryCard";
+import { CategoryCard } from "@/components/shared/CategoryCard";
 
 const popularCategories = [
   {

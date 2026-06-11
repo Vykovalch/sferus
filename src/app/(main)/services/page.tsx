@@ -23,7 +23,7 @@ import {
   Sprout,
   Flower,
 } from "lucide-react";
-import { CategoryCard } from "@/components/services/CategoryCard";
+import { CategoryCard } from "@/components/shared/CategoryCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
