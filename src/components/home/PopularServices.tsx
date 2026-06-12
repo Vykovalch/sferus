@@ -49,10 +49,10 @@ export function PopularServices() {
     <section className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-center mb-12">
-          Популярные услуги
+          Популярные категории
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
           {popularCategories.map((cat) => (
             <CategoryCard
               key={cat.slug}

@@ -1,4 +1,4 @@
-import { Zap, House } from "lucide-react";
+import { Zap, House, Hammer } from "lucide-react";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 
 const listings = [
@@ -7,7 +7,7 @@ const listings = [
     title: "Ремонт стиральных машин",
     category: "Ремонт техники",
     city: "Тирасполь",
-    imageUrl: "/master1.jpg",
+    imageUrl: "/master1.png",
     icon: null,
   },
   {
@@ -15,7 +15,7 @@ const listings = [
     title: "Электромонтажные работы",
     category: "Электрика",
     city: "Бендеры",
-    imageUrl: null,
+    imageUrl: "/master2.png",
     icon: Zap,
   },
   {
@@ -40,6 +40,14 @@ const listings = [
     category: "Окна и двери",
     city: "Слободзея",
     imageUrl: null,
+    icon: Hammer,
+  },
+  {
+    id: "6",
+    title: "Ремонт сантехники на дому",
+    category: "Сантехника",
+    city: "Рыбница",
+    imageUrl: "/Услуга6.png",
     icon: House,
   },
 ];
@@ -52,7 +60,7 @@ export function TopListings() {
           Топ объявления
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
           {listings.map((listing) => (
             <ServiceCard key={listing.id} {...listing} />
           ))}

@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 import './globals.css'
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
 
 const geist = Geist({ 
   subsets: ['latin', 'cyrillic'],
@@ -24,16 +22,13 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body className={geist.className}>
+      <body className={`${geist.variable} font-sans`}>
         {children}
       </body>
     </html>
   )
 }
+

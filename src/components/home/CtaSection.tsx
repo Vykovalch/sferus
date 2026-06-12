@@ -10,7 +10,7 @@ export function CtaSection() {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {/* Для клиентов */}
-          <Card className="border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-300">
+          <Card className="border-border hover:border-border/60 hover:shadow-md transition-all duration-200">
             <CardContent className="p-8 md:p-10 flex flex-col h-full">
               <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-3">
                 Нужен специалист?
@@ -21,7 +21,7 @@ export function CtaSection() {
               <Button
                 asChild
                 size="lg"
-                className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow group cursor-pointer"
+                className="w-full bg-brand hover:bg-brand/90 text-brand-foreground group cursor-pointer"
               >
                 <Link href="/services">
                   <span>Найти специалиста</span>
@@ -32,7 +32,7 @@ export function CtaSection() {
           </Card>
 
           {/* Для исполнителей */}
-          <Card className="border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-300">
+          <Card className="border-border hover:border-border/60 hover:shadow-md transition-all duration-200">
             <CardContent className="p-8 md:p-10 flex flex-col h-full">
               <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-3">
                 Принимаете заказы?
@@ -44,7 +44,7 @@ export function CtaSection() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="w-full border-border text-foreground hover:bg-muted group cursor-pointer"
+                className="w-full border-brand text-brand hover:bg-brand/5 group cursor-pointer"
               >
                 <Link href="/register">
                   <span>Разместить услугу</span>

@@ -41,7 +41,7 @@ export function CategoryCard({
       </div>
 
       <div className="flex flex-col gap-1 mt-auto">
-        <h3 className="text-sm font-medium text-foreground leading-snug">{name}</h3>
+        <h3 className="text-sm font-medium leading-snug">{name}</h3>
         <p className="text-xs text-muted-foreground">{countLabel ?? `${count} объявлений`}</p>
       </div>
     </Link>
