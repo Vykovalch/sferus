@@ -6,20 +6,23 @@ const listings = [
     id: "1",
     title: "Ремонт стиральных машин",
     category: "Ремонт техники",
-    imageUrl: "/master1.png",
+    city: "Тирасполь",
+    imageUrl: "/master1.jpg",
     icon: null,
   },
   {
     id: "2",
     title: "Электромонтажные работы",
     category: "Электрика",
-    imageUrl: "/master2.png",
+    city: "Бендеры",
+    imageUrl: null,
     icon: Zap,
   },
   {
     id: "3",
     title: "Уборка квартир и офисов",
     category: "Дом и быт",
+    city: "Тирасполь",
     imageUrl: "/master2.jpg",
     icon: null,
   },
@@ -27,14 +30,16 @@ const listings = [
     id: "4",
     title: "Ремонт сантехники",
     category: "Сантехника",
-    imageUrl: "/master4.png",
+    city: "Рыбница",
+    imageUrl: null,
     icon: House,
   },
   {
     id: "5",
-    title: "Установка кондиционеров",
-    category: "Строительство и ремонт",
-    imageUrl: "/blank.png",
+    title: "Установка и ремонт окон и дверей",
+    category: "Окна и двери",
+    city: "Слободзея",
+    imageUrl: null,
     icon: House,
   },
 ];
@@ -47,7 +52,7 @@ export function TopListings() {
           Топ объявления
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {listings.map((listing) => (
             <ServiceCard key={listing.id} {...listing} />
           ))}

@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export interface ServiceCardProps {
   id: string;
   title: string;
   category: string;
+  city: string;
   imageUrl?: string | null;
   icon?: LucideIcon | null;
   href?: string;
@@ -15,6 +17,7 @@ export interface ServiceCardProps {
 export function ServiceCard({
   id,
   title,
+  city,
   imageUrl,
   icon: Icon,
   href,
@@ -44,9 +47,13 @@ export function ServiceCard({
         </div>
 
         <CardContent className="px-4 py-3">
-          <h3 className="text-sm font-medium leading-snug text-foreground line-clamp-2">
+          <h3 className="text-sm font-medium leading-snug text-foreground line-clamp-2 mb-2">
             {title}
           </h3>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+            <span>{city}</span>
+          </div>
         </CardContent>
       </Card>
     </Link>

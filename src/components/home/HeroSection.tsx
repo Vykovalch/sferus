@@ -22,7 +22,7 @@ export function HeroSection() {
         <div className="max-w-4xl mx-auto text-center">
           {/* Заголовок */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl tracking-tight mb-12 dark:text-foreground font-normal leading-[1.15] text-balance">
-            Найдите специалиста <br className="hidden sm:inline" />
+            Найдите услугу<br className="hidden sm:inline" />
             <span className="relative inline-block mt-2 font-semibold">в Приднестровье</span>
           </h1>
 

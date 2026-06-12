@@ -3,58 +3,58 @@
 import { ChevronRight, MapPin, Star, Building2, User, Hammer } from 'lucide-react'
 import Link from 'next/link'
 import { CategorySidebar } from '@/components/services/CategorySidebar'
-import { ServiceCard } from '@/components/services/ServiceCard'
+import { ServiceCard } from '@/components/shared/ServiceCard'
 import { Button } from '@/components/ui/button'
 
 // Временные данные — позже заменить на запросы к БД
 const mockServices = [
   {
-    id: 1,
-    title: 'Электромонтажные работы любой сложности',
-    subcategory: 'Электрика',
-    executor: { name: 'Виктор Петров', initials: 'ВП', type: 'individual' as const, rating: 4.9, reviewsCount: 127 },
-    city: 'Тирасполь',
-    price: 80,
+    id: "1",
+    title: "Ремонт стиральных машин",
+    category: "Ремонт техники",
+    city: "Тирасполь",
+    imageUrl: "/master1.jpg",
+    icon: null,
   },
   {
-    id: 2,
+    id: "2",
     title: 'Ремонт и замена труб, установка сантехники',
-    subcategory: 'Сантехника',
-    executor: { name: 'СтройМастер ООО', initials: 'СМ', type: 'company' as const, rating: 5, reviewsCount: 89 },
+    category: 'Сантехника',
     city: 'Бендеры',
-    price: 100,
+    imageUrl: "/master1.jpg",
+    icon: null,
   },
   {
-    id: 3,
+    id: "3",
     title: 'Штукатурка, шпаклёвка, покраска стен',
-    subcategory: 'Отделка',
-    executor: { name: 'Дмитрий Ковалёв', initials: 'ДК', type: 'individual' as const, rating: 4.8, reviewsCount: 56 },
+    category: 'Отделка',
     city: 'Тирасполь',
-    price: 150,
+    imageUrl: "/master1.jpg",
+    icon: null,
   },
   {
-    id: 4,
+    id: "4",
     title: 'Кровельные работы, ремонт крыши',
-    subcategory: 'Кровля',
-    executor: { name: 'КровляПро', initials: 'КП', type: 'company' as const, rating: 4.7, reviewsCount: 34 },
+    category: 'Кровля',
     city: 'Рыбница',
-    price: 200,
+    imageUrl: "/master1.jpg",
+    icon: null,    
   },
   {
-    id: 5,
+    id: "5",
     title: 'Установка и ремонт окон и дверей',
-    subcategory: 'Окна и двери',
-    executor: { name: 'Олег Васильев', initials: 'ОВ', type: 'individual' as const, rating: 4.9, reviewsCount: 43 },
+    category: 'Окна и двери',
     city: 'Тирасполь',
-    price: 120,
+    imageUrl: "/master1.jpg",
+    icon: null,
   },
   {
-    id: 6,
+    id: "6",
     title: 'Заливка фундамента, бетонные работы',
-    subcategory: 'Фундамент',
-    executor: { name: 'БетонСтрой', initials: 'БС', type: 'company' as const, rating: 4.6, reviewsCount: 28 },
+    category: 'Фундамент',
     city: 'Бендеры',
-    price: 300,
+    imageUrl: "/master1.jpg",
+    icon: null,
   },
 ]
 
@@ -132,7 +132,7 @@ export default function CategoryPage() {
             {/* Сетка карточек */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {mockServices.map((service) => (
-                <ServiceCard key={service.id} service={service} />
+                <ServiceCard key={service.id} {...service} />
               ))}
             </div>
 
