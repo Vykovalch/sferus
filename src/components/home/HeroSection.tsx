@@ -34,7 +34,7 @@ export function HeroSection() {
                 <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand" />
                 <input
                   type="text"
-                  placeholder="Мастер на час, repair, юрист..."
+                  placeholder="Ремонт, уборка, репетитор..."
                   className="w-full pl-12 pr-4 py-3.5 text-base bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none font-medium"
                 />
               </div>

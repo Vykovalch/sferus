@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Mail, RefreshCw, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { authClient } from '@/lib/auth-client'
-import { Logo } from '@/components/shared/Logo'
 import { Button } from '@/components/ui/button'
 
 interface VerifyEmailClientProps {
@@ -48,10 +47,6 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
 
   return (
     <div className="w-full bg-background text-foreground animate-in fade-in duration-300">
-      <div className="lg:hidden flex justify-center mb-8">
-        <Logo className="h-9 w-auto" />
-      </div>
-
       {/* Иконка */}
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center">

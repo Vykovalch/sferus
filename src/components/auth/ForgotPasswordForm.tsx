@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import { authClient } from '@/lib/auth-client'
-import { Logo } from '@/components/shared/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -37,10 +36,6 @@ export function ForgotPasswordForm() {
   if (submitted) {
     return (
       <div className="w-full text-center bg-background text-foreground animate-in fade-in duration-300">
-        <div className="lg:hidden flex justify-center mb-8">
-          <Logo className="h-9 w-auto" />
-        </div>
-
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center">
             <CheckCircle className="h-8 w-8 text-brand" />
@@ -70,11 +65,7 @@ export function ForgotPasswordForm() {
 
   return (
     <div className="w-full bg-background text-foreground animate-in fade-in duration-300">
-      <div className="lg:hidden flex justify-center mb-8">
-        <Logo className="h-9 w-auto" />
-      </div>
-
-      <div className="mb-6 text-center lg:text-left">
+      <div className="mb-6 text-center">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">
           Забыли пароль?
         </h2>

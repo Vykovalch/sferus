@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const cities = [
+  { id: 0, name: "Все города" },
   { id: 1, name: "Тирасполь" },
   { id: 2, name: "Бендеры" },
   { id: 3, name: "Рыбница" },
@@ -30,7 +31,7 @@ export function CityDropdown() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-1.5 px-2 text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-0"
+          className="flex items-center gap-1.5 px-2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-0"
         >
           {/* Иконка из макета image_d01e5c.png */}
           <MapPin className="h-4 w-4" />
@@ -39,7 +40,11 @@ export function CityDropdown() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start" className="w-48">
+      <DropdownMenuContent
+        align="start"
+        className="min-w-[calc(var(--radix-dropdown-menu-trigger-width)+2rem)]"
+        onCloseAutoFocus={(e) => e.preventDefault()}
+      >
         {cities.map((city) => (
           <DropdownMenuItem
             key={city.id}

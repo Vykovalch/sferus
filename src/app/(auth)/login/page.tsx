@@ -1,24 +1,18 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { AuthBrand } from "@/components/auth/AuthBrand";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
   title: "Войти — Sferus",
 };
-
 export default function LoginPage() {
   return (
-    <>
-      <AuthBrand />
-      
-      <div className="flex items-center justify-center p-6 sm:p-10 md:p-12 bg-background w-full">
-        <div className="w-full max-w-[400px] mx-auto">
-          <Suspense>
-            <LoginForm />
-          </Suspense>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="w-full max-w-[400px]">
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
-    </>
+    </div>
   );
 }
