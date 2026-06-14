@@ -30,7 +30,7 @@ export function HowItWorks() {
         <div className="grid md:grid-cols-2 gap-12 md:gap-20 max-w-5xl mx-auto relative">
           {/* Путь: Для клиентов */}
           <div className="space-y-10">
-            <h3 className="text-xl sm:text-2xl font-medium text-center md:text-left mb-8">
+            <h3 className="text-xl sm:text-2xl font-medium text-left mb-8">
               Для клиентов
             </h3>
             {clientSteps.map((step: StepItem) => (
@@ -63,7 +63,7 @@ export function HowItWorks() {
 
           {/* Путь: Для исполнителей */}
           <div className="space-y-10">
-            <h3 className="text-xl sm:text-2xl font-medium text-center md:text-left mb-8">
+            <h3 className="text-xl sm:text-2xl font-medium text-left mb-8">
               Для исполнителей
             </h3>
             {executorSteps.map((step: StepItem) => (

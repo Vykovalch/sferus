@@ -8,8 +8,6 @@ interface CategoryCardProps {
   count: number;
   iconColor?: string;
   iconBg?: string;
-  countLabel?: string;
-  iconHoverClass?: string;
 }
 
 export function CategoryCard({
@@ -19,8 +17,6 @@ export function CategoryCard({
   count,
   iconColor = "text-brand",
   iconBg = "bg-brand/10",
-  countLabel,
-  iconHoverClass = "group-hover:scale-110",
 }: CategoryCardProps) {
   return (
     <Link
@@ -35,14 +31,14 @@ export function CategoryCard({
         group"
     >
       <div
-        className={`w-11 h-11 rounded-lg flex items-center justify-center shrink-0 ${iconBg} transition-transform duration-200 ${iconHoverClass}`}
+        className={`w-11 h-11 rounded-lg flex items-center justify-center shrink-0 ${iconBg} transition-transform duration-200 group-hover:scale-110`}
       >
         <Icon className={`h-5 w-5 ${iconColor}`} />
       </div>
 
       <div className="flex flex-col gap-1 mt-auto">
         <h3 className="text-sm font-medium leading-snug">{name}</h3>
-        <p className="text-xs text-muted-foreground">{countLabel ?? `${count} объявлений`}</p>
+        <p className="text-xs text-muted-foreground">{count} объявлений</p>
       </div>
     </Link>
   );
