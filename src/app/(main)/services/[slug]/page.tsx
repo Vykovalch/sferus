@@ -84,7 +84,7 @@ export default function CategoryPage() {
       <div className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
           <aside className="hidden lg:block w-56 flex-shrink-0">
-            <CategorySidebar />
+            <CategorySidebar idPrefix="desktop" />
           </aside>
 
           <div className="flex-1 min-w-0">
@@ -110,7 +110,7 @@ export default function CategoryPage() {
                   <SheetHeader className="mb-4">
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
-                  <CategorySidebar />
+                  <CategorySidebar idPrefix="mobile" />
                 </SheetContent>
               </Sheet>
             </div>

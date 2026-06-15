@@ -12,7 +12,7 @@ const subcategories = [
   { name: "Фундамент", count: 9 },
 ];
 
-const cities = ["Все", "Тирасполь", "Бендеры", "Рыбница", "Дубоссары", "Слободзея"];
+const cities = ["Все города", "Тирасполь", "Бендеры", "Рыбница", "Дубоссары", "Слободзея"];
 
 const executorTypes = [
   { value: "all", label: "Все исполнители" },
@@ -67,7 +67,19 @@ const radioBlock = (
   </div>
 );
 
-export function CategorySidebar() {
+interface CategorySidebarProps {
+  /**
+   * Уникальный префикс для атрибута name radio-групп.
+   * Необходим, чтобы десктопная и мобильная версии сайдбара
+   * (которые могут быть одновременно смонтированы в DOM —
+   * desktop скрыт через `hidden lg:block`, mobile лежит в Sheet)
+   * не делили один и тот же name и не конфликтовали по
+   * нативной группировке radio-кнопок браузером.
+   */
+  idPrefix?: string;
+}
+
+export function CategorySidebar({ idPrefix = "desktop" }: CategorySidebarProps) {
   const [activeSubcat, setActiveSubcat] = useState("Все подкатегории");
   const [activeCity, setActiveCity] = useState("Все");
   const [executorType, setExecutorType] = useState("all");
@@ -76,7 +88,7 @@ export function CategorySidebar() {
     // {
     //   title: 'Подкатегория',
     //   content: radioBlock(
-    //     'subcategory',
+    //     `${idPrefix}-subcategory`,
     //     subcategories.map((s) => ({ value: s.name, label: s.name, count: s.count })),
     //     activeSubcat,
     //     setActiveSubcat
@@ -84,12 +96,12 @@ export function CategorySidebar() {
     // },
     {
       title: "Исполнитель",
-      content: radioBlock("executorType", executorTypes, executorType, setExecutorType),
+      content: radioBlock(`${idPrefix}-executorType`, executorTypes, executorType, setExecutorType),
     },
     {
       title: "Город",
       content: radioBlock(
-        "city",
+        `${idPrefix}-city`,
         cities.map((c) => ({ value: c, label: c })),
         activeCity,
         setActiveCity,

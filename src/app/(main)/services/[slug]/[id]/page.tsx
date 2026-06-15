@@ -250,22 +250,6 @@ export default function ServiceListingPage() {
                 </div>
               </div>
 
-              {/* Рейтинг */}
-              <div className="flex items-center gap-2 mb-4 border-t border-b border-border/60 py-2.5">
-                <div className="flex items-center gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      // biome-ignore lint/suspicious/noArrayIndexKey: static stars
-                      key={i}
-                      className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
-                    />
-                  ))}
-                </div>
-                <span className="text-xs text-muted-foreground font-medium">
-                  {executor.rating} ({executor.reviewsCount} отзыва)
-                </span>
-              </div>
-
               <Button className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
                 Показать контакты
               </Button>
