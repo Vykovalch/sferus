@@ -1,6 +1,4 @@
-"use client";
-
-import { Search, MapPin, ChevronDown } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   Hammer,
   Wrench,
@@ -24,8 +22,7 @@ import {
   Flower,
 } from "lucide-react";
 import { CategoryCard } from "@/components/shared/CategoryCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { CityDropdown } from "@/components/shared/CityDropdown";
 
 const categories = [
   {
@@ -192,68 +189,42 @@ const categories = [
 
 export default function ServicesPage() {
   return (
-    <div className="bg-background text-foreground min-h-screen">
-      {/* Hero-блок с поисковой строкой */}
-      <div className="bg-card border-b border-border shadow-sm">
-        <div className="container mx-auto px-4 py-10">
-          <h1 className="text-2xl font-medium tracking-tight mb-2">Каталог услуг</h1>
-          <p className="text-sm text-muted-foreground mb-6 max-w-xl">
-            Найдите специалиста среди 400+ проверенных исполнителей в Приднестровье
-          </p>
+    <div className="bg-background min-h-screen">
+      {/* Шапка */}
+      <div className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
 
-          {/* Поисковая панель */}
-          <div className="flex flex-col md:flex-row gap-3 max-w-4xl w-full">
-            <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
-              <Input
+          {/* Поиск — копия из HeroSection */}
+          <div className="group flex flex-col md:flex-row items-stretch bg-card/80 dark:bg-card/40 backdrop-blur-xl p-2 rounded-2xl md:rounded-3xl border border-border/80 shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-border focus-within:border-brand/40 focus-within:ring-4 focus-within:ring-brand/5 gap-2 md:gap-0 max-w-3xl">
+            <div className="relative flex-1 flex items-center group/input">
+              <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand" />
+              <input
                 type="text"
-                placeholder="Поиск услуг и специалистов..."
-                className="pl-10 h-11 border-input focus-visible:ring-brand placeholder:text-muted-foreground"
+                placeholder="Ремонт, уборка, репетитор..."
+                className="w-full pl-12 pr-4 py-3.5 text-base bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none font-medium"
               />
             </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="flex items-center gap-2 h-11 px-4 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer transition-colors justify-between md:justify-center"
-            >
-              <span className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground/60" />
-                <span>Тирасполь</span>
-              </span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60" />
-            </Button>
+            <div className="hidden md:block h-8 my-auto w-px bg-gradient-to-b from-transparent via-border to-transparent" />
 
-            <Button
+            <div className="flex items-center px-2 py-1 md:py-0 bg-secondary/10 md:bg-transparent rounded-xl md:rounded-none">
+              <CityDropdown />
+            </div>
+
+            <button
               type="button"
-              className="h-11 px-8 bg-brand hover:bg-brand/90 text-brand-foreground shadow font-medium cursor-pointer transition-colors"
+              className="px-8 py-3.5 bg-primary text-primary-foreground hover:opacity-90 rounded-xl md:rounded-2xl shadow-[0_4px_12px_rgba(250,84,84,0.2)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)] transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 font-semibold text-base cursor-pointer"
             >
               Найти
-            </Button>
-          </div>
-
-          {/* Статистика */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-6 pt-6 border-t border-border/60 text-xs font-medium text-muted-foreground">
-            <span>
-              <span className="text-foreground font-semibold">500+</span> объявлений
-            </span>
-            <span>
-              <span className="text-foreground font-semibold">400+</span> исполнителей
-            </span>
-            <span>
-              <span className="text-foreground font-semibold">20</span> категорий
-            </span>
-            <span>
-              <span className="text-foreground font-semibold">5</span> городов
-            </span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Сетка категорий */}
-      <div className="container mx-auto px-4 py-10">
-        <h2 className="text-lg font-medium tracking-tight mb-6">Все категории</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+      {/* Категории */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {categories.map((cat) => (
             <CategoryCard
               key={cat.slug}
