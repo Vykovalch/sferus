@@ -1,15 +1,20 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-import { CheckCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import type { Metadata } from "next";
+import Link from "next/link";
+import Image from "next/image";
+import { CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: 'Пароль изменён — Sferus',
-}
+  title: "Пароль изменён — Sferus",
+};
 
 export default function ResetPasswordSuccessPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
+      <Link href="/" className="mb-8 transition-opacity hover:opacity-80">
+        <Image src="/icon.svg" alt="Sferus" width={40} height={40} priority />
+      </Link>
+
       <div className="w-full max-w-[400px] text-center animate-in fade-in duration-300">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
@@ -30,5 +35,5 @@ export default function ResetPasswordSuccessPage() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
