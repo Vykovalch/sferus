@@ -22,7 +22,7 @@ export function Header({ session }: HeaderProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md supports-[backdrop-filter]:bg-hero-bg/80 transition-colors">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-hero-bg/95 backdrop-blur-md supports-[backdrop-filter]:bg-hero-bg/80 transition-colors">
       <div className="container mx-auto px-4 max-w-[1280px]">
         <div className="flex h-16 items-center justify-between gap-4">
           
