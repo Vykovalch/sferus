@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="border-t border-zinc-800 bg-[#272727] py-8">
       <div className="container mx-auto px-4 flex flex-col items-center gap-2">
-        <Logo variant="inverse" className="h-8 w-auto" />
+        <Logo variant="inverse" className="text-2xl" />
         <p className="text-xs text-zinc-500">Поиск услуг в Приднестровье</p>
         <Link
           href="https://t.me/sferus_md"

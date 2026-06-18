@@ -1,80 +1,97 @@
+"use client";
+
 import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 
-export async function Header() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+interface HeaderProps {
+  session: any; // Сессия из серверного layout (auth.api.getSession)
+}
+
+export function Header({ session }: HeaderProps) {
+  const pathname = usePathname();
+
+  // Ваши ссылки навигации
+  const navLinks = [
+    { href: "/services", label: "Услуги" },
+    { href: "/tasks", label: "Задания" },
+    { href: "/#how-it-works", label: "Как это работает" },
+  ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b-2 border-primary bg-[#272727]">
-      <div className="container mx-auto px-4">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md supports-[backdrop-filter]:bg-hero-bg/80 transition-colors">
+      <div className="container mx-auto px-4 max-w-[1280px]">
         <div className="flex h-16 items-center justify-between gap-4">
+          
+          {/* Левая часть: Логотип Sferus */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
-              {/* Изменено: h-10 заменено на h-11 для дополнительной высоты вытянутого текста,
-                  и добавлена фиксированная ширина w-28, чтобы буквы гарантированно помещались */}
-              <Logo className="h-11 w-28" />
+              <Logo className="text-2xl" />
             </Link>
           </div>
 
+          {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в вишневый) */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/services"
-              className="text-base font-medium text-white/90 hover:text-white transition-colors"
-            >
-              Услуги
-            </Link>
-            <Link
-              href="/tasks"
-              className="text-base font-medium text-white/90 hover:text-white transition-colors"
-            >
-              Задания
-            </Link>
-            <Link
-              href="/#how-it-works"
-              className="text-base font-medium text-white/90 hover:text-white transition-colors"
-            >
-              Как это работает
-            </Link>
+            {navLinks.map((link) => {
+              // Строгая проверка активности страницы (якоря не горят красным постоянно)
+              const isActive = pathname === link.href;
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-semibold tracking-[0.01em] transition-colors ${
+                    isActive 
+                      ? "text-primary" 
+                      : "text-foreground/80 hover:text-primary"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
+          {/* Правая часть: Блок действий (Кнопки / Меню пользователя) */}
           <div className="flex items-center gap-2 md:gap-4">
             {session ? (
               <>
+                {/* Кнопки авторизованного пользователя */}
                 <Button
                   asChild
                   variant="outline"
-                  className="hidden md:inline-flex border-white/30 text-white hover:bg-white/10 hover:text-white font-medium bg-transparent"
+                  className="hidden md:inline-flex h-11 border-secondary text-secondary hover:bg-secondary/5 font-semibold transition-colors px-5"
                 >
                   <Link href="/services/new">Создать услугу</Link>
                 </Button>
 
                 <Button
                   asChild
-                  className="hidden md:inline-flex bg-brand hover:bg-brand/90 text-brand-foreground font-medium"
+                  className="hidden md:inline-flex h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm transition-colors px-5"
                 >
                   <Link href="/tasks/new">Создать задание</Link>
                 </Button>
 
+                <div className="hidden md:block h-6 w-px bg-border mx-1" />
                 <UserMenu session={session} />
               </>
             ) : (
-              <Link
-                href="/login"
-                className="text-base font-medium text-white/90 hover:text-white transition-colors px-2"
+              /* Кнопка для неавторизованного пользователя — только "Войти" на месте "Регистрации" */
+              <Button
+                asChild
+                className="h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm transition-colors px-6"
               >
-                Войти
-              </Link>
+                <Link href="/login">Войти</Link>
+              </Button>
             )}
 
+            {/* Мобильное меню (бургер) */}
             <MobileMenu session={session} />
           </div>
+
         </div>
       </div>
     </header>

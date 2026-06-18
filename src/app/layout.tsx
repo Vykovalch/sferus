@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
-const geist = Geist({ 
+const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
-  variable: '--font-sans', // Изменено: Добавлена CSS-переменная для интеграции с Tailwind
+  variable: '--font-sans',
 })
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body className={`${geist.variable} font-sans`}>
+      <body className={`${inter.variable} font-sans`}>
         {children}
       </body>
     </html>
