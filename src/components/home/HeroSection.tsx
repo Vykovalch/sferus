@@ -14,19 +14,19 @@ export function HeroSection() {
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-
           {/* Заголовок */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-12 leading-[1.15] text-balance">
-            Найдите услугу<br className="hidden sm:inline" />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
+            Найдите услугу
+            <br className="hidden sm:inline" />
             <span className="text-primary"> в Приднестровье</span>
           </h1>
 
           {/* Поисковая панель */}
           <div className="mb-10 max-w-3xl mx-auto">
-            <div className="flex flex-col md:flex-row items-stretch bg-white/80 backdrop-blur-xl p-2 rounded-xl border border-border shadow-lg gap-2 md:gap-0">
+            <div className="flex flex-col md:flex-row items-stretch bg-white/80 backdrop-blur-xl p-2 rounded-2xl md:rounded-3xl border border-border shadow-lg hover:border-border focus-within:border-border/40 focus-within:ring-brand gap-2 md:gap-0">
               {/* Поле ввода */}
               <div className="relative flex-1 flex items-center">
-                <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
+                <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand" />
                 <input
                   type="text"
                   placeholder="Ремонт, уборка, репетитор..."
@@ -45,7 +45,7 @@ export function HeroSection() {
               {/* Кнопка поиска */}
               <button
                 type="button"
-                className="px-10 py-4 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-bold text-base cursor-pointer transition-all active:scale-[0.98] shadow-md"
+                className="px-10 py-4 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl md:rounded-2xl font-bold text-base cursor-pointer transition-all active:scale-[0.98] shadow-md"
               >
                 Найти
               </button>
@@ -84,7 +84,6 @@ export function HeroSection() {
               <span className="text-sm text-muted-foreground font-medium">активных заданий</span>
             </div>
           </div>
-
         </div>
       </div>
     </section>

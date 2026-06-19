@@ -22,10 +22,9 @@ export function Header({ session }: HeaderProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-hero-bg/95 backdrop-blur-md supports-[backdrop-filter]:bg-hero-bg/80 transition-colors">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
       <div className="container mx-auto px-4 max-w-[1280px]">
         <div className="flex h-16 items-center justify-between gap-4">
-          
           {/* Левая часть: Логотип Sferus */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
@@ -43,10 +42,8 @@ export function Header({ session }: HeaderProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-semibold tracking-[0.01em] transition-colors ${
-                    isActive 
-                      ? "text-primary" 
-                      : "text-foreground/80 hover:text-primary"
+                  className={`text-base font-semibold tracking-[0.01em] transition-colors ${
+                    isActive ? "text-primary" : "text-foreground/80 hover:text-primary"
                   }`}
                 >
                   {link.label}
@@ -79,19 +76,17 @@ export function Header({ session }: HeaderProps) {
                 <UserMenu session={session} />
               </>
             ) : (
-              /* Кнопка для неавторизованного пользователя — только "Войти" на месте "Регистрации" */
-              <Button
-                asChild
-                className="h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm transition-colors px-6"
+              <Link
+                href="/login"
+                className="text-base font-semibold text-foreground/80 hover:text-primary transition-colors px-2"
               >
-                <Link href="/login">Войти</Link>
-              </Button>
+                Войти
+              </Link>
             )}
 
             {/* Мобильное меню (бургер) */}
             <MobileMenu session={session} />
           </div>
-
         </div>
       </div>
     </header>

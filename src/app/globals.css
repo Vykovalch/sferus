@@ -54,21 +54,20 @@
 }
 
 :root {
-  --background: oklch(0.988 0.008 262);   /* #faf8ff — чуть голубоватый */
-  --foreground: oklch(0.16 0.04 262);     /* #131b2e — тёмно-синий */
+  --background: oklch(0.988 0.008 262);
+  --foreground: oklch(0.16 0.04 262);
 
-  --hero-bg: oklch(0.988 0.008 262);
+  /* --hero-bg: oklch(0.988 0.008 262); */
+  --hero-bg: oklch(0.9826 0.0095 299.24);
 
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.16 0.04 262);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.16 0.04 262);
 
-  /* Primary — красный #b80035 */
   --primary: oklch(0.45 0.21 15);
   --primary-foreground: oklch(1 0 0);
 
-  /* Secondary — бирюза #006a61 */
   --secondary: oklch(0.43 0.09 186);
   --secondary-foreground: oklch(1 0 0);
 
@@ -79,8 +78,8 @@
 
   --destructive: oklch(0.45 0.22 25);
 
-  --border: oklch(0.90 0.008 15);
-  --input: oklch(0.90 0.008 15);
+  --border: oklch(0.9288 0.0126 255.51);
+  --input: oklch(0.9 0.008 15);
   --ring: oklch(0.45 0.21 15);
 
   --chart-1: oklch(0.45 0.21 15);
@@ -102,7 +101,7 @@
 
   --brand: oklch(0.45 0.21 15);
   --brand-foreground: oklch(1 0 0);
-  --brand-heading: oklch(0.43 0.09 186);
+  --brand-heading: oklch(33.249% 0.04052 294.045);
 }
 
 .dark {
