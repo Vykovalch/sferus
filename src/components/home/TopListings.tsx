@@ -61,7 +61,7 @@ const listings = [
 
 export function TopListings() {
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-16 bg-[#F2F3FF]">
       <div className="container mx-auto px-4">
         <div className="mb-10">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Топ объявления</h2>

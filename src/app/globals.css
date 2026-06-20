@@ -54,7 +54,7 @@
 }
 
 :root {
-  --background: oklch(0.988 0.008 262);
+  --background: oklch(0.9826 0.0095 299.24);
   --foreground: oklch(0.16 0.04 262);
 
   /* --hero-bg: oklch(0.988 0.008 262); */

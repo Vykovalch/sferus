@@ -1,58 +1,58 @@
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { ArrowRight, UserSearch, Briefcase } from 'lucide-react'
 
 export function CtaSection() {
   return (
-    // Используем muted/50 для красивого разделения с предыдущей белой секцией отзывов
-    <section className="py-20 md:py-20 bg-muted/40">
+    <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto">
+
           {/* Для клиентов */}
-          <Card className="border-border hover:border-border/60 hover:shadow-md transition-all duration-200">
-            <CardContent className="p-8 md:p-10 flex flex-col h-full">
-              <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-3">
+          <div className="p-12 rounded-3xl bg-primary text-primary-foreground relative overflow-hidden group">
+            {/* Декоративная иконка */}
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-500">
+              <UserSearch className="h-32 w-32" />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-primary-foreground">
                 Нужен специалист?
               </h3>
-              <p className="text-sm md:text-base text-muted-foreground mb-8 flex-grow">
-                Найдите специалиста бесплатно и без посредников
+              <p className="text-base mb-8 opacity-90 max-w-sm leading-relaxed">
+                Найдите профессионала для вашей задачи бесплатно и без посредников прямо сейчас.
               </p>
-              <Button
-                asChild
-                size="lg"
-                className="w-full bg-brand hover:bg-brand/90 text-brand-foreground group cursor-pointer"
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-xl font-semibold hover:shadow-xl transition-all active:scale-95"
               >
-                <Link href="/services">
-                  <span>Найти специалиста</span>
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+                Найти специалиста
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
 
           {/* Для исполнителей */}
-          <Card className="border-border hover:border-border/60 hover:shadow-md transition-all duration-200">
-            <CardContent className="p-8 md:p-10 flex flex-col h-full">
-              <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-3">
+          <div className="p-12 rounded-3xl bg-white border-2 border-secondary relative overflow-hidden group">
+            {/* Декоративная иконка */}
+            <div className="absolute top-0 right-0 p-8 opacity-5 text-secondary group-hover:scale-125 transition-transform duration-500">
+              <Briefcase className="h-32 w-32" />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-secondary">
                 Принимаете заказы?
               </h3>
-              <p className="text-sm md:text-base text-muted-foreground mb-8 flex-grow">
-                Разместите услугу бесплатно — без комиссий и предоплаты
+              <p className="text-base text-muted-foreground mb-8 max-w-sm leading-relaxed">
+                Разместите услугу бесплатно — без комиссий и предоплаты. Получайте заказы напрямую.
               </p>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="w-full border-brand text-brand hover:bg-brand/5 group cursor-pointer"
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 border-2 border-secondary text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-secondary hover:text-white transition-all active:scale-95"
               >
-                <Link href="/register">
-                  <span>Разместить услугу</span>
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+                Разместить услугу
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
