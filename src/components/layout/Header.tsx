@@ -6,9 +6,10 @@ import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import type { Session } from "@/lib/auth";
 
 interface HeaderProps {
-  session: any; // Сессия из серверного layout (auth.api.getSession)
+  session: Session | null; // Сессия из серверного layout (auth.api.getSession)
 }
 
 export function Header({ session }: HeaderProps) {
