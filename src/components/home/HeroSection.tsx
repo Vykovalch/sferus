@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Search, PlusCircle, Users, FileText, Briefcase } from "lucide-react";
-import { CityDropdown } from "@/components/shared/CityDropdown";
+import { PlusCircle, Users, FileText, Briefcase } from "lucide-react";
+import { SearchBar } from "@/components/shared/SearchBar";
 
 export function HeroSection() {
   return (
@@ -14,45 +14,16 @@ export function HeroSection() {
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Заголовок */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
             Найдите услугу
             <br className="hidden sm:inline" />
             <span className="text-primary"> в Приднестровье</span>
           </h1>
 
-          {/* Поисковая панель */}
           <div className="mb-10 max-w-3xl mx-auto">
-            <div className="flex flex-col md:flex-row items-stretch bg-white/80 backdrop-blur-xl p-2 rounded-2xl md:rounded-3xl border border-border shadow-lg hover:border-border focus-within:border-border/40 focus-within:ring-brand gap-2 md:gap-0">
-              {/* Поле ввода */}
-              <div className="relative flex-1 flex items-center">
-                <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand" />
-                <input
-                  type="text"
-                  placeholder="Ремонт, уборка, репетитор..."
-                  className="w-full pl-12 pr-4 py-4 text-base bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none font-medium"
-                />
-              </div>
-
-              {/* Разделитель */}
-              <div className="hidden md:block h-8 my-auto w-px bg-border" />
-
-              {/* Выбор города */}
-              <div className="flex items-center px-2 py-1 md:py-0">
-                <CityDropdown />
-              </div>
-
-              {/* Кнопка поиска */}
-              <button
-                type="button"
-                className="px-10 py-4 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl md:rounded-2xl font-bold text-base cursor-pointer transition-all active:scale-[0.98] shadow-md"
-              >
-                Найти
-              </button>
-            </div>
+            <SearchBar />
           </div>
 
-          {/* Ссылка на создание задания */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-base mb-14">
             <span className="text-muted-foreground font-medium">
               Нужен исполнитель под конкретную задачу?
@@ -66,7 +37,6 @@ export function HeroSection() {
             </Link>
           </div>
 
-          {/* Статистика */}
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 max-w-2xl mx-auto">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/50 rounded-full border border-white/80">
               <Users className="w-4 h-4 text-primary shrink-0" />
