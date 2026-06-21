@@ -35,7 +35,7 @@ export function ForgotPasswordForm() {
 
   if (submitted) {
     return (
-      <div className="w-full text-center bg-background text-foreground animate-in fade-in duration-300">
+      <div className="w-full text-center bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center">
             <CheckCircle className="h-8 w-8 text-brand" />
@@ -64,8 +64,8 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <div className="w-full bg-background text-foreground animate-in fade-in duration-300">
-      <div className="mb-6 text-center">
+    <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
+      <div className="text-center mb-6">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">
           Забыли пароль?
         </h2>

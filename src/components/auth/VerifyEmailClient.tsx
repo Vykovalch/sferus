@@ -32,7 +32,6 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
 
     setResendStatus('sent')
 
-    // Кулдаун 60 секунд — защита от спама
     let seconds = 60
     setCooldown(seconds)
     const timer = setInterval(() => {
@@ -46,8 +45,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
   }
 
   return (
-    <div className="w-full bg-background text-foreground animate-in fade-in duration-300">
-      {/* Иконка */}
+    <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center">
           <Mail className="h-8 w-8 text-brand" />
@@ -66,7 +64,6 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
         </p>
       </div>
 
-      {/* Шаги */}
       <div className="bg-muted/40 rounded-xl p-4 mb-6 space-y-3">
         {[
           'Откройте письмо от Sferus',
@@ -82,7 +79,6 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
         ))}
       </div>
 
-      {/* Кнопка переотправки */}
       <div className="space-y-3">
         {resendStatus === 'sent' ? (
           <div className="flex items-center justify-center gap-2 py-2 text-sm text-emerald-600 dark:text-emerald-400">

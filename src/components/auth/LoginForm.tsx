@@ -34,7 +34,6 @@ export function LoginForm() {
     })
 
     if (error) {
-      // EMAIL_NOT_VERIFIED — better-auth возвращает этот код если email не подтверждён
       if (error.code === 'EMAIL_NOT_VERIFIED') {
         router.push(`/verify-email?email=${encodeURIComponent(formData.get('email') as string)}`)
         return
@@ -54,7 +53,6 @@ export function LoginForm() {
 
     const { error } = await signIn.social({
       provider: 'google',
-      // После успешной авторизации Google редиректит сюда
       callbackURL: callbackUrl,
     })
 
@@ -62,13 +60,12 @@ export function LoginForm() {
       setError('Не удалось войти через Google. Попробуйте снова.')
       setGoogleLoading(false)
     }
-    // При успехе better-auth сам делает редирект — setLoading не сбрасываем
   }
 
   return (
-    <div className="w-full bg-background text-foreground animate-in fade-in duration-300">
-
-      <div className="mb-6 text-center">
+    <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
+      
+      <div className="text-center mb-6">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">
           Добро пожаловать!
         </h2>
@@ -83,7 +80,6 @@ export function LoginForm() {
         </div>
       )}
 
-      {/* Google — вынесена наверх, это основной способ входа в 2026 */}
       <Button
         type="button"
         variant="outline"
@@ -117,7 +113,7 @@ export function LoginForm() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">или</span>
+          <span className="bg-white px-2 text-muted-foreground">или</span>
         </div>
       </div>
 

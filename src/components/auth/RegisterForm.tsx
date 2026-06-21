@@ -65,8 +65,6 @@ export function RegisterForm() {
 
     const { error } = await signIn.social({
       provider: 'google',
-      // Google OAuth пользователи не требуют верификации email —
-      // better-auth автоматически ставит emailVerified: true
       callbackURL: '/',
     })
 
@@ -77,9 +75,9 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="w-full bg-background text-foreground animate-in fade-in duration-300">
+    <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
 
-      <div className="mb-6 text-center">
+      <div className="text-center mb-6">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">
           Создать аккаунт
         </h2>
@@ -94,7 +92,6 @@ export function RegisterForm() {
         </div>
       )}
 
-      {/* Google — вынесена наверх как основной способ */}
       <Button
         type="button"
         variant="outline"
@@ -128,7 +125,7 @@ export function RegisterForm() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">или</span>
+          <span className="bg-white px-2 text-muted-foreground">или</span>
         </div>
       </div>
 

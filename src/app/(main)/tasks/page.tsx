@@ -57,39 +57,16 @@ const mockTasks = [
 
 export default function TasksPage() {
   return (
-    // Изменено: переведено на bg-background для работы с темами
-    <div className="min-h-screen bg-background text-foreground">
-
-      {/* Шапка страницы */}
-      <div className="bg-background border-b border-border">
-        <div className="container mx-auto px-4 py-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              {/* Изменено: font-medium и tracking-tight для премиального вида */}
-              <h1 className="text-xl font-medium tracking-tight text-foreground">Задания</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                Открытые задания от клиентов — откликайтесь и предлагайте условия
-              </p>
-            </div>
-            {/* Изменено: кнопка приведена к системному bg-brand */}
-            <Button asChild className="bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer self-start sm:self-auto">
-              <Link href="/tasks/new">+ Создать задание</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-semibold tracking-tight mb-6">Задания</h1>
         <div className="flex gap-6">
-
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
             <TasksSidebar />
           </aside>
-
           {/* Контентная область */}
           <div className="flex-1 min-w-0">
-
             {/* Панель сортировки и фильтров */}
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm text-muted-foreground">
@@ -113,14 +90,12 @@ export default function TasksPage() {
                 </button>
               </div>
             </div>
-
             {/* Список карточек */}
             <div className="flex flex-col gap-3">
               {mockTasks.map((task) => (
                 <TaskCard key={task.id} task={task} />
               ))}
             </div>
-
             {/* Пагинация */}
             <div className="flex items-center justify-center gap-1.5 mt-8">
               <button
@@ -150,7 +125,6 @@ export default function TasksPage() {
                 Вперёд
               </button>
             </div>
-
           </div>
         </div>
       </div>
