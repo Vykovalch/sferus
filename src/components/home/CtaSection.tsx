@@ -1,16 +1,16 @@
-import Link from "next/link";
-import { ArrowRight, UserSearch, Briefcase } from "lucide-react";
+import Link from 'next/link'
+import { ArrowRight, UserSearch, Briefcase } from 'lucide-react'
 
 export function CtaSection() {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto">
+
           {/* Для клиентов */}
           <div className="p-12 rounded-3xl bg-primary text-primary-foreground relative overflow-hidden group">
-            {/* Декоративная иконка */}
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-500">
-              <UserSearch className="h-32 w-32" />
+            <div className="absolute top-8 right-8 xl:top-8 xl:right-8 opacity-10 group-hover:scale-125 transition-transform duration-500 hidden sm:block md:hidden xl:block">
+              <UserSearch className="h-32 w-32 xl:h-32 xl:w-32" />
             </div>
             <div className="relative z-10">
               <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-primary-foreground">
@@ -31,9 +31,8 @@ export function CtaSection() {
 
           {/* Для исполнителей */}
           <div className="p-12 rounded-3xl bg-white border-2 border-secondary relative overflow-hidden group">
-            {/* Декоративная иконка */}
-            <div className="absolute top-0 right-0 p-8 opacity-5 text-secondary group-hover:scale-125 transition-transform duration-500">
-              <Briefcase className="h-32 w-32" />
+            <div className="absolute top-8 right-8 xl:top-8 xl:right-8 opacity-5 text-secondary group-hover:scale-125 transition-transform duration-500 hidden sm:block md:hidden xl:block">
+              <Briefcase className="h-32 w-32 xl:h-32 xl:w-32" />
             </div>
             <div className="relative z-10">
               <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-secondary">
@@ -51,6 +50,7 @@ export function CtaSection() {
               </Link>
             </div>
           </div>
+
         </div>
       </div>
     </section>
