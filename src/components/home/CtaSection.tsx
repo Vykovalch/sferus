@@ -1,12 +1,11 @@
-import Link from 'next/link'
-import { ArrowRight, UserSearch, Briefcase } from 'lucide-react'
+import Link from "next/link";
+import { ArrowRight, UserSearch, Briefcase } from "lucide-react";
 
 export function CtaSection() {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto">
-
           {/* Для клиентов */}
           <div className="p-12 rounded-3xl bg-primary text-primary-foreground relative overflow-hidden group">
             {/* Декоративная иконка */}
@@ -52,7 +51,6 @@ export function CtaSection() {
               </Link>
             </div>
           </div>
-
         </div>
       </div>
     </section>
