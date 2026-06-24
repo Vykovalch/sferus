@@ -1,8 +1,8 @@
-import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 import { TasksSidebar } from '@/components/tasks/TasksSidebar'
 import { TaskCard } from '@/components/tasks/TaskCard'
 import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
 const mockTasks = [
   {
@@ -15,7 +15,7 @@ const mockTasks = [
     status: 'open' as const,
     responsesCount: 3,
     createdAt: '2 часа назад',
-    author: { name: 'Андрей П.', initials: 'АП' },
+    author: { name: 'Андрей П.', type: 'person' as const },
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const mockTasks = [
     status: 'open' as const,
     responsesCount: 7,
     createdAt: '5 часов назад',
-    author: { name: 'Марина К.', initials: 'МК' },
+    author: { name: 'Марина К.', type: 'company' as const },
   },
   {
     id: 3,
@@ -39,7 +39,7 @@ const mockTasks = [
     status: 'open' as const,
     responsesCount: 2,
     createdAt: '1 день назад',
-    author: { name: 'Елена Л.', initials: 'ЕЛ' },
+    author: { name: 'Елена Л.', type: 'person' as const },
   },
   {
     id: 4,
@@ -51,7 +51,7 @@ const mockTasks = [
     status: 'open' as const,
     responsesCount: 5,
     createdAt: '2 дня назад',
-    author: { name: 'Дмитрий В.', initials: 'ДВ' },
+    author: { name: 'Дмитрий В.', type: 'company' as const },
   },
 ]
 
@@ -63,67 +63,75 @@ export default function TasksPage() {
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
-            <TasksSidebar />
+            <TasksSidebar idPrefix="desktop" />
           </aside>
+
           {/* Контентная область */}
           <div className="flex-1 min-w-0">
-            {/* Панель сортировки и фильтров */}
+            {/* Панель фильтров */}
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-muted-foreground">
-                Найдено <span className="font-medium text-foreground">50</span> заданий
-              </p>
-              <div className="flex items-center gap-2.5">
-                {/* Мобильная кнопка фильтров */}
-                <button
-                  type="button"
-                  className="lg:hidden flex items-center gap-2 px-3 py-1.5 text-sm border border-input rounded-lg hover:bg-muted hover:text-foreground transition-colors bg-background text-muted-foreground cursor-pointer font-medium"
-                >
-                  Фильтры
-                </button>
-                {/* Кнопка сортировки */}
-                <button
-                  type="button"
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-input rounded-lg hover:bg-muted hover:text-foreground transition-colors bg-background text-muted-foreground cursor-pointer font-medium"
-                >
-                  <span>Сначала новые</span>
-                  <ChevronRight className="h-3.5 w-3.5 rotate-90 text-muted-foreground/70" />
-                </button>
-              </div>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="lg:hidden h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    Фильтры
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl">
+                  <SheetHeader className="mb-4">
+                    <SheetTitle>Фильтры</SheetTitle>
+                  </SheetHeader>
+                  <TasksSidebar idPrefix="mobile" />
+                </SheetContent>
+              </Sheet>
             </div>
+
             {/* Список карточек */}
             <div className="flex flex-col gap-3">
               {mockTasks.map((task) => (
                 <TaskCard key={task.id} task={task} />
               ))}
             </div>
+
             {/* Пагинация */}
-            <div className="flex items-center justify-center gap-1.5 mt-8">
-              <button
+            <div className="flex items-center justify-center gap-2 mt-8 select-none">
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 disabled
-                className="px-3 py-1.5 text-sm rounded-lg border border-border text-muted-foreground/50 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="h-9 border-input text-muted-foreground"
               >
                 Назад
-              </button>
+              </Button>
               {[1, 2, 3].map((page) => (
-                <button
+                <Button
                   key={page}
                   type="button"
-                  className={`w-8.5 h-8.5 text-sm rounded-lg border transition-colors cursor-pointer font-medium flex items-center justify-center ${
+                  variant={page === 1 ? "default" : "outline"}
+                  size="sm"
+                  className={`w-9 h-9 p-0 font-medium cursor-pointer transition-colors ${
                     page === 1
-                      ? 'bg-brand border-brand text-brand-foreground shadow-sm'
-                      : 'border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm'
+                      : 'border-input text-muted-foreground hover:bg-muted hover:text-foreground'
                   }`}
                 >
                   {page}
-                </button>
+                </Button>
               ))}
-              <button
+              <Button
                 type="button"
-                className="px-3 py-1.5 text-sm rounded-lg border border-input text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer font-medium"
+                variant="outline"
+                size="sm"
+                className="h-9 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
               >
                 Вперёд
-              </button>
+              </Button>
             </div>
           </div>
         </div>

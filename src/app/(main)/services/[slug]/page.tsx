@@ -97,11 +97,13 @@ export default function CategoryPage() {
         </nav>
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Строительство и ремонт</h1>
         <div className="flex gap-6">
+          {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
             <CategorySidebar idPrefix="desktop" />
           </aside>
-
+          {/* Контентная область */}
           <div className="flex-1 min-w-0">
+            {/* Панель сортировки и фильтров */}
             <div className="flex items-center justify-between mb-4">
               {/* Кнопка фильтров — только на мобильных */}
               <Sheet>
@@ -125,12 +127,14 @@ export default function CategoryPage() {
               </Sheet>
             </div>
 
+            {/* Список карточек */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {mockServices.map((service) => (
                 <ServiceCard key={service.id} {...service} />
               ))}
             </div>
 
+            {/* Пагинация */}
             <div className="flex items-center justify-center gap-2 mt-10 select-none">
               <Button
                 type="button"
