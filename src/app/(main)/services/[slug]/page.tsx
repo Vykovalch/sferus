@@ -80,27 +80,22 @@ const mockServices = [
 export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-8">
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6 select-none">
+      <div className="container mx-auto px-4 py-6">
+        <nav aria-label="Breadcrumb">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4 select-none">
             <Link
               href="/services"
               className="hover:text-brand transition-colors font-medium cursor-pointer"
             >
               Услуги
             </Link>
-            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
-            <span className="text-foreground font-medium">Строительство и ремонт</span>
-          </nav>
-
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Строительство и ремонт</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">120 объявлений</p>
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground/60" />
+            <span aria-current="page" className="text-foreground font-medium">
+              Строительство и ремонт
+            </span>
           </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6">
+        </nav>
+        <h1 className="text-2xl font-semibold tracking-tight mb-6">Строительство и ремонт</h1>
         <div className="flex gap-6">
           <aside className="hidden lg:block w-56 flex-shrink-0">
             <CategorySidebar idPrefix="desktop" />
@@ -108,10 +103,6 @@ export default function CategoryPage() {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-medium text-muted-foreground">
-                Найдено <span className="text-foreground font-semibold">120</span> объявлений
-              </p>
-
               {/* Кнопка фильтров — только на мобильных */}
               <Sheet>
                 <SheetTrigger asChild>

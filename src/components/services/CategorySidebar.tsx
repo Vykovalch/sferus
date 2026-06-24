@@ -68,20 +68,12 @@ const radioBlock = (
 );
 
 interface CategorySidebarProps {
-  /**
-   * Уникальный префикс для атрибута name radio-групп.
-   * Необходим, чтобы десктопная и мобильная версии сайдбара
-   * (которые могут быть одновременно смонтированы в DOM —
-   * desktop скрыт через `hidden lg:block`, mobile лежит в Sheet)
-   * не делили один и тот же name и не конфликтовали по
-   * нативной группировке radio-кнопок браузером.
-   */
   idPrefix?: string;
 }
 
 export function CategorySidebar({ idPrefix = "desktop" }: CategorySidebarProps) {
   const [activeSubcat, setActiveSubcat] = useState("Все подкатегории");
-  const [activeCity, setActiveCity] = useState("Все");
+  const [activeCity, setActiveCity] = useState("Все города");
   const [executorType, setExecutorType] = useState("all");
 
   const blocks = [
