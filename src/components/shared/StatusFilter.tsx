@@ -3,7 +3,6 @@
 const statuses = [
   { value: "open", label: "Открытые" },
   { value: "in_progress", label: "В работе" },
-  { value: "done", label: "Завершённые" },
 ];
 
 interface StatusFilterProps {

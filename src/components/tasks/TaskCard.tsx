@@ -43,14 +43,15 @@ export function TaskCard({ task }: TaskCardProps) {
   return (
     <Link
       href={`/tasks/${task.id}`}
-      className="bg-card rounded-xl p-5 hover:shadow-sm transition-all duration-200 group block"
+      className="bg-card rounded-xl p-5 hover:shadow transition-all duration-200 block"
     >
+      {/* Категория над заголовком */}
+      <p className="text-xs text-muted-foreground font-medium mb-1">{task.category}</p>
+
       {/* Заголовок + бюджет */}
       <div className="flex items-start justify-between gap-4 mb-2">
-        <span className="text-base font-medium text-foreground group-hover:text-brand transition-colors leading-snug">
-          {task.title}
-        </span>
-        <span className="text-base font-bold text-brand whitespace-nowrap flex-shrink-0">
+        <span className="text-base font-medium text-foreground leading-snug">{task.title}</span>
+        <span className="text-base font-medium text-foreground whitespace-nowrap flex-shrink-0">
           {task.budget}
         </span>
       </div>
@@ -66,9 +67,6 @@ export function TaskCard({ task }: TaskCardProps) {
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[task.status]}`}
         >
           {statusLabels[task.status]}
-        </span>
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-          {task.category}
         </span>
         <div className="flex items-center gap-1 text-xs text-muted-foreground/80">
           <MapPin className="h-3.5 w-3.5 text-muted-foreground/60" />
@@ -100,9 +98,8 @@ export function TaskCard({ task }: TaskCardProps) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              // логика отклика
             }}
-            className="h-8 px-4 text-xs bg-brand hover:bg-brand/90 text-brand-foreground shadow font-medium cursor-pointer transition-colors"
+            className="h-8 px-4 text-xs bg-card text-brand border border-brand/70 hover:bg-brand hover:text-brand-foreground hover:border-brand shadow-none font-medium cursor-pointer transition-colors"
           >
             Откликнуться
           </Button>

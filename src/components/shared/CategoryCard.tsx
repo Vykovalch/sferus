@@ -21,7 +21,7 @@ export function CategoryCard({
   return (
     <Link
       href={`/services/${slug}`}
-      className="group flex flex-col items-center text-center gap-4 p-6 h-full bg-muted/50 rounded-2xl border border-transparent transition-all duration-200 hover:bg-white hover:shadow-xl hover:border-border"
+      className="group flex flex-col items-center text-center gap-4 p-6 h-full bg-muted/50 rounded-2xl transition-all duration-200 hover:bg-white hover:shadow"
     >
       <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${iconBg} transition-transform duration-200 group-hover:scale-110`}>
         <Icon className={`h-7 w-7 ${iconColor}`} />

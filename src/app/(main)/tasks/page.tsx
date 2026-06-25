@@ -1,59 +1,63 @@
-import { SlidersHorizontal } from 'lucide-react'
-import { TasksSidebar } from '@/components/tasks/TasksSidebar'
-import { TaskCard } from '@/components/tasks/TaskCard'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { SlidersHorizontal } from "lucide-react";
+import { TasksSidebar } from "@/components/tasks/TasksSidebar";
+import { TaskCard } from "@/components/tasks/TaskCard";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const mockTasks = [
   {
     id: 1,
-    title: 'Нужен электрик для замены проводки в квартире',
-    description: 'Квартира 3-комнатная, нужно полностью заменить проводку, установить новый щиток и розетки. Работа срочная, желательно начать на этой неделе.',
-    category: 'Строительство и ремонт',
-    city: 'Тирасполь',
-    budget: 'до 500 руб.',
-    status: 'open' as const,
+    title: "Нужен электрик для замены проводки в квартире",
+    description:
+      "Квартира 3-комнатная, нужно полностью заменить проводку, установить новый щиток и розетки. Работа срочная, желательно начать на этой неделе.",
+    category: "Строительство и ремонт",
+    city: "Тирасполь",
+    budget: "до 500 руб.",
+    status: "open" as const,
     responsesCount: 3,
-    createdAt: '2 часа назад',
-    author: { name: 'Андрей П.', type: 'person' as const },
+    createdAt: "2 часа назад",
+    author: { name: "Андрей П.", type: "person" as const },
   },
   {
     id: 2,
-    title: 'Разработка сайта-визитки для стоматологии',
-    description: 'Нужен современный сайт для стоматологической клиники. Дизайн, вёрстка, адаптив. Срок — 2 недели. Есть примеры нравящихся сайтов.',
-    category: 'IT и Digital',
-    city: 'Тирасполь',
-    budget: 'до 800 руб.',
-    status: 'open' as const,
+    title: "Разработка сайта-визитки для стоматологии",
+    description:
+      "Нужен современный сайт для стоматологической клиники. Дизайн, вёрстка, адаптив. Срок — 2 недели. Есть примеры нравящихся сайтов.",
+    category: "IT и Digital",
+    city: "Тирасполь",
+    budget: "до 800 руб.",
+    status: "open" as const,
     responsesCount: 7,
-    createdAt: '5 часов назад',
-    author: { name: 'Марина К.', type: 'company' as const },
+    createdAt: "5 часов назад",
+    author: { name: "Марина К.", type: "company" as const },
   },
   {
     id: 3,
-    title: 'Репетитор по английскому для ребёнка 10 лет',
-    description: 'Ищу репетитора по английскому языку для ребёнка 10 лет. Уровень — начинающий. Занятия 2 раза в неделю, онлайн или на дому в Бендерах.',
-    category: 'Образование и обучение',
-    city: 'Бендеры',
-    budget: 'Договорная',
-    status: 'open' as const,
+    title: "Репетитор по английскому для ребёнка 10 лет",
+    description:
+      "Ищу репетитора по английскому языку для ребёнка 10 лет. Уровень — начинающий. Занятия 2 раза в неделю, онлайн или на дому в Бендерах.",
+    category: "Образование и обучение",
+    city: "Бендеры",
+    budget: "Договорная",
+    status: "open" as const,
     responsesCount: 2,
-    createdAt: '1 день назад',
-    author: { name: 'Елена Л.', type: 'person' as const },
+    createdAt: "1 день назад",
+    author: { name: "Елена Л.", type: "person" as const },
   },
   {
     id: 4,
-    title: 'Уборка офиса 200 кв.м. еженедельно',
-    description: 'Ищем клининговую компанию или специалиста для еженедельной уборки офиса. Офис 200 кв.м., 2 этаж, есть всё необходимое оборудование.',
-    category: 'Дом, быт и уход',
-    city: 'Тирасполь',
-    budget: 'до 300 руб./раз',
-    status: 'open' as const,
+    title: "Уборка офиса 200 кв.м. еженедельно",
+    description:
+      "Ищем клининговую компанию или специалиста для еженедельной уборки офиса. Офис 200 кв.м., 2 этаж, есть всё необходимое оборудование.",
+    category: "Дом, быт и уход",
+    city: "Тирасполь",
+    budget: "до 300 руб./раз",
+    status: "open" as const,
     responsesCount: 5,
-    createdAt: '2 дня назад',
-    author: { name: 'Дмитрий В.', type: 'company' as const },
+    createdAt: "2 дня назад",
+    author: { name: "Дмитрий В.", type: "company" as const },
   },
-]
+];
 
 export default function TasksPage() {
   return (
@@ -67,26 +71,28 @@ export default function TasksPage() {
           </aside>
 
           {/* Контентная область */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 max-w-5xl">
             {/* Панель фильтров */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between lg:hidden mb-4">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="lg:hidden h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
+                    className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Фильтры
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl">
+                <SheetContent side="bottom" className="max-h-[85vh] rounded-t-2xl">
                   <SheetHeader className="mb-4">
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
-                  <TasksSidebar idPrefix="mobile" />
+                  <div className="overflow-y-auto">
+                    <TasksSidebar idPrefix="mobile" />
+                  </div>
                 </SheetContent>
               </Sheet>
             </div>
@@ -117,8 +123,8 @@ export default function TasksPage() {
                   size="sm"
                   className={`w-9 h-9 p-0 font-medium cursor-pointer transition-colors ${
                     page === 1
-                      ? 'bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm'
-                      : 'border-input text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? "bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm"
+                      : "border-input text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
                   {page}
@@ -137,5 +143,5 @@ export default function TasksPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

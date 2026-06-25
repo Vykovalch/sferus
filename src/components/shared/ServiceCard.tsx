@@ -35,7 +35,7 @@ export function ServiceCard({
   return (
     <Link
       href={`/services/listing/${id}`}
-      className="group bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300"
+      className="group bg-white rounded-2xl overflow-hidden hover:shadow transition-all duration-200"
     >
       {/* Фото */}
       <div className="aspect-[1.5] relative overflow-hidden">
@@ -56,7 +56,7 @@ export function ServiceCard({
 
       {/* Контент */}
       <div className="p-3">
-        <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 mb-2">
+        <h3 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-2">
           {title}
         </h3>
 
@@ -85,7 +85,7 @@ export function ServiceCard({
           <span>{city}</span>
         </div>
 
-        <div className="flex items-center gap-1 text-sm font-bold text-primary">
+        <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
           <Wallet className="h-4 w-4 flex-shrink-0" />
           <span>{price}</span>
         </div>

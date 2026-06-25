@@ -101,28 +101,30 @@ export default function CategoryPage() {
           <aside className="hidden lg:block w-56 flex-shrink-0">
             <CategorySidebar idPrefix="desktop" />
           </aside>
+
           {/* Контентная область */}
           <div className="flex-1 min-w-0">
-            {/* Панель сортировки и фильтров */}
-            <div className="flex items-center justify-between mb-4">
-              {/* Кнопка фильтров — только на мобильных */}
+            {/* Панель фильтров */}
+            <div className="flex items-center justify-between lg:hidden mb-4">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="lg:hidden h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
+                    className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Фильтры
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-2xl">
+                <SheetContent side="bottom" className="max-h-[85vh] rounded-t-2xl">
                   <SheetHeader className="mb-4">
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
-                  <CategorySidebar idPrefix="mobile" />
+                  <div className="overflow-y-auto">
+                    <CategorySidebar idPrefix="mobile" />
+                  </div>
                 </SheetContent>
               </Sheet>
             </div>
