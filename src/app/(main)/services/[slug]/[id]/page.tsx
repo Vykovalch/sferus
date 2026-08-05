@@ -20,6 +20,7 @@ const mockListing = {
   homeVisit: true,
   images: ["/usluga1.jpg", "/usluga2.jpg", "/usluga3.jpg"],
   executor: {
+    username: "viktor-petrov",
     name: "Виктор Петров",
     initials: "ВП",
     type: "individual" as ExecutorType,
@@ -230,7 +231,10 @@ export default function ServiceListingPage() {
           <div className="hidden lg:flex flex-col gap-4 w-60 flex-shrink-0 sticky top-6">
             <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
               {/* Аватар + имя */}
-              <div className="flex items-center gap-3 mb-4">
+              <Link
+                href={`/profiles/${executor.username}`}
+                className="flex items-center gap-3 mb-4 group cursor-pointer"
+              >
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-bold flex-shrink-0 ${
                     isCompany
@@ -241,14 +245,14 @@ export default function ServiceListingPage() {
                   {executor.initials}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground line-clamp-1">
+                  <p className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-brand transition-colors">
                     {executor.name}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {isCompany ? "Компания" : "Частный специалист"}
                   </p>
                 </div>
-              </div>
+              </Link>
 
               <Button className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
                 Показать контакты

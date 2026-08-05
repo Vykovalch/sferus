@@ -20,6 +20,7 @@ const mockTask = {
   createdAt: "5 часов назад",
   userId: "user_123",
   author: {
+    username: "marina-kovaleva",
     name: "Марина Ковалёва",
     initials: "МК",
     memberSince: "марта 2025",
@@ -149,17 +150,22 @@ export default async function TaskDetailPage() {
               {/* Заказчик */}
               <div className="border-t border-border pt-5">
                 <h2 className="text-sm font-medium text-foreground mb-3">Заказчик</h2>
-                <div className="flex items-center gap-3 mb-3">
+                <Link
+                  href={`/profiles/${mockTask.author.username}`}
+                  className="flex items-center gap-3 mb-3 group cursor-pointer"
+                >
                   <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-sm font-bold text-brand flex-shrink-0">
                     {mockTask.author.initials}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{mockTask.author.name}</p>
+                    <p className="text-sm font-medium text-foreground group-hover:text-brand transition-colors">
+                      {mockTask.author.name}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       На платформе с {mockTask.author.memberSince}
                     </p>
                   </div>
-                </div>
+                </Link>
                 <div className="flex gap-4 text-xs md:text-sm text-muted-foreground">
                   <span>
                     Заданий:{" "}
