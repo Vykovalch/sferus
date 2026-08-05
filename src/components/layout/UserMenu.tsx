@@ -2,16 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  User,
-  ClipboardList,
-  FileText,
-  Send,
-  Heart,
-  Settings,
-  LogOut,
-  ChevronDown,
-} from "lucide-react";
+import { User, LogOut, ChevronDown } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import type { Session } from "@/lib/auth";
 import {
@@ -75,54 +66,15 @@ export function UserMenu({ session }: UserMenuProps) {
 
         <DropdownMenuSeparator />
 
-        {/* Профиль */}
+        {/* Единая точка входа в личный кабинет — детальная навигация уже в сайдбаре дашборда */}
         <DropdownMenuItem asChild>
           <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
             <User className="h-4 w-4 text-muted-foreground" />
-            Профиль
+            Личный кабинет
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-
-        {/* Активность */}
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/services" className="flex items-center gap-2 cursor-pointer">
-            <ClipboardList className="h-4 w-4 text-muted-foreground" />
-            Мои услуги
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/tasks" className="flex items-center gap-2 cursor-pointer">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            Мои задания
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/responses" className="flex items-center gap-2 cursor-pointer">
-            <Send className="h-4 w-4 text-muted-foreground" />
-            Мои отклики
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/favorites" className="flex items-center gap-2 cursor-pointer">
-            <Heart className="h-4 w-4 text-muted-foreground" />
-            Избранное
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
-        {/* Настройки и выход */}
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings" className="flex items-center gap-2 cursor-pointer">
-            <Settings className="h-4 w-4 text-muted-foreground" />
-            Настройки
-          </Link>
-        </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={handleSignOut}
