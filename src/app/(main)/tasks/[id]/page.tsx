@@ -1,83 +1,88 @@
-import Link from 'next/link'
-import { ChevronRight, MapPin, Clock, Users, Star, CheckCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
-import { RespondButton } from '@/components/tasks/RespondButton'
+import Link from "next/link";
+import { ChevronRight, MapPin, Clock, Users, Star, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { RespondButton } from "@/components/tasks/RespondButton";
 
-type TaskStatus = 'open' | 'in_progress' | 'done'
+type TaskStatus = "open" | "in_progress" | "done";
 
 const mockTask = {
   id: 1,
-  title: 'Разработка сайта-визитки для стоматологии',
-  description: 'Нужен современный сайт для стоматологической клиники. Требования: адаптивный дизайн, страницы "О нас", "Услуги", "Врачи", "Контакты". Форма записи на приём. Срок — 2 недели. Есть примеры нравящихся сайтов которые пришлю после обсуждения. Предпочтительно работать с исполнителем из Тирасполя для личных встреч.',
-  budget: 'до 800 руб.',
-  category: 'IT и Digital',
-  city: 'Тирасполь',
-  deadline: '2 недели',
-  status: 'open' as TaskStatus,
-  createdAt: '5 часов назад',
-  userId: 'user_123',
+  title: "Разработка сайта-визитки для стоматологии",
+  description:
+    'Нужен современный сайт для стоматологической клиники. Требования: адаптивный дизайн, страницы "О нас", "Услуги", "Врачи", "Контакты". Форма записи на приём. Срок — 2 недели. Есть примеры нравящихся сайтов которые пришлю после обсуждения. Предпочтительно работать с исполнителем из Тирасполя для личных встреч.',
+  budget: "до 800 руб.",
+  category: "IT и Digital",
+  city: "Тирасполь",
+  deadline: "2 недели",
+  status: "open" as TaskStatus,
+  createdAt: "5 часов назад",
+  userId: "user_123",
   author: {
-    name: 'Марина Ковалёва',
-    initials: 'МК',
-    memberSince: 'марта 2025',
+    name: "Марина Ковалёва",
+    initials: "МК",
+    memberSince: "марта 2025",
     tasksCount: 5,
     completedCount: 3,
   },
   responses: [
     {
       id: 1,
-      userId: 'user_456',
-      author: { name: 'Дмитрий Ковалёв', initials: 'ДК', rating: 4.9, reviewsCount: 43 },
-      price: '600 руб.',
-      text: 'Занимаюсь разработкой сайтов 5 лет. Сделаю современный адаптивный сайт с формой записи. Могу показать примеры похожих работ. Готов встретиться лично для обсуждения деталей.',
+      userId: "user_456",
+      author: { name: "Дмитрий Ковалёв", initials: "ДК", rating: 4.9, reviewsCount: 43 },
+      price: "600 руб.",
+      text: "Занимаюсь разработкой сайтов 5 лет. Сделаю современный адаптивный сайт с формой записи. Могу показать примеры похожих работ. Готов встретиться лично для обсуждения деталей.",
     },
     {
       id: 2,
-      userId: 'user_789',
-      author: { name: 'Александр М.', initials: 'АМ', rating: 4.7, reviewsCount: 28 },
-      price: '750 руб.',
-      text: 'Могу выполнить работу за 10 дней. Использую современный стек — Next.js, Tailwind. SEO оптимизация в комплекте.',
+      userId: "user_789",
+      author: { name: "Александр М.", initials: "АМ", rating: 4.7, reviewsCount: 28 },
+      price: "750 руб.",
+      text: "Могу выполнить работу за 10 дней. Использую современный стек — Next.js, Tailwind. SEO оптимизация в комплекте.",
     },
   ],
   similarTasks: [
-    { id: 2, title: 'Лендинг для строительной компании', city: 'Тирасполь', budget: 'до 500 руб.' },
-    { id: 3, title: 'Интернет-магазин на WordPress', city: 'Бендеры', budget: 'до 1200 руб.' },
+    { id: 2, title: "Лендинг для строительной компании", city: "Тирасполь", budget: "до 500 руб." },
+    { id: 3, title: "Интернет-магазин на WordPress", city: "Бендеры", budget: "до 1200 руб." },
   ],
-}
+};
 
 const statusLabels: Record<TaskStatus, string> = {
-  open: 'Открыто',
-  in_progress: 'В работе',
-  done: 'Завершено',
-}
+  open: "Открыто",
+  in_progress: "В работе",
+  done: "Завершено",
+};
 
 // Изменено: Используем семантические цвета темы
 const statusColors: Record<TaskStatus, string> = {
-  open: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-  in_progress: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-  done: 'bg-muted text-muted-foreground',
-}
+  open: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  in_progress: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  done: "bg-muted text-muted-foreground",
+};
 
 export default async function TaskDetailPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
-  })
+  });
 
-  const currentUserId = session?.user.id ?? null
-  const isOwner = currentUserId === mockTask.userId
-  const hasResponded = mockTask.responses.some((r) => r.userId === currentUserId)
-  const myResponse = mockTask.responses.find((r) => r.userId === currentUserId)
+  const currentUserId = session?.user.id ?? null;
+  const isOwner = currentUserId === mockTask.userId;
+  const hasResponded = mockTask.responses.some((r) => r.userId === currentUserId);
+  const myResponse = mockTask.responses.find((r) => r.userId === currentUserId);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-
       {/* Хлебные крошки */}
-      <div className="bg-background border-b border-border">
+      <div className="bg-background">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
-            <Link href="/tasks" className="hover:text-brand transition-colors cursor-pointer font-medium">Задания</Link>
+            <Link
+              href="/tasks"
+              className="hover:text-brand transition-colors cursor-pointer font-medium"
+            >
+              Задания
+            </Link>
             <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
             <span className="text-foreground font-medium line-clamp-1">{mockTask.title}</span>
           </nav>
@@ -86,13 +91,10 @@ export default async function TaskDetailPage() {
 
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
-
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
-
             {/* Основной блок */}
             <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
-
               {/* Заголовок + бюджет */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                 <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
@@ -105,7 +107,9 @@ export default async function TaskDetailPage() {
 
               {/* Бейджи */}
               <div className="flex items-center gap-2 flex-wrap mb-6">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[mockTask.status]}`}>
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[mockTask.status]}`}
+                >
                   {statusLabels[mockTask.status]}
                 </span>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
@@ -119,7 +123,9 @@ export default async function TaskDetailPage() {
 
               {/* Описание */}
               <h2 className="text-sm font-medium text-foreground mb-2">Описание задания</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">{mockTask.description}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                {mockTask.description}
+              </p>
 
               {/* Детали */}
               <div className="border-t border-border pt-5 mb-6">
@@ -149,20 +155,30 @@ export default async function TaskDetailPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">{mockTask.author.name}</p>
-                    <p className="text-xs text-muted-foreground">На платформе с {mockTask.author.memberSince}</p>
+                    <p className="text-xs text-muted-foreground">
+                      На платформе с {mockTask.author.memberSince}
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-4 text-xs md:text-sm text-muted-foreground">
-                  <span>Заданий: <span className="font-medium text-foreground">{mockTask.author.tasksCount}</span></span>
-                  <span>Завершено: <span className="font-medium text-foreground">{mockTask.author.completedCount}</span></span>
+                  <span>
+                    Заданий:{" "}
+                    <span className="font-medium text-foreground">
+                      {mockTask.author.tasksCount}
+                    </span>
+                  </span>
+                  <span>
+                    Завершено:{" "}
+                    <span className="font-medium text-foreground">
+                      {mockTask.author.completedCount}
+                    </span>
+                  </span>
                 </div>
               </div>
-
             </div>
 
             {/* Блок откликов */}
             <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-
               {/* Автор задания — видит все отклики */}
               {isOwner && (
                 <>
@@ -171,17 +187,24 @@ export default async function TaskDetailPage() {
                   </h2>
                   <div className="flex flex-col gap-3">
                     {mockTask.responses.map((response) => (
-                      <div key={response.id} className="border border-border rounded-xl p-4 hover:border-brand/50 transition-colors bg-card/50">
+                      <div
+                        key={response.id}
+                        className="border border-border rounded-xl p-4 hover:border-brand/50 transition-colors bg-card/50"
+                      >
                         <div className="flex items-start justify-between gap-4 mb-3">
                           <div className="flex items-center gap-2.5">
                             <div className="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-xs font-bold text-brand flex-shrink-0">
                               {response.author.initials}
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-foreground">{response.author.name}</p>
+                              <p className="text-sm font-medium text-foreground">
+                                {response.author.name}
+                              </p>
                               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                <span className="text-foreground font-medium">{response.author.rating}</span>
+                                <span className="text-foreground font-medium">
+                                  {response.author.rating}
+                                </span>
                                 <span>· {response.author.reviewsCount} отзывов</span>
                               </div>
                             </div>
@@ -190,12 +213,22 @@ export default async function TaskDetailPage() {
                             {response.price}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">{response.text}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                          {response.text}
+                        </p>
                         <div className="flex items-center gap-2">
-                          <Button size="sm" className="h-8 px-4 text-xs bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
+                          <Button
+                            size="sm"
+                            className="h-8 px-4 text-xs bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+                          >
                             Принять отклик
                           </Button>
-                          <Button size="sm" variant="outline" asChild className="h-8 px-4 text-xs border-input hover:bg-muted text-foreground cursor-pointer font-medium transition-colors">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            asChild
+                            className="h-8 px-4 text-xs border-input hover:bg-muted text-foreground cursor-pointer font-medium transition-colors"
+                          >
                             <Link href={`/profile/${response.userId}`}>Профиль</Link>
                           </Button>
                         </div>
@@ -217,8 +250,14 @@ export default async function TaskDetailPage() {
                       <p className="text-sm font-medium text-foreground">Ваш отклик</p>
                       <span className="text-sm font-bold text-brand">{myResponse.price}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">{myResponse.text}</p>
-                    <Button size="sm" variant="outline" className="h-8 px-4 text-xs border-input hover:bg-muted text-foreground cursor-pointer font-medium transition-colors">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                      {myResponse.text}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 px-4 text-xs border-input hover:bg-muted text-foreground cursor-pointer font-medium transition-colors"
+                    >
                       Редактировать отклик
                     </Button>
                   </div>
@@ -235,39 +274,46 @@ export default async function TaskDetailPage() {
                     Откликнитесь на задание чтобы предложить свои условия заказчику
                   </p>
                   {!session ? (
-                    <Button asChild className="bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
-                      <Link href={`/login?callbackUrl=/tasks/${mockTask.id}`}>Войдите чтобы откликнуться</Link>
+                    <Button
+                      asChild
+                      className="bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+                    >
+                      <Link href={`/login?callbackUrl=/tasks/${mockTask.id}`}>
+                        Войдите чтобы откликнуться
+                      </Link>
                     </Button>
                   ) : (
                     <RespondButton taskId={mockTask.id} />
                   )}
                 </>
               )}
-
             </div>
-
           </div>
 
           {/* Правый Сайдбар (Десктоп) */}
           <div className="hidden lg:flex flex-col gap-4 w-60 flex-shrink-0 sticky top-6">
             <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-
               {/* Кнопка действия */}
-              {!isOwner && !hasResponded && (
-                session ? (
+              {!isOwner &&
+                !hasResponded &&
+                (session ? (
                   <RespondButton taskId={mockTask.id} className="w-full mb-4" />
                 ) : (
-                  <Button asChild className="w-full mb-4 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
+                  <Button
+                    asChild
+                    className="w-full mb-4 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+                  >
                     <Link href={`/login?callbackUrl=/tasks/${mockTask.id}`}>Откликнуться</Link>
                   </Button>
-                )
-              )}
+                ))}
 
               {/* Чекбокс отклика */}
               {!isOwner && hasResponded && (
                 <div className="flex items-center gap-2 mb-4 p-3 bg-emerald-500/10 rounded-lg">
                   <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Вы откликнулись</span>
+                  <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                    Вы откликнулись
+                  </span>
                 </div>
               )}
 
@@ -308,12 +354,10 @@ export default async function TaskDetailPage() {
                   </div>
                 </div>
               )}
-
             </div>
           </div>
-
         </div>
       </div>
     </div>
-  )
+  );
 }

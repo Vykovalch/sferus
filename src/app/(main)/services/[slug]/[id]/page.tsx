@@ -65,7 +65,7 @@ export default function ServiceListingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
-      <div className="bg-background border-b border-border">
+      <div className="bg-background">
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
             <Link
