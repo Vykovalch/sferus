@@ -88,10 +88,10 @@ export default function ServiceListingPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 pb-28 lg:pb-6">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
-          <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
             {/* Основной блок */}
             <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
               {/* Заголовок + цена */}
@@ -227,8 +227,8 @@ export default function ServiceListingPage() {
             </div>
           </div>
 
-          {/* Сайдбар — исполнитель */}
-          <div className="hidden lg:flex flex-col gap-4 w-60 flex-shrink-0 sticky top-6">
+          {/* Исполнитель — в потоке на мобильном, закреплённый сайдбар на десктопе */}
+          <div className="w-full lg:w-60 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
             <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
               {/* Аватар + имя */}
               <Link
@@ -254,12 +254,23 @@ export default function ServiceListingPage() {
                 </div>
               </Link>
 
-              <Button className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
+              <Button className="hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
                 Показать контакты
               </Button>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Мобильная закреплённая панель: цена + контакты */}
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 flex items-center gap-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+        <div className="flex-1 min-w-0">
+          <div className="text-lg font-bold text-brand leading-tight">от {mockListing.price} руб.</div>
+          <div className="text-[11px] text-muted-foreground">за {mockListing.priceUnit}</div>
+        </div>
+        <Button className="flex-shrink-0 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
+          Показать контакты
+        </Button>
       </div>
     </div>
   );

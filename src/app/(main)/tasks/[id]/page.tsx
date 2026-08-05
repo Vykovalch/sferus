@@ -72,6 +72,31 @@ export default async function TaskDetailPage() {
   const hasResponded = mockTask.responses.some((r) => r.userId === currentUserId);
   const myResponse = mockTask.responses.find((r) => r.userId === currentUserId);
 
+  // Общий CTA для сайдбара (десктоп) и закреплённой панели (мобильный) — одна логика, два места показа
+  const respondCta =
+    !isOwner && !hasResponded ? (
+      session ? (
+        <RespondButton taskId={mockTask.id} className="w-full" />
+      ) : (
+        <Button
+          asChild
+          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+        >
+          <Link href={`/login?callbackUrl=/tasks/${mockTask.id}`}>Откликнуться</Link>
+        </Button>
+      )
+    ) : null;
+
+  const respondedBadge =
+    !isOwner && hasResponded ? (
+      <div className="flex items-center gap-2 p-3 bg-emerald-500/10 rounded-lg">
+        <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+        <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+          Вы откликнулись
+        </span>
+      </div>
+    ) : null;
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
@@ -90,10 +115,10 @@ export default async function TaskDetailPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 pb-28 lg:pb-6">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
-          <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
             {/* Основной блок */}
             <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
               {/* Заголовок + бюджет */}
@@ -129,7 +154,7 @@ export default async function TaskDetailPage() {
               </p>
 
               {/* Детали */}
-              <div className="border-t border-border pt-5 mb-6">
+              <div className="border-t border-border pt-5">
                 <h2 className="text-sm font-medium text-foreground mb-3">Детали</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div>
@@ -144,41 +169,6 @@ export default async function TaskDetailPage() {
                     <p className="text-xs text-muted-foreground mb-0.5">Город</p>
                     <p className="text-sm font-medium text-foreground">{mockTask.city}</p>
                   </div>
-                </div>
-              </div>
-
-              {/* Заказчик */}
-              <div className="border-t border-border pt-5">
-                <h2 className="text-sm font-medium text-foreground mb-3">Заказчик</h2>
-                <Link
-                  href={`/profiles/${mockTask.author.username}`}
-                  className="flex items-center gap-3 mb-3 group cursor-pointer"
-                >
-                  <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-sm font-bold text-brand flex-shrink-0">
-                    {mockTask.author.initials}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground group-hover:text-brand transition-colors">
-                      {mockTask.author.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      На платформе с {mockTask.author.memberSince}
-                    </p>
-                  </div>
-                </Link>
-                <div className="flex gap-4 text-xs md:text-sm text-muted-foreground">
-                  <span>
-                    Заданий:{" "}
-                    <span className="font-medium text-foreground">
-                      {mockTask.author.tasksCount}
-                    </span>
-                  </span>
-                  <span>
-                    Завершено:{" "}
-                    <span className="font-medium text-foreground">
-                      {mockTask.author.completedCount}
-                    </span>
-                  </span>
                 </div>
               </div>
             </div>
@@ -296,32 +286,41 @@ export default async function TaskDetailPage() {
             </div>
           </div>
 
-          {/* Правый Сайдбар (Десктоп) */}
-          <div className="hidden lg:flex flex-col gap-4 w-60 flex-shrink-0 sticky top-6">
+          {/* Заказчик — в потоке на мобильном, закреплённый сайдбар на десктопе */}
+          <div className="w-full lg:w-60 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2 flex flex-col gap-4">
+            {/* Карточка заказчика */}
             <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-              {/* Кнопка действия */}
-              {!isOwner &&
-                !hasResponded &&
-                (session ? (
-                  <RespondButton taskId={mockTask.id} className="w-full mb-4" />
-                ) : (
-                  <Button
-                    asChild
-                    className="w-full mb-4 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
-                  >
-                    <Link href={`/login?callbackUrl=/tasks/${mockTask.id}`}>Откликнуться</Link>
-                  </Button>
-                ))}
-
-              {/* Чекбокс отклика */}
-              {!isOwner && hasResponded && (
-                <div className="flex items-center gap-2 mb-4 p-3 bg-emerald-500/10 rounded-lg">
-                  <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
-                    Вы откликнулись
-                  </span>
+              <Link
+                href={`/profiles/${mockTask.author.username}`}
+                className="flex items-center gap-3 mb-3 group cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-base font-bold text-brand flex-shrink-0">
+                  {mockTask.author.initials}
                 </div>
-              )}
+                <div>
+                  <p className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-brand transition-colors">
+                    {mockTask.author.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Заказчик</p>
+                </div>
+              </Link>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground border-t border-border pt-3">
+                <span>
+                  Заданий: <span className="font-medium text-foreground">{mockTask.author.tasksCount}</span>
+                </span>
+                <span>
+                  Завершено: <span className="font-medium text-foreground">{mockTask.author.completedCount}</span>
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                На платформе с {mockTask.author.memberSince}
+              </p>
+            </div>
+
+            {/* Действие + мета-информация — только на десктопе, на мобильном заменяется закреплённой панелью */}
+            <div className="hidden lg:flex flex-col bg-background border border-border rounded-xl p-5 shadow-sm">
+              {respondCta && <div className="mb-4">{respondCta}</div>}
+              {respondedBadge && <div className="mb-4">{respondedBadge}</div>}
 
               {/* Мета-информация */}
               <div className="space-y-2.5">
@@ -364,6 +363,13 @@ export default async function TaskDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Мобильная закреплённая панель: основное действие */}
+      {(respondCta || respondedBadge) && (
+        <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+          {respondCta ?? respondedBadge}
+        </div>
+      )}
     </div>
   );
 }
