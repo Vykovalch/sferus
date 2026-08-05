@@ -14,9 +14,8 @@ export default async function FavoritesPage() {
   if (!session) redirect("/login?callbackUrl=/dashboard/favorites");
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-xl font-medium text-foreground mb-6">Избранное</h1>
+    <>
+      <h1 className="text-xl font-medium text-foreground mb-6">Избранное</h1>
 
         {mockFavorites.length === 0 ? (
           <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
@@ -58,7 +57,6 @@ export default async function FavoritesPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </>
   );
 }

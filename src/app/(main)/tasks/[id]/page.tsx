@@ -76,15 +76,15 @@ export default async function TaskDetailPage() {
       {/* Хлебные крошки */}
       <div className="bg-background">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
             <Link
               href="/tasks"
               className="hover:text-brand transition-colors cursor-pointer font-medium"
             >
               Задания
             </Link>
-            <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
-            <span className="text-foreground font-medium line-clamp-1">{mockTask.title}</span>
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
+            <span aria-current="page" className="text-foreground font-medium line-clamp-1">{mockTask.title}</span>
           </nav>
         </div>
       </div>

@@ -19,9 +19,8 @@ export default async function ProfilePage() {
     .slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <h1 className="text-xl font-medium text-foreground mb-6">Мой профиль</h1>
+    <>
+      <h1 className="text-xl font-medium text-foreground mb-6">Мой профиль</h1>
 
         <div className="bg-background border border-border rounded-xl p-6 shadow-sm space-y-6">
           {/* Аватар */}
@@ -97,7 +96,6 @@ export default async function ProfilePage() {
             </Button>
           </form>
         </div>
-      </div>
-    </div>
+    </>
   );
 }

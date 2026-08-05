@@ -20,15 +20,15 @@ export default async function CreateTaskPage() {
       {/* Хлебные крошки */}
       <div className="bg-background">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Link
               href="/tasks"
               className="hover:text-brand transition-colors cursor-pointer font-medium"
             >
               Задания
             </Link>
-            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
-            <span className="text-foreground font-medium">Создать задание</span>
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground/60" />
+            <span aria-current="page" className="text-foreground font-medium">Создать задание</span>
           </nav>
         </div>
       </div>

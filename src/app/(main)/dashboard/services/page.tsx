@@ -16,8 +16,7 @@ export default async function MyServicesPage() {
   if (!session) redirect("/login?callbackUrl=/dashboard/services");
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <>
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-medium text-foreground">Мои услуги</h1>
           <Button asChild className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer">
@@ -60,15 +59,13 @@ export default async function MyServicesPage() {
                     {s.active ? <PowerOff className="h-4 w-4" /> : <Power className="h-4 w-4" />}
                   </Button>
                   <Button size="icon" variant="ghost" asChild className="h-8 w-8 text-muted-foreground hover:text-brand cursor-pointer">
-                    <Link href={`/services/${s.id}/edit`}><Edit3 className="h-4 w-4" /></Link>
+                    <Link href={`/dashboard/services/${s.id}/edit`}><Edit3 className="h-4 w-4" /></Link>
                   </Button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </>
   );
 }
-  

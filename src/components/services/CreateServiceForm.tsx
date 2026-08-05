@@ -43,21 +43,36 @@ const priceUnits = [
 
 interface CreateServiceFormProps {
   userName: string
+  mode?: 'create' | 'edit'
+  initialValues?: {
+    title?: string
+    description?: string
+    category?: string
+    city?: string
+    price?: string
+    priceUnit?: string
+    homeVisit?: boolean
+    photos?: string[]
+  }
 }
 
-export function CreateServiceForm({ userName }: CreateServiceFormProps) {
+export function CreateServiceForm({ userName, mode = 'create', initialValues }: CreateServiceFormProps) {
   const router = useRouter()
+  const isEdit = mode === 'edit'
+  const cancelHref = isEdit ? '/dashboard/services' : '/services'
+  const redirectAfterSubmit = isEdit ? '/dashboard/services' : '/services'
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('')
-  const [city, setCity] = useState('')
-  const [price, setPrice] = useState('')
-  const [priceUnit, setPriceUnit] = useState('hour')
-  const [homeVisit, setHomeVisit] = useState(true)
-  const [photos, setPhotos] = useState<string[]>([])
+  const [title, setTitle] = useState(initialValues?.title ?? '')
+  const [description, setDescription] = useState(initialValues?.description ?? '')
+  const [category, setCategory] = useState(initialValues?.category ?? '')
+  const [city, setCity] = useState(initialValues?.city ?? '')
+  const [price, setPrice] = useState(initialValues?.price ?? '')
+  const [priceUnit, setPriceUnit] = useState(initialValues?.priceUnit ?? 'hour')
+  const [homeVisit, setHomeVisit] = useState(initialValues?.homeVisit ?? true)
+  const [photos, setPhotos] = useState<string[]>(initialValues?.photos ?? [])
 
   const priceUnitLabel = priceUnits.find((u) => u.value === priceUnit)?.label ?? ''
   const priceDisplay = price ? `от ${price} руб. ${priceUnitLabel}` : 'Цена не указана'
@@ -82,7 +97,7 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
     // TODO: заменить на Server Action
     await new Promise((r) => setTimeout(r, 1000))
     setLoading(false)
-    router.push('/services')
+    router.push(redirectAfterSubmit)
   }
 
   return (
@@ -316,14 +331,16 @@ export function CreateServiceForm({ userName }: CreateServiceFormProps) {
             asChild
             className="border-border text-muted-foreground hover:text-foreground cursor-pointer font-medium"
           >
-            <Link href="/services">Отмена</Link>
+            <Link href={cancelHref}>Отмена</Link>
           </Button>
           <Button
             type="submit"
             disabled={loading}
             className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
           >
-            {loading ? 'Публикация...' : 'Опубликовать объявление'}
+            {loading
+              ? (isEdit ? 'Сохранение...' : 'Публикация...')
+              : (isEdit ? 'Сохранить изменения' : 'Опубликовать объявление')}
           </Button>
         </div>
 

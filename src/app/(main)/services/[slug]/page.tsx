@@ -80,9 +80,10 @@ const mockServices = [
 export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-6">
-        <nav aria-label="Breadcrumb">
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4 select-none">
+      {/* Хлебные крошки */}
+      <div className="bg-background">
+        <div className="container mx-auto px-4 py-3">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Link
               href="/services"
               className="hover:text-brand transition-colors font-medium cursor-pointer"
@@ -93,8 +94,11 @@ export default function CategoryPage() {
             <span aria-current="page" className="text-foreground font-medium">
               Строительство и ремонт
             </span>
-          </div>
-        </nav>
+          </nav>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Строительство и ремонт</h1>
         <div className="flex gap-6">
           {/* Сайдбар */}

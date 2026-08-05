@@ -23,8 +23,7 @@ export default async function MyTasksPage() {
   if (!session) redirect("/login?callbackUrl=/dashboard/tasks");
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <>
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-medium text-foreground">Мои задания</h1>
           <Button asChild className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer">
@@ -67,7 +66,6 @@ export default async function MyTasksPage() {
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </>
   );
 }
