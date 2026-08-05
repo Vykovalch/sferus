@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Logo } from '@/components/shared/Logo'
-import { Send, MessageCircle, Phone, Mail } from 'lucide-react'
+import { Phone, Mail } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -59,8 +59,8 @@ export function Footer() {
         <div className="border-t border-border/40 pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">© 2026 Sferus. Все права защищены.</p>
           <div className="flex gap-6">
-            <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="#">Условия использования</Link>
-            <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="#">Приватность</Link>
+            <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/terms">Условия использования</Link>
+            <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/privacy">Приватность</Link>
           </div>
         </div>
 
