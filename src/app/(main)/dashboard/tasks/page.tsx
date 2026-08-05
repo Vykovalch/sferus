@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
-import { Plus, MessageSquare, FileText } from "lucide-react";
+import { Plus, MessageSquare, FileText, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const mockTasks = [
@@ -46,12 +46,20 @@ export default async function MyTasksPage() {
         ) : (
           <div className="space-y-3">
             {mockTasks.map((t) => (
-              <Link key={t.id} href={`/tasks/${t.id}`} className="block">
-                <div className="bg-background border border-border rounded-xl p-4 shadow-sm hover:border-brand/40 hover:shadow-md transition-all">
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <p className="text-sm font-medium text-foreground leading-snug">{t.title}</p>
-                    <span className="text-sm font-bold text-brand whitespace-nowrap flex-shrink-0">{t.budget}</span>
-                  </div>
+              <div
+                key={t.id}
+                className="bg-background border border-border rounded-xl p-4 shadow-sm hover:border-brand/40 hover:shadow-md transition-all"
+              >
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <Link
+                    href={`/tasks/${t.id}`}
+                    className="text-sm font-medium text-foreground leading-snug hover:text-brand transition-colors"
+                  >
+                    {t.title}
+                  </Link>
+                  <span className="text-sm font-bold text-brand whitespace-nowrap flex-shrink-0">{t.budget}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[t.status]}`}>
                       {statusLabels[t.status]}
@@ -61,8 +69,18 @@ export default async function MyTasksPage() {
                       {t.responses} откликов
                     </span>
                   </div>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    asChild
+                    className="h-8 w-8 text-muted-foreground hover:text-brand cursor-pointer flex-shrink-0"
+                  >
+                    <Link href={`/dashboard/tasks/${t.id}/edit`}>
+                      <Edit3 className="h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}

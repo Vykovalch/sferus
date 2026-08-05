@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { ChevronRight, MapPin, Star, User, Building2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
 import { ServiceGallery } from "@/components/services/ServiceGallery";
+import { ContactRevealButton } from "@/components/services/ContactRevealButton";
 
 type ExecutorType = "individual" | "company";
 
@@ -29,6 +31,11 @@ const mockListing = {
     listingsCount: 3,
     memberSince: "января 2025",
     verified: true,
+    // Контакты, которые исполнитель выбрал показывать клиентам — настраивается в /dashboard/profile
+    contacts: {
+      phone: "+373 777 12345",
+      telegram: "viktor_petrov",
+    },
   },
   otherListings: [
     { id: 2, title: "Установка видеонаблюдения", price: 200 },
@@ -59,9 +66,11 @@ const mockListing = {
   ],
 };
 
-export default function ServiceListingPage() {
+export default async function ServiceListingPage() {
   const { executor } = mockListing;
   const isCompany = executor.type === "company";
+  const session = await auth.api.getSession({ headers: await headers() });
+  const listingPath = `/services/stroitelstvo-i-remont/${mockListing.id}`;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -254,9 +263,12 @@ export default function ServiceListingPage() {
                 </div>
               </Link>
 
-              <Button className="hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
-                Показать контакты
-              </Button>
+              <ContactRevealButton
+                contacts={executor.contacts}
+                isAuthenticated={Boolean(session)}
+                loginCallbackUrl={listingPath}
+                className="hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+              />
             </div>
           </div>
         </div>
@@ -268,9 +280,12 @@ export default function ServiceListingPage() {
           <div className="text-lg font-bold text-brand leading-tight">от {mockListing.price} руб.</div>
           <div className="text-[11px] text-muted-foreground">за {mockListing.priceUnit}</div>
         </div>
-        <Button className="flex-shrink-0 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors">
-          Показать контакты
-        </Button>
+        <ContactRevealButton
+          contacts={executor.contacts}
+          isAuthenticated={Boolean(session)}
+          loginCallbackUrl={listingPath}
+          className="flex-shrink-0 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+        />
       </div>
     </div>
   );

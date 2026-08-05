@@ -7,44 +7,41 @@ import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SERVICE_CATEGORIES } from "@/lib/constants";
 
-const categories = [
-  "Строительство и ремонт",
-  "Ремонт техники и оборудования",
-  "Дом, быт и уход",
-  "Автоуслуги",
-  "IT и Digital",
-  "Юридические услуги и документы",
-  "Бизнес и финансы",
-  "Фото и видео",
-  "Мероприятия и праздники",
-  "Еда и кейтеринг",
-  "Медицина",
-  "Красота, здоровье и фитнес",
-  "Образование и обучение",
-  "Домашние животные",
-  "Недвижимость и риелторы",
-  "Транспорт и доставка",
-  "Охрана и безопасность",
-  "Производство и изготовление",
-  "Агро и благоустройство",
-  "Ритуальные услуги",
-];
+const categories = SERVICE_CATEGORIES;
 
 const cities = ["Тирасполь", "Бендеры", "Рыбница", "Дубоссары", "Слободзея"];
 
-export function CreateTaskForm() {
+interface CreateTaskFormProps {
+  mode?: "create" | "edit";
+  initialValues?: {
+    title?: string;
+    description?: string;
+    category?: string;
+    city?: string;
+    budget?: string;
+    negotiable?: boolean;
+    deadline?: string;
+  };
+}
+
+export function CreateTaskForm({ mode = "create", initialValues }: CreateTaskFormProps) {
   const router = useRouter();
+  const isEdit = mode === "edit";
+  const cancelHref = isEdit ? "/dashboard/tasks" : "/tasks";
+  const redirectAfterSubmit = isEdit ? "/dashboard/tasks" : "/tasks";
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [city, setCity] = useState("");
-  const [budget, setBudget] = useState("");
-  const [negotiable, setNegotiable] = useState(false);
-  const [deadline, setDeadline] = useState("");
+  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [description, setDescription] = useState(initialValues?.description ?? "");
+  const [category, setCategory] = useState(initialValues?.category ?? "");
+  const [city, setCity] = useState(initialValues?.city ?? "");
+  const [budget, setBudget] = useState(initialValues?.budget ?? "");
+  const [negotiable, setNegotiable] = useState(initialValues?.negotiable ?? false);
+  const [deadline, setDeadline] = useState(initialValues?.deadline ?? "");
 
   const budgetDisplay = negotiable ? "Договорная" : budget ? `до ${budget} руб.` : "Не указан";
 
@@ -57,7 +54,7 @@ export function CreateTaskForm() {
     await new Promise((r) => setTimeout(r, 1000));
 
     setLoading(false);
-    router.push("/tasks");
+    router.push(redirectAfterSubmit);
   }
 
   return (
@@ -247,14 +244,20 @@ export function CreateTaskForm() {
             asChild
             className="border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
           >
-            <Link href="/tasks">Отмена</Link>
+            <Link href={cancelHref}>Отмена</Link>
           </Button>
           <Button
             type="submit"
             disabled={loading}
             className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow font-medium cursor-pointer transition-colors"
           >
-            {loading ? "Публикация..." : "Опубликовать задание"}
+            {loading
+              ? isEdit
+                ? "Сохранение..."
+                : "Публикация..."
+              : isEdit
+                ? "Сохранить изменения"
+                : "Опубликовать задание"}
           </Button>
         </div>
       </form>

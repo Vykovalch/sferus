@@ -7,29 +7,9 @@ import { CheckCircle, Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SERVICE_CATEGORIES } from '@/lib/constants'
 
-const categories = [
-  'Строительство и ремонт',
-  'Ремонт техники и оборудования',
-  'Дом, быт и уход',
-  'Автоуслуги',
-  'IT и Digital',
-  'Юридические услуги и документы',
-  'Бизнес и финансы',
-  'Фото и видео',
-  'Мероприятия и праздники',
-  'Еда и кейтеринг',
-  'Медицина',
-  'Красота, здоровье и фитнес',
-  'Образование и обучение',
-  'Домашние животные',
-  'Недвижимость и риелторы',
-  'Транспорт и доставка',
-  'Охрана и безопасность',
-  'Производство и изготовление',
-  'Агро и благоустройство',
-  'Ритуальные услуги',
-]
+const categories = SERVICE_CATEGORIES
 
 const cities = ['Тирасполь', 'Бендеры', 'Рыбница', 'Дубоссары', 'Слободзея']
 

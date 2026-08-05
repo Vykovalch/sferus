@@ -5,6 +5,7 @@ import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ContactSettingsForm } from "@/components/dashboard/ContactSettingsForm";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -47,15 +48,9 @@ export default async function ProfilePage() {
 
           {/* Форма */}
           <form className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="name">Имя и фамилия</Label>
-                <Input id="name" name="name" defaultValue={user.name} />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="phone">Телефон</Label>
-                <Input id="phone" name="phone" placeholder="+373 ..." type="tel" />
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="name">Имя и фамилия</Label>
+              <Input id="name" name="name" defaultValue={user.name} />
             </div>
 
             <div className="space-y-1.5">
@@ -95,6 +90,12 @@ export default async function ProfilePage() {
               Сохранить изменения
             </Button>
           </form>
+        </div>
+
+        {/* Контакты для клиентов */}
+        <div className="bg-background border border-border rounded-xl p-6 shadow-sm mt-6">
+          <h2 className="text-sm font-medium text-foreground mb-1">Контакты для клиентов</h2>
+          <ContactSettingsForm />
         </div>
     </>
   );
