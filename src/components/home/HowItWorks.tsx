@@ -39,7 +39,7 @@ export function HowItWorks() {
           <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 opacity-50" />
 
           {/* Для клиентов */}
-          <div>
+          <div id="how-it-works-clients" className="scroll-mt-24">
             <h3 className="text-xl font-semibold text-primary flex items-center gap-3 mb-10">
               <ShoppingCart className="h-7 w-7" />
               Для клиентов
@@ -56,7 +56,7 @@ export function HowItWorks() {
           </div>
 
           {/* Для исполнителей */}
-          <div>
+          <div id="how-it-works-executors" className="scroll-mt-24">
             <h3 className="text-xl font-semibold text-secondary flex items-center gap-3 mb-10">
               <Wrench className="h-7 w-7" />
               Для исполнителей

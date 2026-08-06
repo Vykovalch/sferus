@@ -25,7 +25,8 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-foreground">Клиентам</h4>
             <nav className="flex flex-col gap-2">
               <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/services">Все услуги</Link>
-              <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/#how-it-works">Как это работает</Link>
+              <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/tasks/new">Создать задание</Link>
+              <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/#how-it-works-clients">Как это работает</Link>
             </nav>
           </div>
 
@@ -34,7 +35,9 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-foreground">Исполнителям</h4>
             <nav className="flex flex-col gap-2">
               <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/tasks">Поиск заданий</Link>
-              <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="#">Партнёрам</Link>
+              <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/services/new">Разместить услугу</Link>
+              <Link className="text-sm text-muted-foreground hover:text-primary transition-colors" href="/#how-it-works-executors">Как это работает</Link>
+              {/* «Партнёрам» скрыто до появления партнёрской программы — страницы под неё пока нет */}
             </nav>
           </div>
 
