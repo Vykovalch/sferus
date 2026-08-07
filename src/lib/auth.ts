@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { admin } from 'better-auth/plugins';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { nextCookies } from 'better-auth/next-js'
 import { Resend } from 'resend'
@@ -28,7 +29,7 @@ export const auth = betterAuth({
         to: u.email,
         subject: 'Сброс пароля — Sferus',
         react: ResetPasswordEmail({ name: u.name, resetUrl: url }),
-      })
+      });
     },
   },
 
@@ -41,7 +42,7 @@ export const auth = betterAuth({
         to: u.email,
         subject: 'Подтвердите email — Sferus',
         react: VerificationEmail({ name: u.name, verificationUrl: url }),
-      })
+      });
     },
   },
 
@@ -56,18 +57,21 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (u) => {
-          const username = await generateUsername(u.name)
+          const username = await generateUsername(u.name);
           await db.insert(profiles).values({
             userId: u.id,
             username,
-          })
+          });
         },
       },
     },
   },
 
-  plugins: [nextCookies()],
-})
+  plugins: [
+    admin({ defaultRole: 'user', adminRoles: ['admin'] }),
+    nextCookies(),
+  ],
+});
 
 export type Session = typeof auth.$Infer.Session
 export type User = typeof auth.$Infer.Session.user
