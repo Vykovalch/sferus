@@ -61,7 +61,3 @@ export const SERVICE_CATEGORIES = [
   'Агро и благоустройство',
   'Ритуальные услуги',
 ] as const
-
-// Временно: пока нет поля role в БД, админ определяется по email.
-// Заменить на реальную проверку роли пользователя при подключении БД.
-export const ADMIN_EMAILS = ['vykovalch@gmail.com'] as const

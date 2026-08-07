@@ -3,15 +3,15 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { ADMIN_EMAILS } from "@/lib/constants";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login?callbackUrl=/admin");
 
-  const isAdmin = (ADMIN_EMAILS as readonly string[]).includes(session.user.email);
-  if (!isAdmin) redirect("/");
+  // Роль приходит из плагина admin (better-auth). Заблокированных пользователей
+  // плагин не пускает ещё на входе, поэтому отдельная проверка здесь не нужна.
+  if (session.user.role !== "admin") redirect("/");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
