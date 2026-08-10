@@ -1,6 +1,6 @@
 import { SlidersHorizontal } from "lucide-react";
-import { TasksSidebar } from "@/components/tasks/TasksSidebar";
-import { TaskCard } from "@/components/tasks/TaskCard";
+import { TasksSidebar } from "@/features/tasks/components/TasksSidebar";
+import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 

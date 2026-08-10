@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { CreateServiceForm } from "@/components/services/CreateServiceForm";
+import { CreateServiceForm } from "@/features/services/components/CreateServiceForm";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 

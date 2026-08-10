@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { CreateTaskForm } from "@/components/tasks/CreateTaskForm";
+import { CreateTaskForm } from "@/features/tasks/components/CreateTaskForm";
 
 // Временные данные — позже заменить на запрос к БД по userId + id
 const mockTaskDetails: Record<

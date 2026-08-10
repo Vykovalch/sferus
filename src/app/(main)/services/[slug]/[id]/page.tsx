@@ -2,8 +2,8 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { ChevronRight, MapPin, Star, User, Building2 } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { ServiceGallery } from "@/components/services/ServiceGallery";
-import { ContactRevealButton } from "@/components/services/ContactRevealButton";
+import { ServiceGallery } from "@/features/services/components/ServiceGallery";
+import { ContactRevealButton } from "@/features/services/components/ContactRevealButton";
 
 type ExecutorType = "individual" | "company";
 

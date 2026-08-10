@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { CreateTaskForm } from "@/components/tasks/CreateTaskForm";
+import { CreateTaskForm } from "@/features/tasks/components/CreateTaskForm";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 

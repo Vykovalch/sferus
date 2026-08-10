@@ -5,7 +5,7 @@ import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ContactSettingsForm } from "@/components/dashboard/ContactSettingsForm";
+import { ContactSettingsForm } from "@/features/profiles/components/ContactSettingsForm";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });

@@ -3,7 +3,7 @@ import { ChevronRight, MapPin, Clock, Users, Star, CheckCircle } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { RespondButton } from "@/components/tasks/RespondButton";
+import { RespondButton } from "@/features/tasks/components/RespondButton";
 
 type TaskStatus = "open" | "in_progress" | "done";
 

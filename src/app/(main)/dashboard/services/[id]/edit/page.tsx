@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { CreateServiceForm } from "@/components/services/CreateServiceForm";
+import { CreateServiceForm } from "@/features/services/components/CreateServiceForm";
 
 // Временные данные — позже заменить на запрос к БД по userId + id
 const mockServiceDetails: Record<

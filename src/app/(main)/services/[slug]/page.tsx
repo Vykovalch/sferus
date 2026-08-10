@@ -2,7 +2,7 @@
 
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
-import { CategorySidebar } from "@/components/services/CategorySidebar";
+import { CategorySidebar } from "@/features/services/components/CategorySidebar";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
