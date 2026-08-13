@@ -1,17 +1,15 @@
-import { ArrowRight, Hammer, Wrench, Home, Car, Monitor, Truck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CategoryCard } from "@/components/shared/CategoryCard";
+import { getCategories } from "@/features/categories/queries";
+import { categoryIcon, categoryStyle } from "@/lib/constants";
 
-const popularCategories = [
-  { name: "Строительство и ремонт", slug: "stroitelstvo-i-remont", icon: Hammer, count: 120, iconColor: "text-orange-500", iconBg: "bg-orange-500/10" },
-  { name: "Ремонт техники", slug: "remont-tehniki", icon: Wrench, count: 85, iconColor: "text-slate-500", iconBg: "bg-slate-500/10" },
-  { name: "Дом, быт и уход", slug: "dom-byt-i-uhod", icon: Home, count: 95, iconColor: "text-teal-500", iconBg: "bg-teal-500/10" },
-  { name: "Автоуслуги", slug: "avtousligi", icon: Car, count: 60, iconColor: "text-blue-500", iconBg: "bg-blue-500/10" },
-  { name: "IT и Digital", slug: "it-i-digital", icon: Monitor, count: 45, iconColor: "text-violet-500", iconBg: "bg-violet-500/10" },
-  { name: "Транспорт и доставка", slug: "transport-i-dostavka", icon: Truck, count: 44, iconColor: "text-blue-600", iconBg: "bg-blue-600/10" },
-];
+/** Сколько категорий показываем на главной. Порядок задаётся колонкой `order`. */
+const POPULAR_COUNT = 6;
 
-export function PopularCategories() {
+export async function PopularCategories() {
+  const categories = (await getCategories()).slice(0, POPULAR_COUNT);
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -32,17 +30,19 @@ export function PopularCategories() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {popularCategories.map((cat) => (
-            <CategoryCard
-              key={cat.slug}
-              name={cat.name}
-              slug={cat.slug}
-              icon={cat.icon}
-              count={cat.count}
-              iconColor={cat.iconColor}
-              iconBg={cat.iconBg}
-            />
-          ))}
+          {categories.map((cat) => {
+            const style = categoryStyle(cat.slug);
+            return (
+              <CategoryCard
+                key={cat.slug}
+                name={cat.name}
+                slug={cat.slug}
+                icon={categoryIcon(cat.icon)}
+                iconColor={style.icon}
+                iconBg={style.bg}
+              />
+            );
+          })}
         </div>
       </div>
     </section>

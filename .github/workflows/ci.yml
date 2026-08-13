@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Отменяем предыдущий прогон, если в ветку прилетел новый коммит
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Полная история нужна шагу проверки изменённых файлов:
+          # без неё git не найдёт базовую ветку для сравнения
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Типы
+        run: npx tsc --noEmit
+
+      - name: Линтер
+        # Только правила качества кода, без форматирования.
+        # Сейчас проходит по всему проекту: ошибок линтера нет ни одной.
+        run: npx biome lint
+
+      - name: Формат и импорты — только изменённые файлы
+        # Легаси-код написан до появления конфига Biome и расходится с ним
+        # по кавычкам, точкам с запятой и порядку импортов (~175 замечаний).
+        # Разовое форматирование всего репозитория отложено сознательно,
+        # поэтому стандарт применяется только к тому, что реально правят:
+        # база сходится к единому стилю по мере редактирования файлов.
+        #
+        # Шаг только для pull request: при нуле изменённых файлов
+        # `biome ci --changed` завершается с кодом 1.
+        if: github.event_name == 'pull_request'
+        run: npx biome ci --changed --since=origin/${{ github.event.pull_request.base.ref }}
+
+      - name: Сборка
+        # Именно `next build`, а не `npm run build`: скрипт сборки начинается
+        # с `drizzle-kit migrate`, и на CI это применило бы миграции к базе.
+        run: npx next build
+        env:
+          # Значения-заглушки: сборке нужны переменные, потому что клиент БД
+          # и клиент Resend создаются на уровне модуля. Реальных обращений
+          # к внешним сервисам при сборке не происходит.
+          DATABASE_URL: postgresql://user:pass@localhost.invalid/db?sslmode=require
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          BETTER_AUTH_SECRET: ci-placeholder-secret
+          BETTER_AUTH_URL: http://localhost:3000
+          RESEND_API_KEY: re_ci_placeholder
+          GOOGLE_CLIENT_ID: ci-placeholder
+          GOOGLE_CLIENT_SECRET: ci-placeholder

@@ -1,8 +1,11 @@
+import { Briefcase, FileText, PlusCircle, Users } from "lucide-react";
 import Link from "next/link";
-import { PlusCircle, Users, FileText, Briefcase } from "lucide-react";
 import { SearchBar } from "@/components/shared/SearchBar";
+import { getCities } from "@/features/cities/queries";
 
-export function HeroSection() {
+export async function HeroSection() {
+  const cities = await getCities();
+
   return (
     <section
       className="relative py-16 md:py-32 overflow-hidden"
@@ -21,7 +24,7 @@ export function HeroSection() {
           </h1>
 
           <div className="mb-10 max-w-3xl mx-auto">
-            <SearchBar />
+            <SearchBar cities={cities} />
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-base mb-14">

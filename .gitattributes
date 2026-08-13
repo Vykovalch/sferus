@@ -1,0 +1,21 @@
+# Единые окончания строк во всех окружениях.
+#
+# Без этого файла на Windows с core.autocrlf=true рабочее дерево получает CRLF,
+# а Biome по умолчанию ожидает LF — из-за чего локальная проверка помечает файлы
+# целиком как требующие форматирования, тогда как CI на Linux их пропускает.
+# Разработчик и CI должны видеть одно и то же.
+* text=auto eol=lf
+
+# Двоичные файлы git трогать не должен
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# Генерируется npm и drizzle-kit — не участвует в разрешении конфликтов вручную
+package-lock.json -diff
+drizzle/meta/*.json -diff

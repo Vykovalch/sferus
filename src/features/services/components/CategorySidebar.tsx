@@ -3,16 +3,21 @@
 import { useState } from "react";
 import { CityFilter } from "@/components/shared/CityFilter";
 import { ExecutorFilter } from "@/components/shared/ExecutorFilter";
+import type { CityOption } from "@/features/cities/queries";
 
-const cities = ["Все города", "Тирасполь", "Бендеры", "Рыбница", "Дубоссары", "Слободзея"];
+const ALL_CITIES = "Все города";
 
 interface CategorySidebarProps {
+  /** Города из БД: клиентский компонент их сам получить не может. */
+  cities: CityOption[];
   idPrefix?: string;
 }
 
-export function CategorySidebar({ idPrefix = "desktop" }: CategorySidebarProps) {
-  const [activeCity, setActiveCity] = useState("Все города");
+export function CategorySidebar({ cities, idPrefix = "desktop" }: CategorySidebarProps) {
+  const [activeCity, setActiveCity] = useState(ALL_CITIES);
   const [executorType, setExecutorType] = useState("all");
+
+  const cityNames = [ALL_CITIES, ...cities.map((c) => c.name)];
 
   return (
     <div className="space-y-3 select-none">
@@ -22,7 +27,7 @@ export function CategorySidebar({ idPrefix = "desktop" }: CategorySidebarProps) 
         name={`${idPrefix}-executorType`}
       />
       <CityFilter
-        cities={cities}
+        cities={cityNames}
         activeCity={activeCity}
         onChange={setActiveCity}
         name={`${idPrefix}-city`}

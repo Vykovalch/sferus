@@ -1,11 +1,10 @@
-"use client";
-
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
-import { CategorySidebar } from "@/features/services/components/CategorySidebar";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { getCities } from "@/features/cities/queries";
+import { CategorySidebar } from "@/features/services/components/CategorySidebar";
 
 const mockServices = [
   {
@@ -77,13 +76,18 @@ const mockServices = [
   },
 ];
 
-export default function CategoryPage() {
+export default async function CategoryPage() {
+  const cities = await getCities();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
       <div className="bg-background">
         <div className="container mx-auto px-4 py-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground"
+          >
             <Link
               href="/services"
               className="hover:text-brand transition-colors font-medium cursor-pointer"
@@ -103,7 +107,7 @@ export default function CategoryPage() {
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
-            <CategorySidebar idPrefix="desktop" />
+            <CategorySidebar idPrefix="desktop" cities={cities} />
           </aside>
 
           {/* Контентная область */}
@@ -127,7 +131,7 @@ export default function CategoryPage() {
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
                   <div className="overflow-y-auto">
-                    <CategorySidebar idPrefix="mobile" />
+                    <CategorySidebar idPrefix="mobile" cities={cities} />
                   </div>
                 </SheetContent>
               </Sheet>

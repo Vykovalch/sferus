@@ -1,15 +1,41 @@
 "use client";
 
-import { useState } from "react";
 import { Ban, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { USER_ROLES } from "@/lib/constants";
 
+// Ролей «заказчик» и «исполнитель» в проекте нет: пользователь универсален
+// и может одновременно публиковать услуги и создавать задания.
+// См. docs/DATA-MODEL.md, раздел «Пользователь универсален».
 const mockUsers = [
-  { id: 1, name: "Виктор Петров", email: "viktor.petrov@example.com", role: "EXECUTOR" as const, registeredAt: "12 янв. 2026", blocked: false },
-  { id: 2, name: "Марина Ковалёва", email: "marina.k@example.com", role: "CLIENT" as const, registeredAt: "3 мар. 2026", blocked: false },
-  { id: 3, name: "ТехноСервис", email: "info@technoservice.example", role: "EXECUTOR" as const, registeredAt: "15 мар. 2024", blocked: false },
-  { id: 4, name: "Дмитрий Ковалёв", email: "dmitry.k@example.com", role: "BOTH" as const, registeredAt: "20 апр. 2026", blocked: true },
+  {
+    id: 1,
+    name: "Виктор Петров",
+    email: "viktor.petrov@example.com",
+    registeredAt: "12 янв. 2026",
+    blocked: false,
+  },
+  {
+    id: 2,
+    name: "Марина Ковалёва",
+    email: "marina.k@example.com",
+    registeredAt: "3 мар. 2026",
+    blocked: false,
+  },
+  {
+    id: 3,
+    name: "ТехноСервис",
+    email: "info@technoservice.example",
+    registeredAt: "15 мар. 2024",
+    blocked: false,
+  },
+  {
+    id: 4,
+    name: "Дмитрий Ковалёв",
+    email: "dmitry.k@example.com",
+    registeredAt: "20 апр. 2026",
+    blocked: true,
+  },
 ];
 
 export default function AdminUsersPage() {
@@ -53,9 +79,6 @@ export default function AdminUsersPage() {
                   <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                 </div>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-muted text-muted-foreground flex-shrink-0">
-                  {USER_ROLES[u.role]}
-                </span>
                 <span className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">
                   {u.registeredAt}
                 </span>
@@ -77,7 +100,9 @@ export default function AdminUsersPage() {
                       ? "text-muted-foreground hover:text-green-600"
                       : "text-muted-foreground hover:text-destructive"
                   }`}
-                  aria-label={u.blocked ? "Разблокировать пользователя" : "Заблокировать пользователя"}
+                  aria-label={
+                    u.blocked ? "Разблокировать пользователя" : "Заблокировать пользователя"
+                  }
                 >
                   {u.blocked ? <CheckCircle2 className="h-4 w-4" /> : <Ban className="h-4 w-4" />}
                 </Button>

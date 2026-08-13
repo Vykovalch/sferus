@@ -1,7 +1,9 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { getCategories } from "@/features/categories/queries";
+import { getCities } from "@/features/cities/queries";
 import { CreateServiceForm } from "@/features/services/components/CreateServiceForm";
+import { auth } from "@/lib/auth";
 
 // Временные данные — позже заменить на запрос к БД по userId + id
 const mockServiceDetails: Record<
@@ -48,11 +50,7 @@ const mockServiceDetails: Record<
   },
 };
 
-export default async function EditServicePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function EditServicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect(`/login?callbackUrl=/dashboard/services/${id}/edit`);
@@ -60,10 +58,18 @@ export default async function EditServicePage({
   const service = mockServiceDetails[id];
   if (!service) notFound();
 
+  const [cities, categories] = await Promise.all([getCities(), getCategories()]);
+
   return (
     <>
       <h1 className="text-xl font-medium text-foreground mb-6">Редактировать объявление</h1>
-      <CreateServiceForm userName={session.user.name} mode="edit" initialValues={service} />
+      <CreateServiceForm
+        userName={session.user.name}
+        cities={cities}
+        categories={categories}
+        mode="edit"
+        initialValues={service}
+      />
     </>
   );
 }

@@ -1,8 +1,10 @@
 import { SlidersHorizontal } from "lucide-react";
-import { TasksSidebar } from "@/features/tasks/components/TasksSidebar";
-import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { getCategories } from "@/features/categories/queries";
+import { getCities } from "@/features/cities/queries";
+import { TaskCard } from "@/features/tasks/components/TaskCard";
+import { TasksSidebar } from "@/features/tasks/components/TasksSidebar";
 
 const mockTasks = [
   {
@@ -59,7 +61,9 @@ const mockTasks = [
   },
 ];
 
-export default function TasksPage() {
+export default async function TasksPage() {
+  const [cities, categories] = await Promise.all([getCities(), getCategories()]);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -67,7 +71,7 @@ export default function TasksPage() {
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
-            <TasksSidebar idPrefix="desktop" />
+            <TasksSidebar idPrefix="desktop" cities={cities} categories={categories} />
           </aside>
 
           {/* Контентная область */}
@@ -91,7 +95,7 @@ export default function TasksPage() {
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
                   <div className="overflow-y-auto">
-                    <TasksSidebar idPrefix="mobile" />
+                    <TasksSidebar idPrefix="mobile" cities={cities} categories={categories} />
                   </div>
                 </SheetContent>
               </Sheet>

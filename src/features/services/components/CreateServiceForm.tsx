@@ -1,91 +1,106 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { CheckCircle, Upload, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { SERVICE_CATEGORIES } from '@/lib/constants'
-
-const categories = SERVICE_CATEGORIES
-
-const cities = ['Тирасполь', 'Бендеры', 'Рыбница', 'Дубоссары', 'Слободзея']
+import { CheckCircle, Upload, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { CategoryOption } from "@/features/categories/queries";
+import type { CityOption } from "@/features/cities/queries";
 
 const priceUnits = [
-  { value: 'hour', label: 'за час' },
-  { value: 'job', label: 'за работу' },
-  { value: 'day', label: 'за день' },
-  { value: 'sqm', label: 'за кв.м.' },
-  { value: 'unit', label: 'за единицу' },
-]
+  { value: "hour", label: "за час" },
+  { value: "job", label: "за работу" },
+  { value: "day", label: "за день" },
+  { value: "sqm", label: "за кв.м." },
+  { value: "unit", label: "за единицу" },
+];
 
 interface CreateServiceFormProps {
-  userName: string
-  mode?: 'create' | 'edit'
+  userName: string;
+  /** Справочники приходят из БД: клиентский компонент их сам получить не может. */
+  cities: CityOption[];
+  categories: CategoryOption[];
+  mode?: "create" | "edit";
   initialValues?: {
-    title?: string
-    description?: string
-    category?: string
-    city?: string
-    price?: string
-    priceUnit?: string
-    homeVisit?: boolean
-    photos?: string[]
-  }
+    title?: string;
+    description?: string;
+    category?: string;
+    city?: string;
+    price?: string;
+    priceUnit?: string;
+    homeVisit?: boolean;
+    photos?: string[];
+  };
 }
 
-export function CreateServiceForm({ userName, mode = 'create', initialValues }: CreateServiceFormProps) {
-  const router = useRouter()
-  const isEdit = mode === 'edit'
-  const cancelHref = isEdit ? '/dashboard/services' : '/services'
-  const redirectAfterSubmit = isEdit ? '/dashboard/services' : '/services'
+export function CreateServiceForm({
+  userName,
+  cities,
+  categories,
+  mode = "create",
+  initialValues,
+}: CreateServiceFormProps) {
+  const router = useRouter();
+  const isEdit = mode === "edit";
+  const cancelHref = isEdit ? "/dashboard/services" : "/services";
+  const redirectAfterSubmit = isEdit ? "/dashboard/services" : "/services";
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const [title, setTitle] = useState(initialValues?.title ?? '')
-  const [description, setDescription] = useState(initialValues?.description ?? '')
-  const [category, setCategory] = useState(initialValues?.category ?? '')
-  const [city, setCity] = useState(initialValues?.city ?? '')
-  const [price, setPrice] = useState(initialValues?.price ?? '')
-  const [priceUnit, setPriceUnit] = useState(initialValues?.priceUnit ?? 'hour')
-  const [homeVisit, setHomeVisit] = useState(initialValues?.homeVisit ?? true)
-  const [photos, setPhotos] = useState<string[]>(initialValues?.photos ?? [])
+  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [description, setDescription] = useState(initialValues?.description ?? "");
+  const [category, setCategory] = useState(initialValues?.category ?? "");
+  const [city, setCity] = useState(initialValues?.city ?? "");
+  const [price, setPrice] = useState(initialValues?.price ?? "");
+  const [priceUnit, setPriceUnit] = useState(initialValues?.priceUnit ?? "hour");
+  const [homeVisit, setHomeVisit] = useState(initialValues?.homeVisit ?? true);
+  const [photos, setPhotos] = useState<string[]>(initialValues?.photos ?? []);
 
-  const priceUnitLabel = priceUnits.find((u) => u.value === priceUnit)?.label ?? ''
-  const priceDisplay = price ? `от ${price} руб. ${priceUnitLabel}` : 'Цена не указана'
-  const userInitials = userName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+  const priceUnitLabel = priceUnits.find((u) => u.value === priceUnit)?.label ?? "";
+  const priceDisplay = price ? `от ${price} руб. ${priceUnitLabel}` : "Цена не указана";
+  const userInitials = userName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
+  // В форме выбираются идентификаторы, а предпросмотр показывает названия
+  const categoryName = categories.find((c) => String(c.id) === category)?.name ?? "";
+  const cityName = cities.find((c) => String(c.id) === city)?.name ?? "";
 
   function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files
-    if (!files) return
-    const remaining = 5 - photos.length
-    const newPhotos = Array.from(files).slice(0, remaining).map((f) => URL.createObjectURL(f))
-    setPhotos((prev) => [...prev, ...newPhotos])
+    const files = e.target.files;
+    if (!files) return;
+    const remaining = 5 - photos.length;
+    const newPhotos = Array.from(files)
+      .slice(0, remaining)
+      .map((f) => URL.createObjectURL(f));
+    setPhotos((prev) => [...prev, ...newPhotos]);
   }
 
   function removePhoto(index: number) {
-    setPhotos((prev) => prev.filter((_, i) => i !== index))
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
     // TODO: заменить на Server Action
-    await new Promise((r) => setTimeout(r, 1000))
-    setLoading(false)
-    router.push(redirectAfterSubmit)
+    await new Promise((r) => setTimeout(r, 1000));
+    setLoading(false);
+    router.push(redirectAfterSubmit);
   }
 
   return (
     <div className="flex gap-6 items-start min-h-screen bg-background text-foreground">
-
       {/* Форма */}
       <form onSubmit={handleSubmit} className="flex-1 min-w-0 flex flex-col gap-4">
-
         {error && (
           <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
             {error}
@@ -116,7 +131,10 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
               <p className="text-xs text-muted-foreground mt-1">{title.length}/100 символов</p>
             </div>
             <div>
-              <Label htmlFor="description" className="text-sm font-medium text-foreground mb-1.5 block">
+              <Label
+                htmlFor="description"
+                className="text-sm font-medium text-foreground mb-1.5 block"
+              >
                 Описание <span className="text-destructive">*</span>
               </Label>
               <textarea
@@ -143,7 +161,10 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="category" className="text-sm font-medium text-foreground mb-1.5 block">
+              <Label
+                htmlFor="category"
+                className="text-sm font-medium text-foreground mb-1.5 block"
+              >
                 Категория <span className="text-destructive">*</span>
               </Label>
               <select
@@ -154,9 +175,13 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
                 required
                 className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
               >
-                <option value="" className="bg-background">Выберите категорию</option>
+                <option value="" className="bg-background">
+                  Выберите категорию
+                </option>
                 {categories.map((cat) => (
-                  <option key={cat} value={cat} className="bg-background">{cat}</option>
+                  <option key={cat.id} value={cat.id} className="bg-background">
+                    {cat.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -172,9 +197,13 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
                 required
                 className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
               >
-                <option value="" className="bg-background">Выберите город</option>
+                <option value="" className="bg-background">
+                  Выберите город
+                </option>
                 {cities.map((c) => (
-                  <option key={c} value={c} className="bg-background">{c}</option>
+                  <option key={c.id} value={c.id} className="bg-background">
+                    {c.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -209,7 +238,9 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
                   className="flex h-9 rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer flex-shrink-0"
                 >
                   {priceUnits.map((u) => (
-                    <option key={u.value} value={u.value} className="bg-background">{u.label}</option>
+                    <option key={u.value} value={u.value} className="bg-background">
+                      {u.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -224,8 +255,8 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { value: true, label: 'Да, выезжаю' },
-                  { value: false, label: 'Только у себя' },
+                  { value: true, label: "Да, выезжаю" },
+                  { value: false, label: "Только у себя" },
                 ].map((opt) => (
                   <button
                     key={String(opt.value)}
@@ -233,16 +264,16 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
                     onClick={() => setHomeVisit(opt.value)}
                     className={`flex items-center gap-2.5 px-4 py-3 border rounded-lg text-sm transition-all cursor-pointer ${
                       homeVisit === opt.value
-                        ? 'border-brand bg-brand/5 text-brand font-medium'
-                        : 'border-border text-muted-foreground hover:border-border/80 hover:bg-card/50'
+                        ? "border-brand bg-brand/5 text-brand font-medium"
+                        : "border-border text-muted-foreground hover:border-border/80 hover:bg-card/50"
                     }`}
                   >
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                      homeVisit === opt.value ? 'border-brand' : 'border-border'
-                    }`}>
-                      {homeVisit === opt.value && (
-                        <div className="w-2 h-2 rounded-full bg-brand" />
-                      )}
+                    <div
+                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                        homeVisit === opt.value ? "border-brand" : "border-border"
+                      }`}
+                    >
+                      {homeVisit === opt.value && <div className="w-2 h-2 rounded-full bg-brand" />}
                     </div>
                     {opt.label}
                   </button>
@@ -265,7 +296,9 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
           {photos.length < 5 && (
             <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-border rounded-xl py-8 cursor-pointer hover:border-brand hover:bg-brand/5 transition-all group">
               <Upload className="h-8 w-8 text-muted-foreground/60 mb-2 group-hover:text-brand transition-colors" />
-              <span className="text-sm text-muted-foreground mb-1 group-hover:text-foreground transition-colors">Нажмите для загрузки фото</span>
+              <span className="text-sm text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+                Нажмите для загрузки фото
+              </span>
               <span className="text-xs text-muted-foreground/60">JPG или PNG, до 5 МБ каждое</span>
               <input
                 type="file"
@@ -280,9 +313,16 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
           {photos.length > 0 && (
             <div className="flex gap-2 flex-wrap mt-3">
               {photos.map((photo, index) => (
-                <div key={photo} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
+                <div
+                  key={photo}
+                  className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group"
+                >
                   {/* biome-ignore lint/performance/noImgElement: preview only */}
-                  <img src={photo} alt={`Фото ${index + 1}`} className="w-full h-full object-cover" />
+                  <img
+                    src={photo}
+                    alt={`Фото ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
                   <button
                     type="button"
                     onClick={() => removePhoto(index)}
@@ -296,7 +336,13 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
               {photos.length < 5 && (
                 <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-brand hover:bg-brand/5 text-muted-foreground/60 hover:text-brand transition-all">
                   <span className="text-2xl font-light">+</span>
-                  <input type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
                 </label>
               )}
             </div>
@@ -319,45 +365,53 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
             className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
           >
             {loading
-              ? (isEdit ? 'Сохранение...' : 'Публикация...')
-              : (isEdit ? 'Сохранить изменения' : 'Опубликовать объявление')}
+              ? isEdit
+                ? "Сохранение..."
+                : "Публикация..."
+              : isEdit
+                ? "Сохранить изменения"
+                : "Опубликовать объявление"}
           </Button>
         </div>
-
       </form>
 
       {/* Превью + советы */}
       <div className="hidden lg:block w-56 flex-shrink-0 sticky top-6">
         <div className="bg-background border border-border rounded-xl p-4 shadow-sm">
-
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Предпросмотр
           </p>
 
           <div className="border border-border rounded-lg overflow-hidden mb-4 bg-card/30">
             <div className="h-24 bg-gradient-to-br from-brand/10 to-brand/5 flex items-center justify-center relative">
-              <span className="text-4xl font-bold text-brand/20">
-                {title.charAt(0) || '?'}
-              </span>
-              {category && (
+              <span className="text-4xl font-bold text-brand/20">{title.charAt(0) || "?"}</span>
+              {categoryName && (
                 <span className="absolute top-2 left-2 bg-background/95 text-brand text-[10px] px-2 py-0.5 rounded-full border border-brand/20 font-medium max-w-[90%] truncate">
-                  {category}
+                  {categoryName}
                 </span>
               )}
             </div>
             <div className="p-3">
               <p className="text-xs font-medium text-foreground leading-snug mb-2 line-clamp-2">
-                {title || 'Заголовок объявления'}
+                {title || "Заголовок объявления"}
               </p>
               <div className="flex items-center gap-1.5 mb-2">
                 <div className="w-5 h-5 rounded-full bg-brand/10 flex items-center justify-center text-[10px] font-bold text-brand flex-shrink-0">
                   {userInitials}
                 </div>
-                <span className="text-xs text-muted-foreground truncate">{userName.split(' ')[0]}</span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {userName.split(" ")[0]}
+                </span>
               </div>
               <div className="flex items-center justify-between border-t border-border/60 pt-2 gap-1">
-                <span className="text-[11px] font-bold text-brand truncate max-w-[65%]">{priceDisplay}</span>
-                {city && <span className="text-[11px] text-muted-foreground flex-shrink-0">{city}</span>}
+                <span className="text-[11px] font-bold text-brand truncate max-w-[65%]">
+                  {priceDisplay}
+                </span>
+                {cityName && (
+                  <span className="text-[11px] text-muted-foreground flex-shrink-0">
+                    {cityName}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -366,21 +420,22 @@ export function CreateServiceForm({ userName, mode = 'create', initialValues }: 
             <p className="text-xs font-semibold text-brand mb-2">Советы</p>
             <ul className="space-y-1.5">
               {[
-                'Фото работ привлекает в 3 раза больше клиентов',
-                'Укажите опыт и гарантии на работу',
-                'Реалистичная цена привлечёт больше откликов',
+                "Фото работ привлекает в 3 раза больше клиентов",
+                "Укажите опыт и гарантии на работу",
+                "Реалистичная цена привлечёт больше откликов",
               ].map((tip) => (
-                <li key={tip} className="flex items-start gap-1.5 text-xs text-muted-foreground leading-normal">
+                <li
+                  key={tip}
+                  className="flex items-start gap-1.5 text-xs text-muted-foreground leading-normal"
+                >
                   <CheckCircle className="h-3 w-3 text-brand flex-shrink-0 mt-0.5" />
                   <span>{tip}</span>
                 </li>
               ))}
             </ul>
           </div>
-
         </div>
       </div>
-
     </div>
-  )
+  );
 }

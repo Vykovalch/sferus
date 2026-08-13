@@ -1,14 +1,20 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { CityDropdown } from "@/components/shared/CityDropdown";
+import type { CityOption } from "@/features/cities/queries";
 
 interface SearchBarProps {
+  /** Пробрасывается в CityDropdown — данные приходят из серверного компонента. */
+  cities: CityOption[];
   placeholder?: string;
 }
 
-export function SearchBar({ placeholder = "Ремонт, уборка, репетитор..." }: SearchBarProps) {
+export function SearchBar({
+  cities,
+  placeholder = "Ремонт, уборка, репетитор...",
+}: SearchBarProps) {
   const router = useRouter();
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
@@ -42,7 +48,7 @@ export function SearchBar({ placeholder = "Ремонт, уборка, репе�
       <div className="hidden md:block h-8 my-auto w-px bg-gradient-to-b from-transparent via-border to-transparent" />
 
       <div className="flex items-center px-2 py-1 md:py-0 bg-secondary/10 md:bg-transparent rounded-xl md:rounded-none">
-        <CityDropdown />
+        <CityDropdown cities={cities} />
       </div>
 
       <button

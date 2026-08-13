@@ -1,7 +1,7 @@
 "use client";
 
+import { ChevronDown, MapPin } from "lucide-react";
 import * as React from "react";
-import { MapPin, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,21 +9,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { CityOption } from "@/features/cities/queries";
 
-const cities = [
-  { id: 0, name: "Все города" },
-  { id: 1, name: "Тирасполь" },
-  { id: 2, name: "Бендеры" },
-  { id: 3, name: "Рыбница" },
-  { id: 4, name: "Дубоссары" },
-  { id: 5, name: "Григориополь" },
-  { id: 6, name: "Каменка" },
-  { id: 7, name: "Слободзея" },
-  { id: 8, name: "Днестровск" },
-];
+const ALL_CITIES = "Все города";
 
-export function CityDropdown() {
-  const [currentCity, setCurrentCity] = React.useState(cities[0].name);
+interface CityDropdownProps {
+  /** Города из БД: клиентский компонент их сам получить не может. */
+  cities: CityOption[];
+}
+
+export function CityDropdown({ cities }: CityDropdownProps) {
+  const [currentCity, setCurrentCity] = React.useState(ALL_CITIES);
+
+  const options = [ALL_CITIES, ...cities.map((c) => c.name)];
 
   return (
     <>
@@ -45,13 +43,13 @@ export function CityDropdown() {
           className="min-w-[calc(var(--radix-dropdown-menu-trigger-width)+2rem)]"
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
-          {cities.map((city) => (
+          {options.map((name) => (
             <DropdownMenuItem
-              key={city.id}
-              onClick={() => setCurrentCity(city.name)}
+              key={name}
+              onClick={() => setCurrentCity(name)}
               className="cursor-pointer text-base py-2 font-medium text-foreground"
             >
-              {city.name}
+              {name}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

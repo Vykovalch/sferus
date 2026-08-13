@@ -1,9 +1,10 @@
 "use client";
 
-const statuses = [
-  { value: "open", label: "Открытые" },
-  { value: "in_progress", label: "В работе" },
-];
+import { TASK_STATUSES } from "@/lib/constants";
+
+// Источник — pg-enum task_status. Статуса in_progress в v1 нет: он подразумевает
+// известного исполнителя, а связи задания с исполнителем без откликов не существует.
+const statuses = Object.entries(TASK_STATUSES).map(([value, label]) => ({ value, label }));
 
 interface StatusFilterProps {
   activeStatus: string;
@@ -33,11 +34,13 @@ export function StatusFilter({ activeStatus, onChange, name = "status" }: Status
               onChange={() => onChange(status.value)}
               className="h-4 w-4 border-input text-brand bg-background focus:ring-brand accent-brand cursor-pointer flex-shrink-0"
             />
-            <span className={`text-sm transition-colors ${
-              activeStatus === status.value
-                ? "text-brand font-medium"
-                : "text-muted-foreground group-hover:text-foreground"
-            }`}>
+            <span
+              className={`text-sm transition-colors ${
+                activeStatus === status.value
+                  ? "text-brand font-medium"
+                  : "text-muted-foreground group-hover:text-foreground"
+              }`}
+            >
               {status.label}
             </span>
           </label>

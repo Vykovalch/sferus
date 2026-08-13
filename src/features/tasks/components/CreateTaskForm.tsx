@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SERVICE_CATEGORIES } from "@/lib/constants";
-
-const categories = SERVICE_CATEGORIES;
-
-const cities = ["Тирасполь", "Бендеры", "Рыбница", "Дубоссары", "Слободзея"];
+import type { CategoryOption } from "@/features/categories/queries";
+import type { CityOption } from "@/features/cities/queries";
 
 interface CreateTaskFormProps {
+  /** Справочники приходят из БД: клиентский компонент их сам получить не может. */
+  cities: CityOption[];
+  categories: CategoryOption[];
   mode?: "create" | "edit";
   initialValues?: {
     title?: string;
@@ -26,7 +26,12 @@ interface CreateTaskFormProps {
   };
 }
 
-export function CreateTaskForm({ mode = "create", initialValues }: CreateTaskFormProps) {
+export function CreateTaskForm({
+  cities,
+  categories,
+  mode = "create",
+  initialValues,
+}: CreateTaskFormProps) {
   const router = useRouter();
   const isEdit = mode === "edit";
   const cancelHref = isEdit ? "/dashboard/tasks" : "/tasks";
@@ -44,6 +49,10 @@ export function CreateTaskForm({ mode = "create", initialValues }: CreateTaskFor
   const [deadline, setDeadline] = useState(initialValues?.deadline ?? "");
 
   const budgetDisplay = negotiable ? "Договорная" : budget ? `до ${budget} руб.` : "Не указан";
+
+  // В форме выбираются идентификаторы, а предпросмотр показывает названия
+  const categoryName = categories.find((c) => String(c.id) === category)?.name ?? "";
+  const cityName = cities.find((c) => String(c.id) === city)?.name ?? "";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -143,8 +152,8 @@ export function CreateTaskForm({ mode = "create", initialValues }: CreateTaskFor
                   Выберите категорию
                 </option>
                 {categories.map((cat) => (
-                  <option key={cat} value={cat} className="text-foreground">
-                    {cat}
+                  <option key={cat.id} value={cat.id} className="text-foreground">
+                    {cat.name}
                   </option>
                 ))}
               </select>
@@ -166,8 +175,8 @@ export function CreateTaskForm({ mode = "create", initialValues }: CreateTaskFor
                   Выберите город
                 </option>
                 {cities.map((c) => (
-                  <option key={c} value={c} className="text-foreground">
-                    {c}
+                  <option key={c.id} value={c.id} className="text-foreground">
+                    {c.name}
                   </option>
                 ))}
               </select>
@@ -281,15 +290,17 @@ export function CreateTaskForm({ mode = "create", initialValues }: CreateTaskFor
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
                   Открыто
                 </span>
-                {category && (
+                {categoryName && (
                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
-                    {category}
+                    {categoryName}
                   </span>
                 )}
               </div>
               <div className="flex items-center justify-between border-t border-border pt-2.5">
                 <span className="text-sm font-bold text-brand">{budgetDisplay}</span>
-                {city && <span className="text-xs text-muted-foreground font-medium">{city}</span>}
+                {cityName && (
+                  <span className="text-xs text-muted-foreground font-medium">{cityName}</span>
+                )}
               </div>
             </div>
           </div>

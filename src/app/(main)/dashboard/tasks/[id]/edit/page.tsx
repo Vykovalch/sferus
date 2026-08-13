@@ -1,7 +1,9 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { getCategories } from "@/features/categories/queries";
+import { getCities } from "@/features/cities/queries";
 import { CreateTaskForm } from "@/features/tasks/components/CreateTaskForm";
+import { auth } from "@/lib/auth";
 
 // Временные данные — позже заменить на запрос к БД по userId + id
 const mockTaskDetails: Record<
@@ -28,7 +30,8 @@ const mockTaskDetails: Record<
   },
   "2": {
     title: "Нужен электрик для замены проводки",
-    description: "Замена старой проводки в квартире 2 комнаты, установка новых розеток и выключателей.",
+    description:
+      "Замена старой проводки в квартире 2 комнаты, установка новых розеток и выключателей.",
     category: "Строительство и ремонт",
     city: "Тирасполь",
     budget: "500",
@@ -46,11 +49,7 @@ const mockTaskDetails: Record<
   },
 };
 
-export default async function EditTaskPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function EditTaskPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect(`/login?callbackUrl=/dashboard/tasks/${id}/edit`);
@@ -58,10 +57,12 @@ export default async function EditTaskPage({
   const task = mockTaskDetails[id];
   if (!task) notFound();
 
+  const [cities, categories] = await Promise.all([getCities(), getCategories()]);
+
   return (
     <>
       <h1 className="text-xl font-medium text-foreground mb-6">Редактировать задание</h1>
-      <CreateTaskForm mode="edit" initialValues={task} />
+      <CreateTaskForm cities={cities} categories={categories} mode="edit" initialValues={task} />
     </>
   );
 }
