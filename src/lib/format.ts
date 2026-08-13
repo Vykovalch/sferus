@@ -1,0 +1,57 @@
+import { PRICE_UNIT_LABELS, type PRICE_UNITS } from "@/features/services/schemas";
+
+type PriceUnit = (typeof PRICE_UNITS)[number];
+
+/**
+ * Цена услуги для показа: «от 80 руб. за час» либо «Договорная».
+ *
+ * В БД «Договорная» — это отсутствие значения в колонке цены плюс флаг,
+ * поэтому склеивание строки живёт здесь, а не в компонентах.
+ */
+export function formatServicePrice(
+  price: number | null,
+  isNegotiable: boolean,
+  priceUnit: string,
+): string {
+  if (isNegotiable || price === null) return "Договорная";
+
+  const unit = PRICE_UNIT_LABELS[priceUnit as PriceUnit];
+  return unit ? `от ${price} руб. ${unit}` : `от ${price} руб.`;
+}
+
+/** Бюджет задания: «до 500 руб.» либо «Договорной». */
+export function formatTaskBudget(budget: number | null, isNegotiable: boolean): string {
+  if (isNegotiable || budget === null) return "Договорной";
+  return `до ${budget} руб.`;
+}
+
+const RELATIVE_UNITS: [limitSeconds: number, divisor: number, unit: Intl.RelativeTimeFormatUnit][] =
+  [
+    [60, 1, "second"],
+    [3600, 60, "minute"],
+    [86400, 3600, "hour"],
+    [2592000, 86400, "day"],
+    [31536000, 2592000, "month"],
+    [Number.POSITIVE_INFINITY, 31536000, "year"],
+  ];
+
+const relative = new Intl.RelativeTimeFormat("ru", { numeric: "auto" });
+
+/** «2 часа назад», «вчера». Склонения берёт Intl, руками их писать не нужно. */
+export function formatRelativeDate(date: Date): string {
+  const seconds = Math.round((date.getTime() - Date.now()) / 1000);
+  const absolute = Math.abs(seconds);
+
+  for (const [limit, divisor, unit] of RELATIVE_UNITS) {
+    if (absolute < limit) return relative.format(Math.round(seconds / divisor), unit);
+  }
+
+  return relative.format(Math.round(seconds / 31536000), "year");
+}
+
+const monthYear = new Intl.DateTimeFormat("ru", { month: "long", year: "numeric" });
+
+/** «января 2025» — для строки «На платформе с …». */
+export function formatMonthYear(date: Date): string {
+  return monthYear.format(date);
+}

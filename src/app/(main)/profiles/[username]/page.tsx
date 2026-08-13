@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
 import { Building2, CheckCircle2, MapPin, Star, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { notFound } from "next/navigation";
 import { ServiceCard } from "@/components/shared/ServiceCard";
+import { Button } from "@/components/ui/button";
 
 type ExecutorType = "individual" | "company";
 
@@ -20,7 +20,7 @@ const mockProfiles: Record<
     listings: {
       id: string;
       title: string;
-      category: string;
+      categorySlug: string;
       city: string;
       imageUrl: string;
       price: string;
@@ -49,7 +49,7 @@ const mockProfiles: Record<
       {
         id: "1",
         title: "Электромонтажные работы любой сложности",
-        category: "Электрика",
+        categorySlug: "construction-and-renovation",
         city: "Тирасполь",
         imageUrl: "/u2.png",
         price: "от 80 руб./час",
@@ -59,7 +59,7 @@ const mockProfiles: Record<
       {
         id: "2",
         title: "Установка видеонаблюдения",
-        category: "Охрана и безопасность",
+        categorySlug: "security",
         city: "Тирасполь",
         imageUrl: "/u4.png",
         price: "от 200 руб.",
@@ -69,7 +69,7 @@ const mockProfiles: Record<
       {
         id: "3",
         title: "Подключение электроплит",
-        category: "Строительство и ремонт",
+        categorySlug: "construction-and-renovation",
         city: "Тирасполь",
         imageUrl: "/u6.png",
         price: "от 50 руб.",
@@ -126,7 +126,7 @@ const mockProfiles: Record<
       {
         id: "4",
         title: "Ремонт стиральных машин",
-        category: "Ремонт техники",
+        categorySlug: "repair-services",
         city: "Тирасполь",
         imageUrl: "/u1.png",
         price: "от 200 руб.",
@@ -136,7 +136,7 @@ const mockProfiles: Record<
       {
         id: "5",
         title: "Ремонт холодильников на дому",
-        category: "Ремонт техники",
+        categorySlug: "repair-services",
         city: "Тирасполь",
         imageUrl: "/u3.png",
         price: "от 250 руб.",
@@ -208,7 +208,10 @@ export default async function PublicProfilePage({
                       {profile.name}
                     </h1>
                     {profile.verified && (
-                      <CheckCircle2 className="h-5 w-5 text-brand flex-shrink-0" aria-label="Проверенный аккаунт" />
+                      <CheckCircle2
+                        className="h-5 w-5 text-brand flex-shrink-0"
+                        aria-label="Проверенный аккаунт"
+                      />
                     )}
                   </div>
 
@@ -233,7 +236,9 @@ export default async function PublicProfilePage({
                     {profile.reviewsCount > 0 ? (
                       <>
                         <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        <span className="text-sm font-semibold text-foreground">{profile.rating}</span>
+                        <span className="text-sm font-semibold text-foreground">
+                          {profile.rating}
+                        </span>
                         <span className="text-sm text-muted-foreground">
                           ({profile.reviewsCount} отзывов)
                         </span>
@@ -258,18 +263,17 @@ export default async function PublicProfilePage({
                   Объявления ({profile.listings.length})
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {/* Моковые данные: страница переводится на БД на этапе 1.3 */}
                   {profile.listings.map((listing) => (
                     <ServiceCard
                       key={listing.id}
-                      id={listing.id}
+                      id={Number(listing.id)}
                       title={listing.title}
-                      category={listing.category}
+                      categorySlug={listing.categorySlug}
                       city={listing.city}
-                      imageUrl={listing.imageUrl}
                       price={listing.price}
-                      executor={{ name: profile.name, type: profile.type === "company" ? "company" : "person" }}
-                      rating={listing.rating}
-                      reviews={listing.reviews}
+                      authorName={profile.name}
+                      authorType={profile.type === "company" ? "company" : "individual"}
                     />
                   ))}
                 </div>
@@ -278,40 +282,40 @@ export default async function PublicProfilePage({
 
             {/* Отзывы */}
             {profile.reviews.length > 0 && (
-            <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-              <h2 className="text-sm font-medium text-foreground mb-4">
-                Отзывы ({profile.reviews.length})
-              </h2>
-              <div className="flex flex-col gap-3">
-                {profile.reviews.map((review) => (
-                  <div key={review.id} className="border border-border rounded-xl p-4 bg-card/50">
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-xs font-bold text-brand flex-shrink-0">
-                          {review.author.initials}
+              <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+                <h2 className="text-sm font-medium text-foreground mb-4">
+                  Отзывы ({profile.reviews.length})
+                </h2>
+                <div className="flex flex-col gap-3">
+                  {profile.reviews.map((review) => (
+                    <div key={review.id} className="border border-border rounded-xl p-4 bg-card/50">
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-xs font-bold text-brand flex-shrink-0">
+                            {review.author.initials}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {review.author.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{review.date}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {review.author.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{review.date}</p>
+                        <div className="flex items-center gap-0.5 flex-shrink-0">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              // biome-ignore lint/suspicious/noArrayIndexKey: static stars
+                              key={i}
+                              className={`h-3.5 w-3.5 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-muted/40"}`}
+                            />
+                          ))}
                         </div>
                       </div>
-                      <div className="flex items-center gap-0.5 flex-shrink-0">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            // biome-ignore lint/suspicious/noArrayIndexKey: static stars
-                            key={i}
-                            className={`h-3.5 w-3.5 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-muted/40"}`}
-                          />
-                        ))}
-                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{review.text}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{review.text}</p>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
             )}
           </div>
 

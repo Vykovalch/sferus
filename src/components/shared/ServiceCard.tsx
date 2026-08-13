@@ -1,54 +1,52 @@
+import { Building2, MapPin, User, Wallet } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Wallet, User, Building2, Star } from "lucide-react";
 import { FavoriteButton } from "@/components/shared/FavoriteButton";
 
-export interface ServiceCardExecutor {
-  name: string;
-  type: "person" | "company";
-}
-
 export interface ServiceCardProps {
-  id: string;
+  id: number;
   title: string;
-  category: string;
+  /** Slug категории — часть адреса объявления. */
+  categorySlug: string;
   city: string;
-  imageUrl: string;
+  /** Уже отформатированная цена: «от 80 руб. за час» либо «Договорная». */
   price: string;
-  top?: boolean;
-  executor?: ServiceCardExecutor;
-  rating?: number;
-  reviews?: number;
+  authorName: string;
+  authorType?: "individual" | "company" | null;
+  /** Появится вместе с загрузкой изображений. */
+  imageUrl?: string | null;
 }
 
 export function ServiceCard({
   id,
   title,
+  categorySlug,
   city,
-  imageUrl,
   price,
-  top,
-  executor,
-  rating,
-  reviews,
+  authorName,
+  authorType,
+  imageUrl,
 }: ServiceCardProps) {
+  const isCompany = authorType === "company";
+
   return (
     <Link
-      href={`/services/listing/${id}`}
+      href={`/services/${categorySlug}/${id}`}
       className="group bg-white rounded-2xl overflow-hidden hover:shadow transition-all duration-200"
     >
       {/* Фото */}
-      <div className="aspect-[1.5] relative overflow-hidden">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          sizes="(max-width: 640px) 50vw, 25vw"
-        />
-        {top && (
-          <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-semibold px-2.5 py-1 rounded-full shadow">
-            Топ
+      <div className="aspect-[1.5] relative overflow-hidden bg-gradient-to-br from-brand/10 to-brand/5">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 640px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-4xl font-bold text-brand/20">{title.charAt(0)}</span>
           </div>
         )}
         <FavoriteButton />
@@ -60,25 +58,14 @@ export function ServiceCard({
           {title}
         </h3>
 
-        {executor && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <div className="flex items-center gap-1 min-w-0">
-              {executor.type === "company" ? (
-                <Building2 className="h-3.5 w-3.5 flex-shrink-0" />
-              ) : (
-                <User className="h-3.5 w-3.5 flex-shrink-0" />
-              )}
-              <span className="truncate">{executor.name}</span>
-            </div>
-            {rating && (
-              <div className="flex items-center gap-0.5 flex-shrink-0 ml-2">
-                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                <span className="font-medium text-foreground">{rating}</span>
-                {reviews && <span className="text-muted-foreground">({reviews})</span>}
-              </div>
-            )}
-          </div>
-        )}
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2 min-w-0">
+          {isCompany ? (
+            <Building2 className="h-3.5 w-3.5 flex-shrink-0" />
+          ) : (
+            <User className="h-3.5 w-3.5 flex-shrink-0" />
+          )}
+          <span className="truncate">{authorName}</span>
+        </div>
 
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
           <MapPin className="h-3.5 w-3.5 flex-shrink-0" />

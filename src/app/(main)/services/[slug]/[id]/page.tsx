@@ -1,98 +1,76 @@
-import Link from "next/link";
+import { Building2, ChevronRight, MapPin, User } from "lucide-react";
 import { headers } from "next/headers";
-import { ChevronRight, MapPin, Star, User, Building2 } from "lucide-react";
-import { auth } from "@/lib/auth";
-import { ServiceGallery } from "@/features/services/components/ServiceGallery";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/features/services/components/ContactRevealButton";
+import { getOtherServicesByAuthor, getServiceDetail } from "@/features/services/queries";
+import { auth } from "@/lib/auth";
+import { formatMonthYear, formatServicePrice } from "@/lib/format";
 
-type ExecutorType = "individual" | "company";
+export default async function ServiceListingPage({
+  params,
+}: {
+  params: Promise<{ slug: string; id: string }>;
+}) {
+  const { slug, id } = await params;
 
-// Временные данные — позже заменить на запросы к БД
-const mockListing = {
-  id: 1,
-  title: "Электромонтажные работы любой сложности",
-  description:
-    "Выполняю все виды электромонтажных работ: замена проводки, установка розеток и выключателей, монтаж щитков, подключение бытовой техники. Работаю аккуратно и качественно, даю гарантию на все виды работ. Опыт более 10 лет. Выезд в любую точку Тирасполя и пригорода.",
-  price: 80,
-  priceUnit: "час",
-  category: "Строительство и ремонт",
-  subcategory: "Электрика",
-  city: "Тирасполь",
-  experience: "Более 10 лет",
-  homeVisit: true,
-  images: ["/usluga1.jpg", "/usluga2.jpg", "/usluga3.jpg"],
-  executor: {
-    username: "viktor-petrov",
-    name: "Виктор Петров",
-    initials: "ВП",
-    type: "individual" as ExecutorType,
-    rating: 4.9,
-    reviewsCount: 127,
-    listingsCount: 3,
-    memberSince: "января 2025",
-    verified: true,
-    // Контакты, которые исполнитель выбрал показывать клиентам — настраивается в /dashboard/profile
-    contacts: {
-      phone: "+373 777 12345",
-      telegram: "viktor_petrov",
-    },
-  },
-  otherListings: [
-    { id: 2, title: "Установка видеонаблюдения", price: 200 },
-    { id: 3, title: "Подключение электроплит", price: 50 },
-  ],
-  reviews: [
-    {
-      id: 1,
-      author: { name: "Андрей П.", initials: "АП" },
-      rating: 5,
-      date: "15 мая 2026",
-      text: "Отличный специалист! Сделал всё быстро и качественно. Заменил проводку во всей квартире за один день. Рекомендую!",
-    },
-    {
-      id: 2,
-      author: { name: "Марина К.", initials: "МК" },
-      rating: 5,
-      date: "3 мая 2026",
-      text: "Виктор очень профессиональный мастер. Установил щиток и розетки, всё работает отлично. Цена адекватная.",
-    },
-    {
-      id: 3,
-      author: { name: "Дмитрий В.", initials: "ДВ" },
-      rating: 4,
-      date: "28 апреля 2026",
-      text: "Хорошая работа, приехал вовремя, всё объяснил. Небольшая задержка по времени но результат отличный.",
-    },
-  ],
-};
+  const serviceId = Number(id);
+  if (!Number.isInteger(serviceId) || serviceId <= 0) notFound();
 
-export default async function ServiceListingPage() {
-  const { executor } = mockListing;
-  const isCompany = executor.type === "company";
-  const session = await auth.api.getSession({ headers: await headers() });
-  const listingPath = `/services/stroitelstvo-i-remont/${mockListing.id}`;
+  const service = await getServiceDetail(serviceId);
+  if (!service) notFound();
+
+  // Категория входит в адрес: чужой slug не должен открывать объявление
+  if (service.categorySlug !== slug) notFound();
+
+  const [session, otherServices] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getOtherServicesByAuthor(service.authorId, service.id),
+  ]);
+
+  const isCompany = service.authorType === "company";
+  const listingPath = `/services/${service.categorySlug}/${service.id}`;
+  const priceLabel = formatServicePrice(service.price, service.isNegotiable, service.priceUnit);
+
+  const authorInitials = service.authorName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
       <div className="bg-background">
         <div className="container mx-auto px-4 py-3">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap"
+          >
             <Link
               href="/services"
               className="hover:text-brand transition-colors cursor-pointer font-medium"
             >
               Услуги
             </Link>
-            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
+            <ChevronRight
+              aria-hidden="true"
+              className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60"
+            />
             <Link
-              href="/services/stroitelstvo-i-remont"
+              href={`/services/${service.categorySlug}`}
               className="hover:text-brand transition-colors cursor-pointer font-medium"
             >
-              {mockListing.category}
+              {service.categoryName}
             </Link>
-            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60" />
-            <span aria-current="page" className="text-foreground font-medium line-clamp-1">{mockListing.title}</span>
+            <ChevronRight
+              aria-hidden="true"
+              className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60"
+            />
+            <span aria-current="page" className="text-foreground font-medium line-clamp-1">
+              {service.title}
+            </span>
           </nav>
         </div>
       </div>
@@ -101,27 +79,24 @@ export default async function ServiceListingPage() {
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
-            {/* Основной блок */}
             <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
-              {/* Заголовок + цена */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                 <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
-                  {mockListing.title}
+                  {service.title}
                 </h1>
                 <div className="sm:text-right flex-shrink-0">
-                  <div className="text-2xl font-bold text-brand">от {mockListing.price} руб.</div>
-                  <div className="text-xs text-muted-foreground">за {mockListing.priceUnit}</div>
+                  <div className="text-2xl font-bold text-brand">{priceLabel}</div>
                 </div>
               </div>
 
               {/* Бейджи */}
               <div className="flex items-center gap-2 flex-wrap mb-6">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                  {mockListing.subcategory}
+                  {service.categoryName}
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <MapPin className="h-3 w-3" />
-                  {mockListing.city}
+                  {service.cityName}
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -135,15 +110,10 @@ export default async function ServiceListingPage() {
                 </span>
               </div>
 
-              {/* Галерея */}
-              <div className="mb-6 rounded-xl overflow-hidden border border-border bg-card">
-                <ServiceGallery images={mockListing.images} title={mockListing.title} />
-              </div>
-
               {/* Описание */}
               <h2 className="text-sm font-medium text-foreground mb-2">Описание услуги</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                {mockListing.description}
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6 whitespace-pre-line">
+                {service.description}
               </p>
 
               {/* Детали */}
@@ -152,22 +122,24 @@ export default async function ServiceListingPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Стоимость</p>
-                    <p className="text-sm font-medium text-foreground">
-                      от {mockListing.price} руб./{mockListing.priceUnit}
-                    </p>
+                    <p className="text-sm font-medium text-foreground">{priceLabel}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Город</p>
-                    <p className="text-sm font-medium text-foreground">{mockListing.city}</p>
+                    <p className="text-sm font-medium text-foreground">{service.cityName}</p>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-0.5">Опыт работы</p>
-                    <p className="text-sm font-medium text-foreground">{mockListing.experience}</p>
-                  </div>
+                  {service.authorExperienceYears !== null && (
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-0.5">Опыт работы</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {service.authorExperienceYears} лет
+                      </p>
+                    </div>
+                  )}
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Выезд на дом</p>
                     <p className="text-sm font-medium text-foreground">
-                      {mockListing.homeVisit ? "Да" : "Нет"}
+                      {service.homeVisit ? "Да" : "Нет"}
                     </p>
                   </div>
                 </div>
@@ -175,73 +147,38 @@ export default async function ServiceListingPage() {
             </div>
 
             {/* Другие объявления исполнителя */}
-            {mockListing.otherListings.length > 0 && (
+            {otherServices.length > 0 && (
               <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
                 <h2 className="text-sm font-medium text-foreground mb-3">
                   Другие объявления этого исполнителя
                 </h2>
                 <div className="flex flex-col gap-2">
-                  {mockListing.otherListings.map((listing) => (
+                  {otherServices.map((other) => (
                     <Link
-                      key={listing.id}
-                      href={`/services/listing/${listing.id}`}
+                      key={other.id}
+                      href={`/services/${other.categorySlug}/${other.id}`}
                       className="flex items-center justify-between px-4 py-3 border border-border rounded-lg hover:border-brand/50 bg-card/30 hover:bg-card/50 transition-all group cursor-pointer"
                     >
                       <span className="text-sm text-muted-foreground group-hover:text-brand transition-colors">
-                        {listing.title}
+                        {other.title}
                       </span>
                       <span className="text-sm font-medium text-brand flex-shrink-0 ml-4">
-                        от {listing.price} руб.
+                        {other.isNegotiable || other.price === null
+                          ? "Договорная"
+                          : `от ${other.price} руб.`}
                       </span>
                     </Link>
                   ))}
                 </div>
               </div>
             )}
-
-            {/* Отзывы */}
-            <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-              <h2 className="text-sm font-medium text-foreground mb-4">
-                Отзывы ({mockListing.reviews.length})
-              </h2>
-              <div className="flex flex-col gap-3">
-                {mockListing.reviews.map((review) => (
-                  <div key={review.id} className="border border-border rounded-xl p-4 bg-card/50">
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-xs font-bold text-brand flex-shrink-0">
-                          {review.author.initials}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {review.author.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{review.date}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-0.5 flex-shrink-0">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            // biome-ignore lint/suspicious/noArrayIndexKey: static stars
-                            key={i}
-                            className={`h-3.5 w-3.5 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-muted/40"}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{review.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* Исполнитель — в потоке на мобильном, закреплённый сайдбар на десктопе */}
+          {/* Исполнитель */}
           <div className="w-full lg:w-60 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
             <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-              {/* Аватар + имя */}
               <Link
-                href={`/profiles/${executor.username}`}
+                href={service.authorUsername ? `/profiles/${service.authorUsername}` : "#"}
                 className="flex items-center gap-3 mb-4 group cursor-pointer"
               >
                 <div
@@ -251,11 +188,11 @@ export default async function ServiceListingPage() {
                       : "bg-brand/10 text-brand"
                   }`}
                 >
-                  {executor.initials}
+                  {authorInitials}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-brand transition-colors">
-                    {executor.name}
+                    {service.authorName}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {isCompany ? "Компания" : "Частный специалист"}
@@ -263,8 +200,14 @@ export default async function ServiceListingPage() {
                 </div>
               </Link>
 
+              {service.authorCreatedAt && (
+                <p className="text-xs text-muted-foreground border-t border-border pt-3 mb-4">
+                  На платформе с {formatMonthYear(service.authorCreatedAt)}
+                </p>
+              )}
+
               <ContactRevealButton
-                contacts={executor.contacts}
+                serviceId={service.id}
                 isAuthenticated={Boolean(session)}
                 loginCallbackUrl={listingPath}
                 className="hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
@@ -274,14 +217,13 @@ export default async function ServiceListingPage() {
         </div>
       </div>
 
-      {/* Мобильная закреплённая панель: цена + контакты */}
+      {/* Мобильная закреплённая панель */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 flex items-center gap-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
         <div className="flex-1 min-w-0">
-          <div className="text-lg font-bold text-brand leading-tight">от {mockListing.price} руб.</div>
-          <div className="text-[11px] text-muted-foreground">за {mockListing.priceUnit}</div>
+          <div className="text-lg font-bold text-brand leading-tight">{priceLabel}</div>
         </div>
         <ContactRevealButton
-          contacts={executor.contacts}
+          serviceId={service.id}
           isAuthenticated={Boolean(session)}
           loginCallbackUrl={listingPath}
           className="flex-shrink-0 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"

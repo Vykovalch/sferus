@@ -2,21 +2,27 @@
 
 import { CheckCircle, Upload, X } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
+import { createService, updateService } from "@/features/services/actions";
+import { PRICE_UNIT_LABELS, PRICE_UNITS } from "@/features/services/schemas";
+import { type ActionState, idleState } from "@/lib/action-state";
 
-const priceUnits = [
-  { value: "hour", label: "за час" },
-  { value: "job", label: "за работу" },
-  { value: "day", label: "за день" },
-  { value: "sqm", label: "за кв.м." },
-  { value: "unit", label: "за единицу" },
-];
+export interface ServiceFormValues {
+  id: number;
+  title: string;
+  description: string;
+  categoryId: number;
+  cityId: number;
+  price: number | null;
+  isNegotiable: boolean;
+  priceUnit: string;
+  homeVisit: boolean;
+}
 
 interface CreateServiceFormProps {
   userName: string;
@@ -24,16 +30,7 @@ interface CreateServiceFormProps {
   cities: CityOption[];
   categories: CategoryOption[];
   mode?: "create" | "edit";
-  initialValues?: {
-    title?: string;
-    description?: string;
-    category?: string;
-    city?: string;
-    price?: string;
-    priceUnit?: string;
-    homeVisit?: boolean;
-    photos?: string[];
-  };
+  initialValues?: ServiceFormValues;
 }
 
 export function CreateServiceForm({
@@ -43,25 +40,48 @@ export function CreateServiceForm({
   mode = "create",
   initialValues,
 }: CreateServiceFormProps) {
-  const router = useRouter();
   const isEdit = mode === "edit";
   const cancelHref = isEdit ? "/dashboard/services" : "/services";
-  const redirectAfterSubmit = isEdit ? "/dashboard/services" : "/services";
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [state, formAction, pending] = useActionState<ActionState<never>, FormData>(
+    isEdit ? updateService : createService,
+    idleState,
+  );
 
+  // Поля остаются управляемыми: от них зависит панель предпросмотра справа.
+  // На отправку это не влияет — значения уходят через FormData по атрибуту name.
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [description, setDescription] = useState(initialValues?.description ?? "");
-  const [category, setCategory] = useState(initialValues?.category ?? "");
-  const [city, setCity] = useState(initialValues?.city ?? "");
-  const [price, setPrice] = useState(initialValues?.price ?? "");
+  const [category, setCategory] = useState(initialValues ? String(initialValues.categoryId) : "");
+  const [city, setCity] = useState(initialValues ? String(initialValues.cityId) : "");
+  const [price, setPrice] = useState(initialValues?.price ? String(initialValues.price) : "");
+  const [isNegotiable, setIsNegotiable] = useState(initialValues?.isNegotiable ?? false);
   const [priceUnit, setPriceUnit] = useState(initialValues?.priceUnit ?? "hour");
   const [homeVisit, setHomeVisit] = useState(initialValues?.homeVisit ?? true);
-  const [photos, setPhotos] = useState<string[]>(initialValues?.photos ?? []);
+  const [photos, setPhotos] = useState<string[]>([]);
 
-  const priceUnitLabel = priceUnits.find((u) => u.value === priceUnit)?.label ?? "";
-  const priceDisplay = price ? `от ${price} руб. ${priceUnitLabel}` : "Цена не указана";
+  const errorMessage = state.status === "error" ? state.message : null;
+  const fieldError = (name: string) =>
+    state.status === "error" ? state.fieldErrors?.[name]?.[0] : undefined;
+
+  // Поля, у которых есть собственная подсказка под инпутом. Ошибки всех
+  // остальных показываем в общей плашке — иначе форма отказывает молча,
+  // без единого объяснения, и причину видно только в схеме.
+  const shownInline = new Set(["title", "description", "categoryId", "cityId", "price"]);
+  const unmappedErrors =
+    state.status === "error"
+      ? Object.entries(state.fieldErrors ?? {})
+          .filter(([field, messages]) => !shownInline.has(field) && messages?.length)
+          .flatMap(([, messages]) => messages ?? [])
+      : [];
+
+  const priceUnitLabel = PRICE_UNIT_LABELS[priceUnit as (typeof PRICE_UNITS)[number]] ?? "";
+  const priceDisplay = isNegotiable
+    ? "Договорная"
+    : price
+      ? `от ${price} руб. ${priceUnitLabel}`
+      : "Цена не указана";
+
   const userInitials = userName
     .split(" ")
     .map((n) => n[0])
@@ -87,23 +107,25 @@ export function CreateServiceForm({
     setPhotos((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    // TODO: заменить на Server Action
-    await new Promise((r) => setTimeout(r, 1000));
-    setLoading(false);
-    router.push(redirectAfterSubmit);
-  }
-
   return (
     <div className="flex gap-6 items-start min-h-screen bg-background text-foreground">
       {/* Форма */}
-      <form onSubmit={handleSubmit} className="flex-1 min-w-0 flex flex-col gap-4">
-        {error && (
-          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-            {error}
+      <form action={formAction} className="flex-1 min-w-0 flex flex-col gap-4">
+        {isEdit && initialValues && <input type="hidden" name="id" value={initialValues.id} />}
+
+        {errorMessage && (
+          <div
+            role="alert"
+            className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+          >
+            {errorMessage}
+            {unmappedErrors.length > 0 && (
+              <ul className="mt-1.5 list-disc list-inside space-y-0.5">
+                {unmappedErrors.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
@@ -125,10 +147,16 @@ export function CreateServiceForm({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
+                minLength={10}
                 maxLength={100}
+                aria-invalid={Boolean(fieldError("title"))}
                 className="border-border focus-visible:border-brand"
               />
-              <p className="text-xs text-muted-foreground mt-1">{title.length}/100 символов</p>
+              {fieldError("title") ? (
+                <p className="text-xs text-destructive mt-1">{fieldError("title")}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">{title.length}/100 символов</p>
+              )}
             </div>
             <div>
               <Label
@@ -144,12 +172,18 @@ export function CreateServiceForm({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
+                minLength={20}
                 rows={5}
+                aria-invalid={Boolean(fieldError("description"))}
                 className="flex w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Подробное описание привлечёт больше клиентов
-              </p>
+              {fieldError("description") ? (
+                <p className="text-xs text-destructive mt-1">{fieldError("description")}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Подробное описание привлечёт больше клиентов
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -162,17 +196,18 @@ export function CreateServiceForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label
-                htmlFor="category"
+                htmlFor="categoryId"
                 className="text-sm font-medium text-foreground mb-1.5 block"
               >
                 Категория <span className="text-destructive">*</span>
               </Label>
               <select
-                id="category"
-                name="category"
+                id="categoryId"
+                name="categoryId"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
+                aria-invalid={Boolean(fieldError("categoryId"))}
                 className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
               >
                 <option value="" className="bg-background">
@@ -184,17 +219,21 @@ export function CreateServiceForm({
                   </option>
                 ))}
               </select>
+              {fieldError("categoryId") && (
+                <p className="text-xs text-destructive mt-1">{fieldError("categoryId")}</p>
+              )}
             </div>
             <div>
-              <Label htmlFor="city" className="text-sm font-medium text-foreground mb-1.5 block">
+              <Label htmlFor="cityId" className="text-sm font-medium text-foreground mb-1.5 block">
                 Город <span className="text-destructive">*</span>
               </Label>
               <select
-                id="city"
-                name="city"
+                id="cityId"
+                name="cityId"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 required
+                aria-invalid={Boolean(fieldError("cityId"))}
                 className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
               >
                 <option value="" className="bg-background">
@@ -206,6 +245,9 @@ export function CreateServiceForm({
                   </option>
                 ))}
               </select>
+              {fieldError("cityId") && (
+                <p className="text-xs text-destructive mt-1">{fieldError("cityId")}</p>
+              )}
             </div>
           </div>
         </div>
@@ -218,41 +260,69 @@ export function CreateServiceForm({
           <div className="space-y-4">
             <div>
               <Label htmlFor="price" className="text-sm font-medium text-foreground mb-1.5 block">
-                Цена <span className="text-destructive">*</span>
+                Цена {!isNegotiable && <span className="text-destructive">*</span>}
               </Label>
               <div className="flex items-center gap-2">
                 <Input
                   id="price"
                   name="price"
                   type="number"
+                  min={1}
                   placeholder="например 80"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  required
-                  className="border-border focus-visible:border-brand"
+                  disabled={isNegotiable}
+                  required={!isNegotiable}
+                  aria-invalid={Boolean(fieldError("price"))}
+                  className="border-border focus-visible:border-brand disabled:opacity-40"
                 />
                 <span className="text-sm text-muted-foreground flex-shrink-0">руб.</span>
                 <select
+                  name="priceUnit"
+                  aria-label="Единица измерения цены"
                   value={priceUnit}
                   onChange={(e) => setPriceUnit(e.target.value)}
                   className="flex h-9 rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer flex-shrink-0"
                 >
-                  {priceUnits.map((u) => (
-                    <option key={u.value} value={u.value} className="bg-background">
-                      {u.label}
+                  {PRICE_UNITS.map((value) => (
+                    <option key={value} value={value} className="bg-background">
+                      {PRICE_UNIT_LABELS[value]}
                     </option>
                   ))}
                 </select>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Клиент увидит: <span className="text-foreground font-medium">{priceDisplay}</span>
-              </p>
+
+              <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none w-fit">
+                <input
+                  type="checkbox"
+                  name="isNegotiable"
+                  checked={isNegotiable}
+                  onChange={(e) => {
+                    setIsNegotiable(e.target.checked);
+                    if (e.target.checked) setPrice("");
+                  }}
+                  className="h-4 w-4 rounded border-border text-brand accent-brand cursor-pointer"
+                />
+                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Цена договорная
+                </span>
+              </label>
+
+              {fieldError("price") ? (
+                <p className="text-xs text-destructive mt-1">{fieldError("price")}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Клиент увидит: <span className="text-foreground font-medium">{priceDisplay}</span>
+                </p>
+              )}
             </div>
 
             <div>
               <Label className="text-sm font-medium text-foreground mb-2 block">
                 Выезд на дом / объект
               </Label>
+              {/* Переключатель сделан кнопками, поэтому значение уходит скрытым полем */}
+              <input type="hidden" name="homeVisit" value={homeVisit ? "true" : "false"} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { value: true, label: "Да, выезжаю" },
@@ -262,6 +332,7 @@ export function CreateServiceForm({
                     key={String(opt.value)}
                     type="button"
                     onClick={() => setHomeVisit(opt.value)}
+                    aria-pressed={homeVisit === opt.value}
                     className={`flex items-center gap-2.5 px-4 py-3 border rounded-lg text-sm transition-all cursor-pointer ${
                       homeVisit === opt.value
                         ? "border-brand bg-brand/5 text-brand font-medium"
@@ -287,10 +358,13 @@ export function CreateServiceForm({
         <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-foreground mb-1 pb-3 border-b border-border/60 flex items-center justify-between">
             <span>Фото работ</span>
-            <span className="text-xs font-normal text-muted-foreground">необязательно</span>
+            <span className="text-[11px] font-medium text-brand bg-brand/10 px-2 py-0.5 rounded-full">
+              Скоро
+            </span>
           </h2>
           <p className="text-xs text-muted-foreground mt-3 mb-3">
-            Объявления с фото получают в 3 раза больше откликов
+            Загрузка фотографий появится в ближайшем обновлении — пока объявление публикуется без
+            них.
           </p>
 
           {photos.length < 5 && (
@@ -317,7 +391,7 @@ export function CreateServiceForm({
                   key={photo}
                   className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group"
                 >
-                  {/* biome-ignore lint/performance/noImgElement: preview only */}
+                  {/* biome-ignore lint/performance/noImgElement: локальное превью, файл не загружается */}
                   <img
                     src={photo}
                     alt={`Фото ${index + 1}`}
@@ -361,10 +435,10 @@ export function CreateServiceForm({
           </Button>
           <Button
             type="submit"
-            disabled={loading}
+            disabled={pending}
             className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
           >
-            {loading
+            {pending
               ? isEdit
                 ? "Сохранение..."
                 : "Публикация..."
@@ -420,9 +494,9 @@ export function CreateServiceForm({
             <p className="text-xs font-semibold text-brand mb-2">Советы</p>
             <ul className="space-y-1.5">
               {[
-                "Фото работ привлекает в 3 раза больше клиентов",
                 "Укажите опыт и гарантии на работу",
                 "Реалистичная цена привлечёт больше откликов",
+                "Подробное описание отвечает на вопросы заранее",
               ].map((tip) => (
                 <li
                   key={tip}

@@ -3,29 +3,12 @@ import "server-only";
 import { headers } from "next/headers";
 import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
+import type { ActionState } from "@/lib/action-state";
 import { auth, type Session } from "@/lib/auth";
 
-/* ────────────────────────── контракт состояния ────────────────────────── */
-
-export type FieldErrors = Record<string, string[] | undefined>;
-
-/**
- * Состояние формы для useActionState.
- *
- * Три состояния, а не два: без `idle` начальное значение пришлось бы выдумывать
- * как «пустой успех» или «пустую ошибку», и форма при первом рендере показывала бы
- * несуществующий результат.
- *
- * Дискриминант — строковый `status`, а не булев флаг: он позволяет отличить
- * «ещё не отправляли» от «отправили неудачно» на уровне типов.
- */
-export type ActionState<TData = void> =
-  | { status: "idle" }
-  | { status: "success"; data: TData }
-  | { status: "error"; message: string; fieldErrors?: FieldErrors };
-
-/** Начальное значение для useActionState. Подходит любому ActionState<T>. */
-export const idleState: ActionState<never> = { status: "idle" };
+// Контракт состояния живёт в `action-state.ts`: этот модуль помечен `server-only`,
+// а клиентским компонентам нужны те же типы и начальное значение.
+export type { ActionState, FieldErrors } from "@/lib/action-state";
 
 /* ────────────────────────── ошибки ────────────────────────── */
 

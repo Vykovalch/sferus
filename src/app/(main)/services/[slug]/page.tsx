@@ -1,83 +1,23 @@
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { CategorySidebar } from "@/features/services/components/CategorySidebar";
+import { getServiceCardsByCategory } from "@/features/services/queries";
+import { formatServicePrice } from "@/lib/format";
 
-const mockServices = [
-  {
-    id: "1",
-    title: "Ремонт стиральных машин",
-    category: "Ремонт техники",
-    city: "Тирасполь",
-    imageUrl: "/u1.png",
-    price: "от 200 руб.",
-    top: true,
-    executor: { name: "ТехноСервис", type: "company" as const },
-    rating: 4.8,
-    reviews: 124,
-  },
-  {
-    id: "2",
-    title: "Электромонтажные работы",
-    category: "Электрика",
-    city: "Бендеры",
-    imageUrl: "/u2.png",
-    price: "от 150 руб.",
-    executor: { name: "Алексей Громов", type: "person" as const },
-    rating: 4.5,
-    reviews: 67,
-  },
-  {
-    id: "3",
-    title: "Уборка квартир и офисов",
-    category: "Дом и быт",
-    city: "Тирасполь",
-    imageUrl: "/u3.png",
-    price: "от 500 руб.",
-    executor: { name: "CleanPro", type: "company" as const },
-    rating: 4.9,
-    reviews: 213,
-  },
-  {
-    id: "4",
-    title: "Установка кондиционеров",
-    category: "Сантехника",
-    city: "Рыбница",
-    imageUrl: "/u4.png",
-    price: "Договорная",
-    executor: { name: "Дмитрий Коваль", type: "person" as const },
-    rating: 4.2,
-    reviews: 38,
-  },
-  {
-    id: "5",
-    title: "Установка и ремонт окон и дверей",
-    category: "Окна и двери",
-    city: "Слободзея",
-    imageUrl: "/u5.png",
-    price: "от 300 руб.",
-    executor: { name: "ОкнаМастер", type: "company" as const },
-    rating: 4.7,
-    reviews: 95,
-  },
-  {
-    id: "6",
-    title: "Ремонт сантехники на дому",
-    category: "Сантехника",
-    city: "Каменка",
-    imageUrl: "/u6.png",
-    price: "от 250 руб.",
-    executor: { name: "Сергей Белов", type: "person" as const },
-    rating: 4.6,
-    reviews: 51,
-  },
-];
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
-export default async function CategoryPage() {
-  const cities = await getCities();
+  const [categories, cities] = await Promise.all([getCategories(), getCities()]);
+  const category = categories.find((c) => c.slug === slug);
+  if (!category) notFound();
+
+  const services = await getServiceCardsByCategory(slug);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -96,14 +36,14 @@ export default async function CategoryPage() {
             </Link>
             <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground/60" />
             <span aria-current="page" className="text-foreground font-medium">
-              Строительство и ремонт
+              {category.name}
             </span>
           </nav>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        <h1 className="text-2xl font-semibold tracking-tight mb-6">Строительство и ремонт</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-6">{category.name}</h1>
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
@@ -137,48 +77,42 @@ export default async function CategoryPage() {
               </Sheet>
             </div>
 
-            {/* Список карточек */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {mockServices.map((service) => (
-                <ServiceCard key={service.id} {...service} />
-              ))}
-            </div>
-
-            {/* Пагинация */}
-            <div className="flex items-center justify-center gap-2 mt-10 select-none">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled
-                className="h-9 border-input text-muted-foreground"
-              >
-                Назад
-              </Button>
-              {[1, 2, 3, 4, 5].map((page) => (
+            {services.length === 0 ? (
+              <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
+                <p className="text-sm font-medium text-foreground mb-1">
+                  В этой категории пока нет объявлений
+                </p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Станьте первым — разместите здесь свою услугу
+                </p>
                 <Button
-                  key={page}
-                  type="button"
-                  variant={page === 1 ? "default" : "outline"}
-                  size="sm"
-                  className={`w-9 h-9 p-0 font-medium cursor-pointer transition-colors ${
-                    page === 1
-                      ? "bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm"
-                      : "border-input text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                  asChild
+                  variant="outline"
+                  className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
                 >
-                  {page}
+                  <Link href="/services/new">Разместить объявление</Link>
                 </Button>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-9 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
-              >
-                Вперёд
-              </Button>
-            </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {services.map((service) => (
+                  <ServiceCard
+                    key={service.id}
+                    id={service.id}
+                    title={service.title}
+                    categorySlug={service.categorySlug}
+                    city={service.cityName}
+                    price={formatServicePrice(
+                      service.price,
+                      service.isNegotiable,
+                      service.priceUnit,
+                    )}
+                    authorName={service.authorName}
+                    authorType={service.authorType}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

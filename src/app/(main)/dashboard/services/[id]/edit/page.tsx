@@ -3,60 +3,22 @@ import { notFound, redirect } from "next/navigation";
 import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { CreateServiceForm } from "@/features/services/components/CreateServiceForm";
+import { getServiceForEdit } from "@/features/services/queries";
 import { auth } from "@/lib/auth";
-
-// Временные данные — позже заменить на запрос к БД по userId + id
-const mockServiceDetails: Record<
-  string,
-  {
-    title: string;
-    description: string;
-    category: string;
-    city: string;
-    price: string;
-    priceUnit: string;
-    homeVisit: boolean;
-  }
-> = {
-  "1": {
-    title: "Электромонтажные работы",
-    description:
-      "Выполняю все виды электромонтажных работ: замена проводки, установка розеток и выключателей, монтаж щитков.",
-    category: "Строительство и ремонт",
-    city: "Тирасполь",
-    price: "80",
-    priceUnit: "hour",
-    homeVisit: true,
-  },
-  "2": {
-    title: "Установка видеонаблюдения",
-    description:
-      "Проектирование и монтаж систем видеонаблюдения для дома и офиса, настройка удалённого доступа.",
-    category: "Охрана и безопасность",
-    city: "Тирасполь",
-    price: "200",
-    priceUnit: "job",
-    homeVisit: true,
-  },
-  "3": {
-    title: "Подключение электроплит",
-    description:
-      "Подключение и настройка электроплит любой сложности с соблюдением норм безопасности.",
-    category: "Строительство и ремонт",
-    city: "Тирасполь",
-    price: "50",
-    priceUnit: "job",
-    homeVisit: true,
-  },
-};
 
 export default async function EditServicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect(`/login?callbackUrl=/dashboard/services/${id}/edit`);
 
-  const service = mockServiceDetails[id];
-  if (!service) notFound();
+  const serviceId = Number(id);
+  if (!Number.isInteger(serviceId) || serviceId <= 0) notFound();
+
+  const service = await getServiceForEdit(serviceId);
+
+  // Чужое объявление — notFound, а не 403: посторонний не должен даже узнать,
+  // что объявление с таким идентификатором существует.
+  if (!service || service.userId !== session.user.id) notFound();
 
   const [cities, categories] = await Promise.all([getCities(), getCategories()]);
 
@@ -68,7 +30,17 @@ export default async function EditServicePage({ params }: { params: Promise<{ id
         cities={cities}
         categories={categories}
         mode="edit"
-        initialValues={service}
+        initialValues={{
+          id: service.id,
+          title: service.title,
+          description: service.description,
+          categoryId: service.categoryId,
+          cityId: service.cityId,
+          price: service.price,
+          isNegotiable: service.isNegotiable,
+          priceUnit: service.priceUnit,
+          homeVisit: service.homeVisit,
+        }}
       />
     </>
   );
