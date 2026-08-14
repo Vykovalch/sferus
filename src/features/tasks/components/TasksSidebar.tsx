@@ -1,48 +1,76 @@
-"use client";
-
-import { useState } from "react";
-import { CategoryFilter } from "@/components/shared/CategoryFilter";
-import { CityFilter } from "@/components/shared/CityFilter";
-import { StatusFilter } from "@/components/shared/StatusFilter";
+import { FilterLinkGroup } from "@/components/shared/FilterLinkGroup";
 import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
+import type { TaskCatalogFilters } from "@/features/tasks/schemas";
+import { TASK_STATUSES } from "@/lib/constants";
 
-const ALL_CITIES = "Все города";
-const ALL_CATEGORIES = "Все категории";
-
-interface TasksSidebarProps {
-  /** Справочники из БД: клиентский компонент их сам получить не может. */
+interface TasksSidebarProps extends TaskCatalogFilters {
+  /** Справочники из БД: серверный компонент получает их от страницы. */
   cities: CityOption[];
   categories: CategoryOption[];
-  idPrefix?: string;
 }
 
-export function TasksSidebar({ cities, categories, idPrefix = "desktop" }: TasksSidebarProps) {
-  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES);
-  const [activeCity, setActiveCity] = useState(ALL_CITIES);
-  const [activeStatus, setActiveStatus] = useState("open");
+/** Собирает адрес доски заданий с обновлённым набором фильтров, остальные сохраняя. */
+function buildBoardHref(filters: TaskCatalogFilters, overrides: Partial<TaskCatalogFilters>) {
+  const next = { ...filters, ...overrides };
+  const search = new URLSearchParams();
+  if (next.categorySlug) search.set("category", next.categorySlug);
+  if (next.cityName) search.set("city", next.cityName);
+  if (next.status !== "open") search.set("status", next.status);
 
-  const cityNames = [ALL_CITIES, ...cities.map((c) => c.name)];
-  const categoryNames = [ALL_CATEGORIES, ...categories.map((c) => c.name)];
+  const query = search.toString();
+  return `/tasks${query ? `?${query}` : ""}`;
+}
+
+export function TasksSidebar({
+  cities,
+  categories,
+  categorySlug,
+  cityName,
+  status,
+}: TasksSidebarProps) {
+  const activeFilters: TaskCatalogFilters = { categorySlug, cityName, status };
+
+  const categoryOptions = [
+    { label: "Все категории", value: undefined },
+    ...categories.map((cat) => ({ label: cat.name, value: cat.slug })),
+  ];
+
+  const cityOptions = [
+    { label: "Все города", value: undefined },
+    ...cities.map((city) => ({ label: city.name, value: city.name })),
+  ];
+
+  const statusOptions = Object.entries(TASK_STATUSES).map(([value, label]) => ({
+    label,
+    value: value as TaskCatalogFilters["status"],
+  }));
 
   return (
-    <div className="space-y-3 select-none">
-      <CategoryFilter
-        categories={categoryNames}
-        activeCategory={activeCategory}
-        onChange={setActiveCategory}
-        name={`${idPrefix}-category`}
+    <div className="space-y-3">
+      <FilterLinkGroup
+        title="Категория"
+        options={categoryOptions.map((option) => ({
+          label: option.label,
+          href: buildBoardHref(activeFilters, { categorySlug: option.value }),
+          active: categorySlug === option.value,
+        }))}
       />
-      <CityFilter
-        cities={cityNames}
-        activeCity={activeCity}
-        onChange={setActiveCity}
-        name={`${idPrefix}-city`}
+      <FilterLinkGroup
+        title="Город"
+        options={cityOptions.map((option) => ({
+          label: option.label,
+          href: buildBoardHref(activeFilters, { cityName: option.value }),
+          active: cityName === option.value,
+        }))}
       />
-      <StatusFilter
-        activeStatus={activeStatus}
-        onChange={setActiveStatus}
-        name={`${idPrefix}-status`}
+      <FilterLinkGroup
+        title="Статус"
+        options={statusOptions.map((option) => ({
+          label: option.label,
+          href: buildBoardHref(activeFilters, { status: option.value }),
+          active: status === option.value,
+        }))}
       />
     </div>
   );

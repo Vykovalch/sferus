@@ -2,28 +2,31 @@
 
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
+import { createTask, updateTask } from "@/features/tasks/actions";
+import { type ActionState, idleState } from "@/lib/action-state";
+
+export interface TaskFormValues {
+  id: number;
+  title: string;
+  description: string;
+  categoryId: number;
+  cityId: number;
+  budget: number | null;
+  isNegotiable: boolean;
+}
 
 interface CreateTaskFormProps {
   /** Справочники приходят из БД: клиентский компонент их сам получить не может. */
   cities: CityOption[];
   categories: CategoryOption[];
   mode?: "create" | "edit";
-  initialValues?: {
-    title?: string;
-    description?: string;
-    category?: string;
-    city?: string;
-    budget?: string;
-    negotiable?: boolean;
-    deadline?: string;
-  };
+  initialValues?: TaskFormValues;
 }
 
 export function CreateTaskForm({
@@ -32,48 +35,62 @@ export function CreateTaskForm({
   mode = "create",
   initialValues,
 }: CreateTaskFormProps) {
-  const router = useRouter();
   const isEdit = mode === "edit";
   const cancelHref = isEdit ? "/dashboard/tasks" : "/tasks";
-  const redirectAfterSubmit = isEdit ? "/dashboard/tasks" : "/tasks";
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [state, formAction, pending] = useActionState<ActionState<never>, FormData>(
+    isEdit ? updateTask : createTask,
+    idleState,
+  );
 
+  // Поля остаются управляемыми: от них зависит панель предпросмотра справа.
+  // На отправку это не влияет — значения уходят через FormData по атрибуту name.
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [description, setDescription] = useState(initialValues?.description ?? "");
-  const [category, setCategory] = useState(initialValues?.category ?? "");
-  const [city, setCity] = useState(initialValues?.city ?? "");
-  const [budget, setBudget] = useState(initialValues?.budget ?? "");
-  const [negotiable, setNegotiable] = useState(initialValues?.negotiable ?? false);
-  const [deadline, setDeadline] = useState(initialValues?.deadline ?? "");
+  const [category, setCategory] = useState(initialValues ? String(initialValues.categoryId) : "");
+  const [city, setCity] = useState(initialValues ? String(initialValues.cityId) : "");
+  const [budget, setBudget] = useState(initialValues?.budget ? String(initialValues.budget) : "");
+  const [isNegotiable, setIsNegotiable] = useState(initialValues?.isNegotiable ?? false);
 
-  const budgetDisplay = negotiable ? "Договорная" : budget ? `до ${budget} руб.` : "Не указан";
+  const errorMessage = state.status === "error" ? state.message : null;
+  const fieldError = (name: string) =>
+    state.status === "error" ? state.fieldErrors?.[name]?.[0] : undefined;
+
+  // Поля, у которых есть собственная подсказка под инпутом. Ошибки всех
+  // остальных показываем в общей плашке — иначе форма отказывает молча.
+  const shownInline = new Set(["title", "description", "categoryId", "cityId", "budget"]);
+  const unmappedErrors =
+    state.status === "error"
+      ? Object.entries(state.fieldErrors ?? {})
+          .filter(([field, messages]) => !shownInline.has(field) && messages?.length)
+          .flatMap(([, messages]) => messages ?? [])
+      : [];
+
+  const budgetDisplay = isNegotiable ? "Договорная" : budget ? `до ${budget} руб.` : "Не указан";
 
   // В форме выбираются идентификаторы, а предпросмотр показывает названия
   const categoryName = categories.find((c) => String(c.id) === category)?.name ?? "";
   const cityName = cities.find((c) => String(c.id) === city)?.name ?? "";
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    // TODO: заменить на Server Action
-    await new Promise((r) => setTimeout(r, 1000));
-
-    setLoading(false);
-    router.push(redirectAfterSubmit);
-  }
-
   return (
     <div className="flex flex-col md:flex-row gap-6 items-start">
       {/* Форма создания */}
-      <form onSubmit={handleSubmit} className="flex-1 min-w-0 w-full flex flex-col gap-4">
-        {/* Сообщение об ошибке */}
-        {error && (
-          <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
-            {error}
+      <form action={formAction} className="flex-1 min-w-0 w-full flex flex-col gap-4">
+        {isEdit && initialValues && <input type="hidden" name="id" value={initialValues.id} />}
+
+        {errorMessage && (
+          <div
+            role="alert"
+            className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium"
+          >
+            {errorMessage}
+            {unmappedErrors.length > 0 && (
+              <ul className="mt-1.5 list-disc list-inside space-y-0.5">
+                {unmappedErrors.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
@@ -96,10 +113,16 @@ export function CreateTaskForm({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
+                minLength={10}
                 maxLength={100}
+                aria-invalid={Boolean(fieldError("title"))}
                 className="border-input focus-visible:ring-brand"
               />
-              <p className="text-xs text-muted-foreground mt-1">{title.length}/100 символов</p>
+              {fieldError("title") ? (
+                <p className="text-xs text-destructive mt-1">{fieldError("title")}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">{title.length}/100 символов</p>
+              )}
             </div>
 
             <div>
@@ -116,12 +139,18 @@ export function CreateTaskForm({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
+                minLength={20}
                 rows={5}
+                aria-invalid={Boolean(fieldError("description"))}
                 className="w-full px-3 py-2 text-sm bg-background text-foreground border border-input rounded-md focus-visible:outline-none focus:border-brand focus:ring-1 focus:ring-brand placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Подробное описание привлечёт больше подходящих исполнителей
-              </p>
+              {fieldError("description") ? (
+                <p className="text-xs text-destructive mt-1">{fieldError("description")}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Подробное описание привлечёт больше подходящих исполнителей
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -135,17 +164,18 @@ export function CreateTaskForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label
-                htmlFor="category"
+                htmlFor="categoryId"
                 className="text-sm font-medium text-foreground mb-1.5 block"
               >
                 Категория <span className="text-destructive">*</span>
               </Label>
               <select
-                id="category"
-                name="category"
+                id="categoryId"
+                name="categoryId"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
+                aria-invalid={Boolean(fieldError("categoryId"))}
                 className="w-full h-9 px-3 py-1 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand disabled:cursor-not-allowed disabled:opacity-50 transition-colors cursor-pointer"
               >
                 <option value="" className="text-muted-foreground">
@@ -157,18 +187,22 @@ export function CreateTaskForm({
                   </option>
                 ))}
               </select>
+              {fieldError("categoryId") && (
+                <p className="text-xs text-destructive mt-1">{fieldError("categoryId")}</p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="city" className="text-sm font-medium text-foreground mb-1.5 block">
+              <Label htmlFor="cityId" className="text-sm font-medium text-foreground mb-1.5 block">
                 Город <span className="text-destructive">*</span>
               </Label>
               <select
-                id="city"
-                name="city"
+                id="cityId"
+                name="cityId"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 required
+                aria-invalid={Boolean(fieldError("cityId"))}
                 className="w-full h-9 px-3 py-1 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand disabled:cursor-not-allowed disabled:opacity-50 transition-colors cursor-pointer"
               >
                 <option value="" className="text-muted-foreground">
@@ -180,68 +214,57 @@ export function CreateTaskForm({
                   </option>
                 ))}
               </select>
+              {fieldError("cityId") && (
+                <p className="text-xs text-destructive mt-1">{fieldError("cityId")}</p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Блок: Бюджет и срок */}
+        {/* Блок: Бюджет */}
         <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
           <h2 className="text-sm font-medium text-foreground mb-4 pb-3 border-b border-border">
-            Бюджет и срок
+            Бюджет
           </h2>
 
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="budget" className="text-sm font-medium text-foreground mb-1.5 block">
-                Бюджет
-              </Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="budget"
-                  name="budget"
-                  type="number"
-                  placeholder="например 500"
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  disabled={negotiable}
-                  className="border-input focus-visible:ring-brand disabled:opacity-40"
-                />
-                <span className="text-sm text-muted-foreground flex-shrink-0">руб.</span>
-              </div>
-              <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={negotiable}
-                  onChange={(e) => {
-                    setNegotiable(e.target.checked);
-                    if (e.target.checked) setBudget("");
-                  }}
-                  className="h-4 w-4 rounded border-input text-brand bg-background focus:ring-brand accent-brand cursor-pointer"
-                />
-                <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Бюджет договорной
-                </span>
-              </label>
-            </div>
-
-            <div>
-              <Label
-                htmlFor="deadline"
-                className="text-sm font-medium text-foreground mb-1.5 block"
-              >
-                Срок выполнения
-              </Label>
+          <div>
+            <Label htmlFor="budget" className="text-sm font-medium text-foreground mb-1.5 block">
+              Бюджет {!isNegotiable && <span className="text-destructive">*</span>}
+            </Label>
+            <div className="flex items-center gap-2">
               <Input
-                id="deadline"
-                name="deadline"
-                type="text"
-                placeholder="например: 2 недели, до 1 июня"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-                className="border-input focus-visible:ring-brand"
+                id="budget"
+                name="budget"
+                type="number"
+                min={1}
+                placeholder="например 500"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                disabled={isNegotiable}
+                required={!isNegotiable}
+                aria-invalid={Boolean(fieldError("budget"))}
+                className="border-input focus-visible:ring-brand disabled:opacity-40"
               />
-              <p className="text-xs text-muted-foreground mt-1">Необязательное поле</p>
+              <span className="text-sm text-muted-foreground flex-shrink-0">руб.</span>
             </div>
+            <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="isNegotiable"
+                checked={isNegotiable}
+                onChange={(e) => {
+                  setIsNegotiable(e.target.checked);
+                  if (e.target.checked) setBudget("");
+                }}
+                className="h-4 w-4 rounded border-input text-brand bg-background focus:ring-brand accent-brand cursor-pointer"
+              />
+              <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Бюджет договорной
+              </span>
+            </label>
+            {fieldError("budget") && (
+              <p className="text-xs text-destructive mt-1">{fieldError("budget")}</p>
+            )}
           </div>
         </div>
 
@@ -257,10 +280,10 @@ export function CreateTaskForm({
           </Button>
           <Button
             type="submit"
-            disabled={loading}
+            disabled={pending}
             className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow font-medium cursor-pointer transition-colors"
           >
-            {loading
+            {pending
               ? isEdit
                 ? "Сохранение..."
                 : "Публикация..."

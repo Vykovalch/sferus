@@ -2,7 +2,7 @@ import { Building2, ChevronRight, MapPin, User } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ContactRevealButton } from "@/features/services/components/ContactRevealButton";
+import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
 import { getOtherServicesByAuthor, getServiceDetail } from "@/features/services/queries";
 import { auth } from "@/lib/auth";
 import { formatMonthYear, formatServicePrice } from "@/lib/format";
@@ -207,7 +207,7 @@ export default async function ServiceListingPage({
               )}
 
               <ContactRevealButton
-                serviceId={service.id}
+                target={{ kind: "service", id: service.id }}
                 isAuthenticated={Boolean(session)}
                 loginCallbackUrl={listingPath}
                 className="hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
@@ -223,7 +223,7 @@ export default async function ServiceListingPage({
           <div className="text-lg font-bold text-brand leading-tight">{priceLabel}</div>
         </div>
         <ContactRevealButton
-          serviceId={service.id}
+          target={{ kind: "service", id: service.id }}
           isAuthenticated={Boolean(session)}
           loginCallbackUrl={listingPath}
           className="flex-shrink-0 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"

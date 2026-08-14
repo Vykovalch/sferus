@@ -12,11 +12,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { revealServiceContacts } from "@/features/profiles/actions";
+import { revealServiceContacts, revealTaskContacts } from "@/features/profiles/actions";
 import type { VisibleContact } from "@/features/profiles/queries";
 
 interface ContactRevealButtonProps {
-  serviceId: number;
+  /**
+   * Какое серверное действие вызвать раскрытием. Не функция-колбэк: Server
+   * Component не может передать произвольную стрелочную функцию клиентскому
+   * компоненту через границу сервер/клиент — сериализуется только прямая
+   * ссылка на `'use server'` функцию. Поэтому здесь дискриминант + id,
+   * а сами действия импортируются внутри клиентского компонента.
+   */
+  target: { kind: "service"; id: number } | { kind: "task"; id: number };
   isAuthenticated: boolean;
   loginCallbackUrl: string;
   className?: string;
@@ -54,9 +61,12 @@ const CHANNELS = {
  * Контакты не приходят пропсами и не лежат в разметке страницы: они
  * запрашиваются с сервера по нажатию, после проверки сессии.
  * Иначе их можно было бы прочитать в исходном коде, не нажимая кнопку.
+ *
+ * Общий для услуг и заданий — какое именно действие вызвать, решает вызывающая
+ * страница через `reveal`, сама кнопка не знает про конкретную сущность.
  */
 export function ContactRevealButton({
-  serviceId,
+  target,
   isAuthenticated,
   loginCallbackUrl,
   className,
@@ -81,7 +91,10 @@ export function ContactRevealButton({
     if (!next || contacts !== null) return;
 
     startTransition(async () => {
-      const result = await revealServiceContacts(serviceId);
+      const result =
+        target.kind === "service"
+          ? await revealServiceContacts(target.id)
+          : await revealTaskContacts(target.id);
       if (result.status === "ok") {
         setContacts(result.contacts);
         setError(null);
@@ -103,7 +116,7 @@ export function ContactRevealButton({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Свяжитесь напрямую</DialogTitle>
-          <DialogDescription>Исполнитель указал следующие способы связи</DialogDescription>
+          <DialogDescription>Указаны следующие способы связи</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-2">
@@ -134,7 +147,7 @@ export function ContactRevealButton({
           })}
 
           {contacts?.length === 0 && (
-            <p className="text-sm text-muted-foreground">Исполнитель не указал способы связи</p>
+            <p className="text-sm text-muted-foreground">Контакты не указаны</p>
           )}
         </div>
       </DialogContent>
