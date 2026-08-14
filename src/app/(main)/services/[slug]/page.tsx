@@ -8,16 +8,24 @@ import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { CategorySidebar } from "@/features/services/components/CategorySidebar";
 import { getServiceCardsByCategory } from "@/features/services/queries";
+import { parseServiceCatalogFilters } from "@/features/services/schemas";
 import { formatServicePrice } from "@/lib/format";
 
-export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+interface CategoryPageProps {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
+  const filters = parseServiceCatalogFilters(await searchParams);
 
   const [categories, cities] = await Promise.all([getCategories(), getCities()]);
   const category = categories.find((c) => c.slug === slug);
   if (!category) notFound();
 
-  const services = await getServiceCardsByCategory(slug);
+  const services = await getServiceCardsByCategory(slug, filters);
+  const hasActiveFilters = Boolean(filters.cityName || filters.executorType);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -47,7 +55,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
-            <CategorySidebar idPrefix="desktop" cities={cities} />
+            <CategorySidebar cities={cities} categorySlug={slug} {...filters} />
           </aside>
 
           {/* Контентная область */}
@@ -71,7 +79,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
                   <div className="overflow-y-auto">
-                    <CategorySidebar idPrefix="mobile" cities={cities} />
+                    <CategorySidebar cities={cities} categorySlug={slug} {...filters} />
                   </div>
                 </SheetContent>
               </Sheet>
@@ -79,19 +87,39 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
             {services.length === 0 ? (
               <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
-                <p className="text-sm font-medium text-foreground mb-1">
-                  В этой категории пока нет объявлений
-                </p>
-                <p className="text-xs text-muted-foreground mb-4">
-                  Станьте первым — разместите здесь свою услугу
-                </p>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
-                >
-                  <Link href="/services/new">Разместить объявление</Link>
-                </Button>
+                {hasActiveFilters ? (
+                  <>
+                    <p className="text-sm font-medium text-foreground mb-1">
+                      По заданным фильтрам ничего не нашлось
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Попробуйте выбрать другой город или тип исполнителя
+                    </p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
+                    >
+                      <Link href={`/services/${slug}`}>Сбросить фильтры</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-medium text-foreground mb-1">
+                      В этой категории пока нет объявлений
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Станьте первым — разместите здесь свою услугу
+                    </p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
+                    >
+                      <Link href="/services/new">Разместить объявление</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

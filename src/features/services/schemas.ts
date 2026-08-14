@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { profileType } from "@/lib/db/schema";
 
 /**
  * Схемы валидации услуги.
@@ -19,6 +20,12 @@ export const PRICE_UNIT_LABELS: Record<(typeof PRICE_UNITS)[number], string> = {
   day: "за день",
   sqm: "за кв.м.",
   unit: "за единицу",
+};
+
+/** Подписи типа исполнителя для фильтра каталога. Значения — enum `profile_type`. */
+export const EXECUTOR_TYPE_LABELS: Record<(typeof profileType.enumValues)[number], string> = {
+  individual: "Частный специалист",
+  company: "Компания",
 };
 
 /**
@@ -107,3 +114,40 @@ export const toggleServiceSchema = z.object({
 
 export type CreateServiceInput = z.infer<typeof createServiceSchema>;
 export type UpdateServiceInput = z.infer<typeof updateServiceSchema>;
+
+/**
+ * Фильтры каталога — вход из query-строки страницы, а не из формы, но то же
+ * правило применимо: значение подставляет пользователь через адресную строку,
+ * и его нельзя передавать в запрос как есть.
+ *
+ * `executorType` — enum на уровне БД (`profiles.type`): невалидное значение
+ * не просто некрасиво отфильтрует, а уронит запрос ошибкой Postgres
+ * «invalid input value for enum». Поэтому проверяется через `z.enum` и тихо
+ * игнорируется при несовпадении — вернуться к «все исполнители» безопаснее,
+ * чем показать пользователю 500.
+ *
+ * `cityName` не enum и ни на что не завязан: неизвестное имя города просто
+ * не найдёт совпадений в `WHERE`, отдельная проверка не нужна.
+ */
+const executorTypeParam = z.enum(profileType.enumValues);
+
+function firstSearchParamValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export interface ServiceCatalogFilters {
+  cityName?: string;
+  executorType?: (typeof profileType.enumValues)[number];
+}
+
+export function parseServiceCatalogFilters(
+  searchParams: Record<string, string | string[] | undefined>,
+): ServiceCatalogFilters {
+  const cityName = firstSearchParamValue(searchParams.city)?.trim();
+  const executorType = executorTypeParam.safeParse(firstSearchParamValue(searchParams.type));
+
+  return {
+    cityName: cityName || undefined,
+    executorType: executorType.success ? executorType.data : undefined,
+  };
+}

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { and, desc, eq, sql } from "drizzle-orm";
+import type { ServiceCatalogFilters } from "@/features/services/schemas";
 import { db } from "@/lib/db";
 import { categories, cities, profiles, services, user } from "@/lib/db/schema";
 
@@ -36,8 +37,15 @@ const cardColumns = {
   authorType: profiles.type,
 };
 
-/** Карточки услуг для каталога категории. */
-export async function getServiceCardsByCategory(categorySlug: string) {
+/** Карточки услуг для каталога категории, с необязательными фильтрами из URL. */
+export async function getServiceCardsByCategory(
+  categorySlug: string,
+  filters: ServiceCatalogFilters = {},
+) {
+  const conditions = [isPubliclyVisible, eq(categories.slug, categorySlug)];
+  if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
+  if (filters.executorType) conditions.push(eq(profiles.type, filters.executorType));
+
   return db
     .select(cardColumns)
     .from(services)
@@ -45,7 +53,7 @@ export async function getServiceCardsByCategory(categorySlug: string) {
     .innerJoin(cities, eq(services.cityId, cities.id))
     .innerJoin(user, eq(services.userId, user.id))
     .leftJoin(profiles, eq(profiles.userId, services.userId))
-    .where(and(isPubliclyVisible, eq(categories.slug, categorySlug)))
+    .where(and(...conditions))
     .orderBy(desc(services.createdAt));
 }
 
