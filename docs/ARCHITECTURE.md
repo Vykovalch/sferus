@@ -43,6 +43,8 @@ src/
       components/           #   UI, принадлежащий только этой фиче
     tasks/
     profiles/               #   профиль + контакты + раскрытие
+    categories/             #   справочник: только queries.ts
+    cities/                 #   справочник: только queries.ts
     favorites/
     admin/
                             #   responses/ и reviews/ — после v1, см. DATA-MODEL.md
@@ -59,8 +61,10 @@ src/
       auth-schema.ts        # таблицы better-auth (менять осторожно)
     auth.ts                 # серверная конфигурация better-auth
     auth-client.ts          # клиентские хуки better-auth
-    action-client.ts        # обёртка Server Actions
-    constants.ts            # города, категории, статусы
+    action-client.ts        # authedAction — помечен 'server-only'
+    action-state.ts         # контракт ActionState — БЕЗ server-only, см. 5.1
+    format.ts               # цены и даты, общее для услуг и заданий
+    constants.ts            # иконки и цвета категорий, статусы заданий
     utils.ts                # cn() и мелкие хелперы
 
   emails/                   # React Email шаблоны
@@ -214,6 +218,26 @@ export const updateService = authedAction(updateServiceSchema, async (input, { u
 
 Форма возвращаемого состояния совместима с `useActionState` (React 19). Это убирает
 ручные `useState(loading)` / `useState(error)`, продублированные сейчас в каждой форме.
+
+### 5.1. Почему контракт состояния вынесен в отдельный модуль
+
+`lib/action-client.ts` помечен `import 'server-only'` — он тянет за собой клиент БД
+и работу с сессией. Но `ActionState` и `idleState` нужны **клиентским** компонентам:
+без них не вызвать `useActionState`.
+
+Импорт серверного модуля из клиентского компонента валит сборку — и это правильно,
+ровно ради этого `server-only` и ставился. Поэтому контракт живёт отдельно:
+
+```
+lib/action-state.ts    ← типы + idleState, безопасно для клиента
+lib/action-client.ts   ← authedAction, 'server-only'
+```
+
+Правило: **клиентские компоненты импортируют из `action-state`, серверные действия —
+из `action-client`.**
+
+Ошибку поймал именно `next build`; ни `tsc`, ни линтер её не видят. Это довод в пользу
+того, чтобы сборка оставалась обязательным шагом CI, а не только проверка типов.
 
 ### Почему свой хелпер, а не `next-safe-action`
 

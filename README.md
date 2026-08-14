@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sferus
 
-## Getting Started
+Маркетплейс услуг для Приднестровья. Заказчики публикуют задания, исполнители размещают
+объявления об услугах.
 
-First, run the development server:
+**Объём v1:** каталог услуг и доска заданий без внутреннего взаимодействия. Связь между
+пользователями — только через раскрытие контактных данных. Откликов, отзывов, рейтингов,
+чата, заказов и платежей в первой версии нет.
+
+## Документация
+
+Перед первым изменением кода стоит прочитать [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+| Файл | Что внутри |
+|---|---|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Структура, слои, правила |
+| [docs/DATA-MODEL.md](docs/DATA-MODEL.md) | Модель данных v1, источник истины для `schema.ts` |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Порядок работ по этапам |
+| [docs/PROGRESS.md](docs/PROGRESS.md) | Что реально работает, а что моки |
+
+## Стек
+
+Next.js 16 (App Router, RSC) · React 19 · TypeScript strict · Drizzle ORM + PostgreSQL
+(Neon) · better-auth · Tailwind 4 + shadcn/radix · zod · Resend · Biome
+
+## Запуск
+
+Понадобится Node 24 и доступ к базе PostgreSQL.
+
+```bash
+npm install
+```
+
+Создайте `.env.local` по образцу [.env.example](.env.example) — нужны строка подключения
+к базе, секрет better-auth, ключ Resend и учётные данные Google OAuth.
+
+Примените миграции и заполните справочники:
+
+```bash
+npm run db:migrate
+```
+
+```bash
+npm run db:seed
+```
+
+Сид идемпотентный: вставляет города и категории, если их нет, и обновляет существующие
+по `slug`. Без него приложение неработоспособно — `category_id` и `city_id` в схеме
+обязательны.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Команды
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Команда | Что делает |
+|---|---|
+| `npm run dev` | разработка |
+| `npm run lint` | проверка Biome |
+| `npm run format` | форматирование |
+| `npm run db:generate` | сгенерировать миграцию после правки `schema.ts` |
+| `npm run db:migrate` | применить миграции |
+| `npm run db:seed` | заполнить справочники |
+| `npm run db:studio` | просмотр БД |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Перед коммитом: `npm run lint` и `npx tsc --noEmit`.
 
-## Learn More
+> **Осторожно с `npm run build`.** Скрипт начинается с `drizzle-kit migrate` и применит
+> миграции к базе. Для локальной проверки сборки используйте `npx next build`.
 
-To learn more about Next.js, take a look at the following resources:
+## Проверки
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+CI запускает четыре шага: `tsc --noEmit`, `biome lint`, проверку форматирования
+изменённых файлов и `next build`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Форматирование проверяется **только у изменённых файлов**: код, написанный до появления
+конфига Biome, расходится с ним примерно в 130 местах, и разовое форматирование всего
+репозитория отложено. Стандарт применяется к тому, что реально правят.
