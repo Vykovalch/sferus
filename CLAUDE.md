@@ -16,6 +16,7 @@
 | [docs/DATA-MODEL.md](docs/DATA-MODEL.md) | Утверждённая модель данных v1. Источник истины для `schema.ts` |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Порядок работ по этапам |
 | [docs/PROGRESS.md](docs/PROGRESS.md) | Что реально работает, а что моки. Обновлять при каждой завершённой фиче |
+| [docs/DESIGN.md](docs/DESIGN.md) | Дизайн-система: палитра, поверхности, карточки. Читать перед правкой цвета или отступа |
 
 ## Объём v1
 
