@@ -1,12 +1,11 @@
-import Link from 'next/link'
-import { ArrowRight, UserSearch, Briefcase } from 'lucide-react'
+import { Briefcase, UserSearch } from "lucide-react";
+import Link from "next/link";
 
 export function CtaSection() {
   return (
     <section className="py-20 bg-muted">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto">
-
           {/* Для клиентов */}
           <div className="p-12 rounded-3xl bg-primary text-primary-foreground relative overflow-hidden group">
             <div className="absolute top-8 right-8 xl:top-8 xl:right-8 opacity-10 group-hover:scale-125 transition-transform duration-500 hidden sm:block md:hidden xl:block">
@@ -21,10 +20,9 @@ export function CtaSection() {
               </p>
               <Link
                 href="/services"
-                className="inline-flex items-center gap-2 bg-white text-primary px-8 py-4 rounded-xl font-semibold hover:shadow-xl transition-all active:scale-95"
+                className="inline-block bg-white text-primary px-8 py-4 rounded-xl font-semibold hover:shadow-xl transition-all active:scale-95"
               >
                 Найти специалиста
-                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -43,14 +41,12 @@ export function CtaSection() {
               </p>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 border-2 border-secondary text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-secondary hover:text-white transition-all active:scale-95"
+                className="inline-block border-2 border-secondary text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-secondary hover:text-white transition-all active:scale-95"
               >
                 Разместить услугу
-                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
-
         </div>
       </div>
     </section>

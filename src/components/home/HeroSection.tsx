@@ -20,7 +20,10 @@ export async function HeroSection() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
             Найдите услугу
             <br className="hidden sm:inline" />
-            <span className="text-primary"> в Приднестровье</span>
+            {/* Глубокая ступень бренда, а не --brand: заголовок не кликается
+                и не должен спорить с кнопкой «Найти» — она в этом же экране
+                и она здесь целевое действие. */}
+            <span className="text-brand-display"> в Приднестровье</span>
           </h1>
 
           <div className="mb-10 max-w-3xl mx-auto">
@@ -40,19 +43,21 @@ export async function HeroSection() {
             </Link>
           </div>
 
+          {/* Иконки нейтральные: они сопровождают подписи, а не действия.
+              Кармин здесь ничего не сообщал и размывал сигнал «сюда можно нажать» */}
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 max-w-2xl mx-auto">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/50 rounded-full border border-white/80">
-              <Users className="w-4 h-4 text-primary shrink-0" />
+              <Users className="w-4 h-4 text-muted-foreground shrink-0" />
               <span className="text-sm font-semibold text-foreground">400+</span>
               <span className="text-sm text-muted-foreground font-medium">исполнителей</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/50 rounded-full border border-white/80">
-              <FileText className="w-4 h-4 text-primary shrink-0" />
+              <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
               <span className="text-sm font-semibold text-foreground">500+</span>
               <span className="text-sm text-muted-foreground font-medium">объявлений</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/50 rounded-full border border-white/80">
-              <Briefcase className="w-4 h-4 text-primary shrink-0" />
+              <Briefcase className="w-4 h-4 text-muted-foreground shrink-0" />
               <span className="text-sm font-semibold text-foreground">50+</span>
               <span className="text-sm text-muted-foreground font-medium">активных заданий</span>
             </div>

@@ -32,12 +32,9 @@ export async function PopularCategories() {
     <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="flex items-end justify-between mb-12">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
-              Популярные категории
-            </h2>
-            <div className="w-20 h-1.5 bg-primary mt-2 rounded-full" />
-          </div>
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+            Популярные категории
+          </h2>
           <Link
             href="/services"
             className="inline-flex items-center gap-1.5 text-base font-medium text-primary hover:underline underline-offset-4 transition-colors"
