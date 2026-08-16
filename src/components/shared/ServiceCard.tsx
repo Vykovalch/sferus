@@ -1,4 +1,4 @@
-import { Building2, MapPin, User, Wallet } from "lucide-react";
+import { Building2, Camera, MapPin, User, Wallet } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FavoriteButton } from "@/components/shared/FavoriteButton";
@@ -32,10 +32,10 @@ export function ServiceCard({
   return (
     <Link
       href={`/services/${categorySlug}/${id}`}
-      className="group bg-white rounded-2xl overflow-hidden hover:shadow transition-all duration-200"
+      className="group bg-card border border-border rounded-2xl overflow-hidden transition-colors duration-200 hover:border-brand/40"
     >
       {/* Фото */}
-      <div className="aspect-[1.5] relative overflow-hidden bg-gradient-to-br from-brand/10 to-brand/5">
+      <div className="aspect-[1.5] relative overflow-hidden bg-muted">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -46,7 +46,7 @@ export function ServiceCard({
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-4xl font-bold text-brand/20">{title.charAt(0)}</span>
+            <Camera className="h-10 w-10 text-muted-foreground/40" />
           </div>
         )}
         <FavoriteButton />

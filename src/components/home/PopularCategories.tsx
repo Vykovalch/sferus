@@ -5,8 +5,12 @@ import { getCategories } from "@/features/categories/queries";
 import { getServiceCountsByCategory } from "@/features/services/queries";
 import { categoryIcon, categoryStyle } from "@/lib/constants";
 
-/** Сколько категорий показываем на главной. */
-const POPULAR_COUNT = 6;
+/**
+ * Сколько категорий показываем на главной. Совпадает с числом колонок сетки
+ * на широком экране (`xl:grid-cols-5`), чтобы блок занимал ровно один ряд
+ * и последняя карточка не висела одна во втором.
+ */
+const POPULAR_COUNT = 5;
 
 /**
  * Популярные категории — те, в которых реально есть объявления, по убыванию их
@@ -25,7 +29,7 @@ export async function PopularCategories() {
     .slice(0, POPULAR_COUNT);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="flex items-end justify-between mb-12">
           <div>
@@ -46,7 +50,9 @@ export async function PopularCategories() {
         {popular.length === 0 ? (
           <p className="text-muted-foreground">Категорий с объявлениями пока нет</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          // Сетка совпадает со страницей всех категорий (app/(main)/services/page.tsx):
+          // карточки одной ширины и с одинаковыми зазорами в обоих местах
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
             {popular.map((category) => {
               const style = categoryStyle(category.slug);
               return (
@@ -57,7 +63,6 @@ export async function PopularCategories() {
                   icon={categoryIcon(category.icon)}
                   count={category.count}
                   iconColor={style.icon}
-                  iconBg={style.bg}
                 />
               );
             })}

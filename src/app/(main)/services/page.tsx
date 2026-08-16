@@ -30,7 +30,6 @@ export default async function ServicesPage() {
                 icon={categoryIcon(cat.icon)}
                 count={counts.get(cat.id) ?? 0}
                 iconColor={style.icon}
-                iconBg={style.bg}
               />
             );
           })}

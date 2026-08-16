@@ -7,6 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-hero-bg: var(--hero-bg);
+  --color-footer-bg: var(--footer-bg);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
@@ -45,17 +46,38 @@
   --color-brand-heading: var(--brand-heading);
 }
 
+/*
+ * Палитра построена на трёх ролях. Новый цвет добавляем, определив его роль,
+ * а не подобрав на глаз — иначе оттенки расходятся и палитра рассыпается.
+ *
+ *   Чернила — hue 294°. Всё тёмное и структурное: текст, заголовки,
+ *     тёмные поверхности (подвал, карточки тёмной темы). Chroma низкая
+ *     (0.01–0.04): оттенок работает как глубина, а не читается как цвет.
+ *   Действие — hue 15° (кармин). Лого, кнопки, фокус, активные состояния.
+ *     Цвет зарезервирован: крупные поверхности в нём не красим, иначе
+ *     перестанет означать «сюда можно нажать».
+ *   Светлые поверхности — строгая нейтраль, chroma 0. Фоны разделов,
+ *     карточки, рамки, поля ввода.
+ *
+ * Отдельно: hue 186° (бирюза) — вторичное действие, --secondary.
+ */
 :root {
-  --background: oklch(0.9826 0.0095 299.24);
-  --foreground: oklch(0.16 0.04 262);
+  --background: oklch(0.9826 0 0);
+  --foreground: oklch(0.16 0.04 294);
 
-  /* --hero-bg: oklch(0.988 0.008 262); */
-  --hero-bg: oklch(0.9826 0.0095 299.24);
+  --hero-bg: oklch(0.9826 0 0);
+
+  /* Тот же оттенок, что у --brand-heading (294°), но тёмная светлота —
+     подвал остаётся тёмным в обеих темах, отдельного значения в .dark нет.
+     Светлота 0.34 (#393546) вместо исходной 0.16 (#0E0A19): переход от светлых
+     разделов страницы к подвалу мягче, но подвал остаётся однозначно тёмным.
+     Подписи в подвале — neutral-300: на этом фоне 8:1, с запасом к WCAG AA. */
+  --footer-bg: oklch(0.34 0.03 294);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.04 262);
+  --card-foreground: oklch(0.16 0.04 294);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.04 262);
+  --popover-foreground: oklch(0.16 0.04 294);
 
   --primary: oklch(0.45 0.21 15);
   --primary-foreground: oklch(1 0 0);
@@ -63,15 +85,19 @@
   --secondary: oklch(0.43 0.09 186);
   --secondary-foreground: oklch(1 0 0);
 
-  --muted: oklch(0.96 0.005 262);
-  --muted-foreground: oklch(0.45 0.03 262);
-  --accent: oklch(0.91 0.015 262);
-  --accent-foreground: oklch(0.16 0.04 262);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.45 0.03 294);
+  --accent: oklch(0.91 0 0);
+  --accent-foreground: oklch(0.16 0.04 294);
 
-  --destructive: oklch(0.58 0.24 27);
+  /* Чистый красный (hue 29 = #FF0000), а не брендовый кармин 15°: ошибка
+     и главное действие не должны читаться как один цвет. Бренд при этом
+     тёмно-винный, destructive — светлее и ярче, разводит их и по характеру.
+     Светлота 0.55 даёт 5.43:1 на белом — с запасом к WCAG AA для text-destructive. */
+  --destructive: oklch(0.55 0.22 29);
 
-  --border: oklch(0.9288 0.0126 255.51);
-  --input: oklch(0.9 0.008 262);
+  --border: oklch(0.9288 0 0);
+  --input: oklch(0.9 0 0);
   --ring: oklch(0.45 0.21 15);
 
   --chart-1: oklch(0.45 0.21 15);
@@ -84,45 +110,46 @@
 
   --brand: oklch(0.45 0.21 15);
   --brand-foreground: oklch(1 0 0);
-  --brand-heading: oklch(33.249% 0.04052 294.045);
+  --brand-heading: oklch(0.33 0.04 294);
 }
 
 .dark {
-  --background: oklch(0.16 0.02 262);
-  --foreground: oklch(0.92 0.01 85);
+  --background: oklch(0.16 0 0);
+  --foreground: oklch(0.92 0.01 294);
 
-  --hero-bg: oklch(0.16 0.02 262);
+  --hero-bg: oklch(0.16 0 0);
 
-  --card: oklch(0.2 0.02 262);
-  --card-foreground: oklch(0.92 0.01 85);
-  --popover: oklch(0.2 0.02 262);
-  --popover-foreground: oklch(0.92 0.01 85);
+  --card: oklch(0.2 0.02 294);
+  --card-foreground: oklch(0.92 0.01 294);
+  --popover: oklch(0.2 0.02 294);
+  --popover-foreground: oklch(0.92 0.01 294);
 
   --primary: oklch(0.55 0.19 15);
   --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.50 0.08 186);
+  --secondary: oklch(0.5 0.08 186);
   --secondary-foreground: oklch(1 0 0);
 
-  --muted: oklch(0.24 0.03 262);
-  --muted-foreground: oklch(0.7 0.01 85);
-  --accent: oklch(0.24 0.03 262);
-  --accent-foreground: oklch(0.95 0.01 262);
+  --muted: oklch(0.24 0.03 294);
+  --muted-foreground: oklch(0.7 0.01 294);
+  --accent: oklch(0.24 0.03 294);
+  --accent-foreground: oklch(0.95 0.01 294);
 
-  --destructive: oklch(0.7 0.19 25);
+  /* Тот же оттенок 29°, что и в светлой теме — раньше темы расходились (27 / 25) */
+  --destructive: oklch(0.7 0.19 29);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 16%);
   --ring: oklch(0.55 0.19 15);
 
   --chart-1: oklch(0.55 0.19 15);
-  --chart-2: oklch(0.50 0.08 186);
+  --chart-2: oklch(0.5 0.08 186);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
   --brand: oklch(0.55 0.19 15);
   --brand-foreground: oklch(1 0 0);
-  --brand-heading: oklch(0.95 0.01 262);
+  --brand-heading: oklch(0.95 0.01 294);
 }
 
 @layer base {

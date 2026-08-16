@@ -18,6 +18,10 @@ const executorSteps: StepItem[] = [
   { n: 3, title: "Откликайтесь на задания", desc: "Предлагайте свои условия напрямую заинтересованным клиентам." },
 ];
 
+/**
+ * Средняя ступень светлой шкалы (98.26%): белый занят витриной «Свежих
+ * объявлений» выше, а два белых раздела подряд слиплись бы в один.
+ */
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="py-20 scroll-mt-16 bg-background">

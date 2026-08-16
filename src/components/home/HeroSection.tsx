@@ -10,7 +10,7 @@ export async function HeroSection() {
     <section
       className="relative py-16 md:py-32 overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(rgba(250, 248, 255, 0.85), rgba(250, 248, 255, 0.85)), url('/hero-bg.png')`,
+        backgroundImage: `linear-gradient(rgba(250, 250, 250, 0.85), rgba(250, 250, 250, 0.85)), url('/hero-bg.png')`,
         backgroundSize: "cover",
         backgroundPosition: "center center",
       }}
