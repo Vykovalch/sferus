@@ -1,5 +1,8 @@
+import { headers } from "next/headers";
 import { ServiceCard } from "@/components/shared/ServiceCard";
+import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { getLatestServiceCards } from "@/features/services/queries";
+import { auth } from "@/lib/auth";
 import { formatServicePrice } from "@/lib/format";
 
 /**
@@ -9,7 +12,11 @@ import { formatServicePrice } from "@/lib/format";
 export async function TopListings() {
   // Совпадает с числом колонок сетки на широком экране — блок занимает ровно
   // один ряд, последняя карточка не висит одна во втором
-  const listings = await getLatestServiceCards(5);
+  const session = await auth.api.getSession({ headers: await headers() });
+  const [listings, favorites] = await Promise.all([
+    getLatestServiceCards(5),
+    getFavoriteTargetIds(session?.user.id),
+  ]);
 
   return (
     <section className="py-16 bg-card">
@@ -32,6 +39,8 @@ export async function TopListings() {
                 price={formatServicePrice(listing.price, listing.isNegotiable, listing.priceUnit)}
                 authorName={listing.authorName}
                 authorType={listing.authorType}
+                isFavorite={favorites.serviceIds.has(listing.id)}
+                isAuthenticated={Boolean(session)}
               />
             ))}
           </div>

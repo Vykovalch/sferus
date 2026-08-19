@@ -15,8 +15,18 @@ export interface ServiceCardProps {
   authorType?: "individual" | "company" | null;
   /** Появится вместе с загрузкой изображений. */
   imageUrl?: string | null;
+  isFavorite?: boolean;
+  isAuthenticated?: boolean;
 }
 
+/**
+ * Карточка услуги.
+ *
+ * Ссылкой обёрнут заголовок, а не вся карточка: кликабельную площадь даёт
+ * `after:absolute after:inset-0` поверх контейнера. Так кнопка избранного
+ * оказывается рядом со ссылкой, а не внутри неё — форма внутри `<a>`
+ * недопустима, и кнопка внутри ссылки была невалидной вложенностью.
+ */
 export function ServiceCard({
   id,
   title,
@@ -26,14 +36,13 @@ export function ServiceCard({
   authorName,
   authorType,
   imageUrl,
+  isFavorite = false,
+  isAuthenticated = false,
 }: ServiceCardProps) {
   const isCompany = authorType === "company";
 
   return (
-    <Link
-      href={`/services/${categorySlug}/${id}`}
-      className="group bg-card border border-border rounded-2xl overflow-hidden transition-colors duration-200 hover:border-brand/40"
-    >
+    <article className="group relative bg-card border border-border rounded-2xl overflow-hidden transition-colors duration-200 hover:border-brand/40">
       {/* Фото */}
       <div className="aspect-[1.5] relative overflow-hidden bg-muted">
         {imageUrl ? (
@@ -49,13 +58,20 @@ export function ServiceCard({
             <Camera className="h-10 w-10 text-muted-foreground/40" />
           </div>
         )}
-        <FavoriteButton />
+        <FavoriteButton
+          target={{ kind: "service", id }}
+          isFavorite={isFavorite}
+          isAuthenticated={isAuthenticated}
+          className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/70 backdrop-blur-sm hover:bg-white"
+        />
       </div>
 
       {/* Контент */}
       <div className="p-3">
         <h3 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-2">
-          {title}
+          <Link href={`/services/${categorySlug}/${id}`} className="after:absolute after:inset-0">
+            {title}
+          </Link>
         </h3>
 
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2 min-w-0">
@@ -77,6 +93,6 @@ export function ServiceCard({
           <span>{price}</span>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

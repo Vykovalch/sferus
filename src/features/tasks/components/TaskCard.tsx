@@ -1,5 +1,6 @@
 import { Building2, Clock, MapPin, User } from "lucide-react";
 import Link from "next/link";
+import { FavoriteButton } from "@/components/shared/FavoriteButton";
 import type { TaskCard as TaskCardData } from "@/features/tasks/queries";
 import { TASK_STATUSES, type TaskStatus } from "@/lib/constants";
 import { formatRelativeDate, formatTaskBudget } from "@/lib/format";
@@ -12,22 +13,32 @@ const statusColors: Record<TaskStatus, string> = {
 
 interface TaskCardProps {
   task: TaskCardData;
+  isFavorite?: boolean;
+  isAuthenticated?: boolean;
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+/**
+ * Карточка задания.
+ *
+ * Кликабельна целиком, но ссылкой обёрнут только заголовок: площадь даёт
+ * `after:absolute after:inset-0`. Иначе кнопка избранного оказалась бы внутри
+ * ссылки — см. комментарий в `ServiceCard`.
+ */
+export function TaskCard({ task, isFavorite = false, isAuthenticated = false }: TaskCardProps) {
   const isCompany = task.authorType === "company";
 
   return (
-    <Link
-      href={`/tasks/${task.id}`}
-      className="bg-card rounded-xl p-5 hover:shadow transition-all duration-200 block"
-    >
+    <article className="relative bg-card rounded-xl p-5 hover:shadow transition-all duration-200">
       {/* Категория над заголовком */}
       <p className="text-xs text-muted-foreground font-medium mb-1">{task.categoryName}</p>
 
       {/* Заголовок + бюджет */}
       <div className="flex items-start justify-between gap-4 mb-2">
-        <span className="text-base font-medium text-foreground leading-snug">{task.title}</span>
+        <span className="text-base font-medium text-foreground leading-snug">
+          <Link href={`/tasks/${task.id}`} className="after:absolute after:inset-0">
+            {task.title}
+          </Link>
+        </span>
         <span className="text-base font-medium text-foreground whitespace-nowrap flex-shrink-0">
           {formatTaskBudget(task.budget, task.isNegotiable)}
         </span>
@@ -63,7 +74,13 @@ export function TaskCard({ task }: TaskCardProps) {
           <User className="h-3.5 w-3.5 text-muted-foreground/60" />
         )}
         <span className="text-xs text-muted-foreground font-medium">{task.authorName}</span>
+        <FavoriteButton
+          target={{ kind: "task", id: task.id }}
+          isFavorite={isFavorite}
+          isAuthenticated={isAuthenticated}
+          className="relative z-10 ml-auto p-1 rounded-full hover:bg-muted"
+        />
       </div>
-    </Link>
+    </article>
   );
 }

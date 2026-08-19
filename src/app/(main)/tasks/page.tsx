@@ -1,13 +1,16 @@
 import { SlidersHorizontal } from "lucide-react";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
+import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { TasksSidebar } from "@/features/tasks/components/TasksSidebar";
 import { getTaskCards } from "@/features/tasks/queries";
 import { parseTaskCatalogFilters } from "@/features/tasks/schemas";
+import { auth } from "@/lib/auth";
 
 interface TasksPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -16,10 +19,12 @@ interface TasksPageProps {
 export default async function TasksPage({ searchParams }: TasksPageProps) {
   const filters = parseTaskCatalogFilters(await searchParams);
 
-  const [cities, categories, tasks] = await Promise.all([
+  const session = await auth.api.getSession({ headers: await headers() });
+  const [cities, categories, tasks, favorites] = await Promise.all([
     getCities(),
     getCategories(),
     getTaskCards(filters),
+    getFavoriteTargetIds(session?.user.id),
   ]);
 
   const hasActiveFilters = Boolean(filters.categorySlug || filters.cityName);
@@ -101,7 +106,12 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             ) : (
               <div className="flex flex-col gap-3">
                 {tasks.map((task) => (
-                  <TaskCard key={task.id} task={task} />
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    isFavorite={favorites.taskIds.has(task.id)}
+                    isAuthenticated={Boolean(session)}
+                  />
                 ))}
               </div>
             )}

@@ -1,4 +1,5 @@
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ServiceCard } from "@/components/shared/ServiceCard";
@@ -6,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
+import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { CategorySidebar } from "@/features/services/components/CategorySidebar";
 import { getServiceCardsByCategory } from "@/features/services/queries";
 import { parseServiceCatalogFilters } from "@/features/services/schemas";
+import { auth } from "@/lib/auth";
 import { formatServicePrice } from "@/lib/format";
 
 interface CategoryPageProps {
@@ -24,7 +27,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const category = categories.find((c) => c.slug === slug);
   if (!category) notFound();
 
-  const services = await getServiceCardsByCategory(slug, filters);
+  const session = await auth.api.getSession({ headers: await headers() });
+  const [services, favorites] = await Promise.all([
+    getServiceCardsByCategory(slug, filters),
+    getFavoriteTargetIds(session?.user.id),
+  ]);
   const hasActiveFilters = Boolean(filters.cityName || filters.executorType);
 
   return (
@@ -137,6 +144,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     )}
                     authorName={service.authorName}
                     authorType={service.authorType}
+                    isFavorite={favorites.serviceIds.has(service.id)}
+                    isAuthenticated={Boolean(session)}
                   />
                 ))}
               </div>

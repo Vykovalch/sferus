@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { getProfileByUsername } from "@/features/profiles/queries";
 import { getServiceCardsByAuthor } from "@/features/services/queries";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
@@ -21,10 +22,11 @@ export default async function PublicProfilePage({
   const profile = await getProfileByUsername(username);
   if (!profile) notFound();
 
-  const [session, services, tasks] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
+  const session = await auth.api.getSession({ headers: await headers() });
+  const [services, tasks, favorites] = await Promise.all([
     getServiceCardsByAuthor(profile.userId),
     getOpenTaskCardsByAuthor(profile.userId),
+    getFavoriteTargetIds(session?.user.id),
   ]);
 
   const isCompany = profile.type === "company";
@@ -128,6 +130,8 @@ export default async function PublicProfilePage({
                       )}
                       authorName={service.authorName}
                       authorType={service.authorType}
+                      isFavorite={favorites.serviceIds.has(service.id)}
+                      isAuthenticated={Boolean(session)}
                     />
                   ))}
                 </div>
@@ -142,7 +146,12 @@ export default async function PublicProfilePage({
                 </h2>
                 <div className="flex flex-col gap-3">
                   {tasks.map((task) => (
-                    <TaskCard key={task.id} task={task} />
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      isFavorite={favorites.taskIds.has(task.id)}
+                      isAuthenticated={Boolean(session)}
+                    />
                   ))}
                 </div>
               </div>
