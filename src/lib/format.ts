@@ -55,3 +55,14 @@ const monthYear = new Intl.DateTimeFormat("ru", { month: "long", year: "numeric"
 export function formatMonthYear(date: Date): string {
   return monthYear.format(date);
 }
+
+const shortDate = new Intl.DateTimeFormat("ru", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+/** «12 янв. 2026» — точная дата там, где она важна: списки админки. */
+export function formatShortDate(date: Date): string {
+  return shortDate.format(date);
+}

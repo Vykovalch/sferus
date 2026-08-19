@@ -1,34 +1,18 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { Eye, Trash2, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { DeleteListingButton } from "@/features/admin/components/DeleteListingButton";
+import { ModerationToggle } from "@/features/admin/components/ModerationToggle";
+import { getTasksForModeration } from "@/features/admin/queries";
+import { TASK_STATUSES } from "@/lib/constants";
 
-const mockAdminTasks = [
-  { id: 1, title: "Разработка сайта-визитки для стоматологии", author: "Марина Ковалёва", city: "Тирасполь", active: true },
-  { id: 2, title: "Лендинг для строительной компании", author: "Марина Ковалёва", city: "Тирасполь", active: true },
-  { id: 3, title: "Интернет-магазин на WordPress", author: "Марина Ковалёва", city: "Бендеры", active: true },
-];
-
-export default function AdminTasksPage() {
-  const [tasks, setTasks] = useState(mockAdminTasks);
-
-  function toggleActive(id: number) {
-    // TODO: заменить на Server Action при подключении БД
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, active: !t.active } : t)));
-  }
-
-  function remove(id: number) {
-    // TODO: заменить на Server Action при подключении БД
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-  }
+/** Модерация заданий. Устройство то же, что у услуг. */
+export default async function AdminTasksPage() {
+  const tasks = await getTasksForModeration();
 
   return (
     <>
       <h1 className="text-xl font-medium text-foreground mb-1">Задания</h1>
       <p className="text-sm text-muted-foreground mb-6">
-        Модерация опубликованных заданий: скрытие и удаление
+        Модерация опубликованных заданий: скрытие с доски и удаление
       </p>
 
       {tasks.length === 0 ? (
@@ -37,53 +21,47 @@ export default function AdminTasksPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {tasks.map((t) => (
-            <div
-              key={t.id}
-              className="bg-background border border-border rounded-xl p-4 flex items-center gap-4 shadow-sm"
-            >
-              <div className="flex-1 min-w-0">
-                <Link
-                  href={`/tasks/${t.id}`}
-                  className="text-sm font-medium text-foreground hover:text-brand transition-colors line-clamp-1"
-                >
-                  {t.title}
-                </Link>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {t.author} · {t.city}
-                </p>
-              </div>
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-                  t.active
-                    ? "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
-                    : "bg-muted text-muted-foreground"
-                }`}
+          {tasks.map((task) => {
+            const isBlocked = task.moderationStatus === "blocked";
+
+            return (
+              <div
+                key={task.id}
+                className="bg-background border border-border rounded-xl p-4 flex items-center gap-4 shadow-sm"
               >
-                {t.active ? "Активно" : "Скрыто"}
-              </span>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => toggleActive(t.id)}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
-                  aria-label={t.active ? "Скрыть задание" : "Показать задание"}
+                <div className="flex-1 min-w-0">
+                  <Link
+                    href={`/tasks/${task.id}`}
+                    className="text-sm font-medium text-foreground hover:text-brand transition-colors line-clamp-1"
+                  >
+                    {task.title}
+                  </Link>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {task.authorName} · {task.cityName}
+                  </p>
+                </div>
+
+                {/* У задания вместо выключателя владельца — жизненный цикл,
+                    который ведёт автор: open → completed / cancelled. */}
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
+                    isBlocked
+                      ? "bg-destructive/10 text-destructive"
+                      : task.status === "open"
+                        ? "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
+                        : "bg-muted text-muted-foreground"
+                  }`}
                 >
-                  {t.active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => remove(t.id)}
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
-                  aria-label="Удалить задание"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                  {isBlocked ? "Скрыто модератором" : TASK_STATUSES[task.status]}
+                </span>
+
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <ModerationToggle target={{ kind: "task", id: task.id }} isBlocked={isBlocked} />
+                  <DeleteListingButton target={{ kind: "task", id: task.id }} title={task.title} />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </>

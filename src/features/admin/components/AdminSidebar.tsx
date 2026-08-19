@@ -1,8 +1,8 @@
 "use client";
 
+import { FileText, Megaphone, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Megaphone, FileText, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [

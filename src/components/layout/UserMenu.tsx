@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { ChevronDown, LogOut, ShieldCheck, User } from "lucide-react";
 import Link from "next/link";
-import { User, LogOut, ChevronDown } from "lucide-react";
-import { signOut } from "@/lib/auth-client";
-import type { Session } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { Session } from "@/lib/auth";
+import { signOut } from "@/lib/auth-client";
 
 interface UserMenuProps {
   session: Session;
@@ -73,6 +73,18 @@ export function UserMenu({ session }: UserMenuProps) {
             Личный кабинет
           </Link>
         </DropdownMenuItem>
+
+        {/* Единственный вход в админку: ссылки на неё в интерфейсе не было
+            вообще, адрес приходилось набирать руками. Пункт виден только
+            администратору — доступ всё равно проверяет layout админки. */}
+        {user.role === "admin" && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin/listings" className="flex items-center gap-2 cursor-pointer">
+              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+              Админ-панель
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
 

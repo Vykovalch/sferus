@@ -1,9 +1,9 @@
-import Link from "next/link";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
-import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/features/admin/components/AdminSidebar";
+import { auth } from "@/lib/auth";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() });

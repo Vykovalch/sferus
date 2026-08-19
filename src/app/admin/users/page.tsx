@@ -1,56 +1,29 @@
-"use client";
+import { headers } from "next/headers";
+import { UserBanToggle } from "@/features/admin/components/UserBanToggle";
+import { getUsersForAdmin } from "@/features/admin/queries";
+import { auth } from "@/lib/auth";
+import { formatShortDate } from "@/lib/format";
 
-import { Ban, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-
-// Ролей «заказчик» и «исполнитель» в проекте нет: пользователь универсален
-// и может одновременно публиковать услуги и создавать задания.
-// См. docs/DATA-MODEL.md, раздел «Пользователь универсален».
-const mockUsers = [
-  {
-    id: 1,
-    name: "Виктор Петров",
-    email: "viktor.petrov@example.com",
-    registeredAt: "12 янв. 2026",
-    blocked: false,
-  },
-  {
-    id: 2,
-    name: "Марина Ковалёва",
-    email: "marina.k@example.com",
-    registeredAt: "3 мар. 2026",
-    blocked: false,
-  },
-  {
-    id: 3,
-    name: "ТехноСервис",
-    email: "info@technoservice.example",
-    registeredAt: "15 мар. 2024",
-    blocked: false,
-  },
-  {
-    id: 4,
-    name: "Дмитрий Ковалёв",
-    email: "dmitry.k@example.com",
-    registeredAt: "20 апр. 2026",
-    blocked: true,
-  },
-];
-
-export default function AdminUsersPage() {
-  const [users, setUsers] = useState(mockUsers);
-
-  function toggleBlocked(id: number) {
-    // TODO: заменить на Server Action при подключении БД
-    setUsers((prev) => prev.map((u) => (u.id === id ? { ...u, blocked: !u.blocked } : u)));
-  }
+/**
+ * Пользователи и блокировка доступа.
+ *
+ * Ролей «заказчик» и «исполнитель» в проекте нет: пользователь универсален
+ * и может одновременно публиковать услуги и создавать задания
+ * (DATA-MODEL.md, «Пользователь универсален»). Единственная роль в списке —
+ * административная, она приходит из плагина `admin`.
+ */
+export default async function AdminUsersPage() {
+  const [session, users] = await Promise.all([
+    auth.api.getSession({ headers: await headers() }),
+    getUsersForAdmin(),
+  ]);
 
   return (
     <>
       <h1 className="text-xl font-medium text-foreground mb-1">Пользователи</h1>
       <p className="text-sm text-muted-foreground mb-6">
-        Список зарегистрированных пользователей, блокировка доступа
+        Блокировка закрывает вход и завершает активные сессии. Опубликованные объявления она не
+        скрывает — их убирают на вкладках «Объявления» и «Задания»
       </p>
 
       {users.length === 0 ? (
@@ -59,53 +32,66 @@ export default function AdminUsersPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {users.map((u) => {
-            const initials = u.name
+          {users.map((user) => {
+            const initials = user.name
               .split(" ")
-              .map((n) => n[0])
+              .map((part) => part[0])
               .join("")
               .toUpperCase()
               .slice(0, 2);
 
+            const isSelf = user.id === session?.user.id;
+            const isBanned = Boolean(user.banned);
+
             return (
               <div
-                key={u.id}
+                key={user.id}
                 className="bg-background border border-border rounded-xl p-4 flex items-center gap-4 shadow-sm"
               >
                 <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-sm font-bold text-brand flex-shrink-0">
                   {initials}
                 </div>
+
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground truncate">{user.name}</p>
+                    {user.role === "admin" && (
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-brand/10 text-brand flex-shrink-0">
+                        Админ
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  {isBanned && user.banReason && (
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                      Причина: {user.banReason}
+                    </p>
+                  )}
                 </div>
+
                 <span className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">
-                  {u.registeredAt}
+                  {formatShortDate(user.createdAt)}
                 </span>
+
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-                    u.blocked
+                    isBanned
                       ? "bg-destructive/10 text-destructive"
                       : "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
                   }`}
                 >
-                  {u.blocked ? "Заблокирован" : "Активен"}
+                  {isBanned ? "Заблокирован" : "Активен"}
                 </span>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => toggleBlocked(u.id)}
-                  className={`h-8 w-8 cursor-pointer flex-shrink-0 ${
-                    u.blocked
-                      ? "text-muted-foreground hover:text-green-600"
-                      : "text-muted-foreground hover:text-destructive"
-                  }`}
-                  aria-label={
-                    u.blocked ? "Разблокировать пользователя" : "Заблокировать пользователя"
-                  }
-                >
-                  {u.blocked ? <CheckCircle2 className="h-4 w-4" /> : <Ban className="h-4 w-4" />}
-                </Button>
+
+                {/* Себя заблокировать нельзя — это запрещает и плагин, и действие.
+                    Кнопку не показываем, чтобы не предлагать невозможное. */}
+                {isSelf ? (
+                  <span className="text-xs text-muted-foreground flex-shrink-0 w-8 text-center">
+                    вы
+                  </span>
+                ) : (
+                  <UserBanToggle userId={user.id} isBanned={isBanned} />
+                )}
               </div>
             );
           })}
