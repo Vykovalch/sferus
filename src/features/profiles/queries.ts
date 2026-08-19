@@ -26,3 +26,62 @@ export async function getVisibleContacts(userId: string) {
 }
 
 export type VisibleContact = Awaited<ReturnType<typeof getVisibleContacts>>[number];
+
+/**
+ * Собственные контакты пользователя — для формы настройки.
+ *
+ * Отдельная функция, а не флаг у `getVisibleContacts`: здесь нужны и скрытые
+ * каналы, и колонка `isVisible`. Свести их в одну функцию с параметром значит
+ * однажды забыть этот параметр и показать чужие скрытые контакты.
+ */
+export async function getMyContacts(userId: string) {
+  return db
+    .select({
+      channel: profileContacts.channel,
+      value: profileContacts.value,
+      isVisible: profileContacts.isVisible,
+    })
+    .from(profileContacts)
+    .innerJoin(profiles, eq(profileContacts.profileId, profiles.id))
+    .where(eq(profiles.userId, userId));
+}
+
+/**
+ * Собственный профиль — для формы настройки.
+ *
+ * Имени и email здесь нет: они живут в таблице `user` и приходят из сессии,
+ * второй запрос за ними не нужен. `username` не селектится — он не
+ * редактируется и в форме не участвует.
+ */
+export async function getMyProfile(userId: string) {
+  const [row] = await db
+    .select({
+      type: profiles.type,
+      cityId: profiles.cityId,
+      bio: profiles.bio,
+      experienceYears: profiles.experienceYears,
+    })
+    .from(profiles)
+    .where(eq(profiles.userId, userId))
+    .limit(1);
+
+  return row ?? null;
+}
+
+export type MyProfile = NonNullable<Awaited<ReturnType<typeof getMyProfile>>>;
+
+/**
+ * Идентификатор профиля по пользователю сессии.
+ *
+ * Нужен мутациям профиля и контактов: `profileId` выводится из сессии и никогда
+ * не приходит из формы — подменить чужой профиль нечем.
+ */
+export async function getProfileIdByUserId(userId: string) {
+  const [row] = await db
+    .select({ id: profiles.id })
+    .from(profiles)
+    .where(eq(profiles.userId, userId))
+    .limit(1);
+
+  return row ?? null;
+}

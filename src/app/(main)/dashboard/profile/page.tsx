@@ -1,18 +1,22 @@
 import { Camera } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { getCities } from "@/features/cities/queries";
 import { ContactSettingsForm } from "@/features/profiles/components/ContactSettingsForm";
+import { ProfileSettingsForm } from "@/features/profiles/components/ProfileSettingsForm";
+import { getMyContacts, getMyProfile } from "@/features/profiles/queries";
+import { toContactFormValues } from "@/features/profiles/schemas";
 import { auth } from "@/lib/auth";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login?callbackUrl=/dashboard/profile");
 
-  const cities = await getCities();
+  const [cities, contacts, profile] = await Promise.all([
+    getCities(),
+    getMyContacts(session.user.id),
+    getMyProfile(session.user.id),
+  ]);
 
   const { user } = session;
   const initials = user.name
@@ -49,58 +53,23 @@ export default async function ProfilePage() {
 
         <div className="border-t border-border" />
 
-        {/* Форма */}
-        <form className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="name">Имя и фамилия</Label>
-            <Input id="name" name="name" defaultValue={user.name} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" defaultValue={user.email} type="email" />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="city">Город</Label>
-            <select
-              id="city"
-              name="city"
-              className="w-full h-9 px-3 py-1 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand transition-colors cursor-pointer"
-            >
-              <option value="">Выберите город</option>
-              {cities.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="bio">О себе</Label>
-            <textarea
-              id="bio"
-              name="bio"
-              rows={3}
-              placeholder="Расскажите о себе, опыте, специализации..."
-              className="w-full px-3 py-2 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand placeholder:text-muted-foreground resize-none transition-colors"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer"
-          >
-            Сохранить изменения
-          </Button>
-        </form>
+        <ProfileSettingsForm
+          userName={user.name}
+          userEmail={user.email}
+          cities={cities}
+          initialValues={{
+            type: profile?.type ?? "individual",
+            cityId: profile?.cityId ?? null,
+            bio: profile?.bio ?? null,
+            experienceYears: profile?.experienceYears ?? null,
+          }}
+        />
       </div>
 
       {/* Контакты для клиентов */}
       <div className="bg-background border border-border rounded-xl p-6 shadow-sm mt-6">
         <h2 className="text-sm font-medium text-foreground mb-1">Контакты для клиентов</h2>
-        <ContactSettingsForm />
+        <ContactSettingsForm initialValues={toContactFormValues(contacts)} />
       </div>
     </>
   );

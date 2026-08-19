@@ -1,105 +1,198 @@
 "use client";
 
-import { useState } from "react";
-import { Phone, Send, MessageCircle } from "lucide-react";
+import { Phone, Send } from "lucide-react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-interface ChannelConfig {
-  key: "phone" | "whatsapp" | "telegram" | "viber";
-  label: string;
-  icon: typeof Phone;
-  placeholder: string;
-  type: "tel" | "text";
-}
-
-const CHANNELS: ChannelConfig[] = [
-  { key: "phone", label: "Телефон", icon: Phone, placeholder: "+373 ...", type: "tel" },
-  { key: "whatsapp", label: "WhatsApp", icon: MessageCircle, placeholder: "+373 ...", type: "tel" },
-  { key: "telegram", label: "Telegram", icon: Send, placeholder: "@username", type: "text" },
-  { key: "viber", label: "Viber", icon: Phone, placeholder: "+373 ...", type: "tel" },
-];
-
-interface ContactValues {
-  phone?: string;
-  whatsapp?: string;
-  telegram?: string;
-  viber?: string;
-}
+import { Label } from "@/components/ui/label";
+import { updateContacts } from "@/features/profiles/actions";
+import type { ContactFormValues } from "@/features/profiles/schemas";
+import { type ActionState, idleState } from "@/lib/action-state";
 
 interface ContactSettingsFormProps {
-  initialValues?: ContactValues;
+  initialValues: ContactFormValues;
 }
 
+interface VisibilityCheckboxProps {
+  name: string;
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
+
+/**
+ * Галочка видимости канала. Значение уходит в FormData как "on" — невыбранная
+ * не отправляется вовсе, и схема разбирает это как `false`.
+ */
+function VisibilityCheckbox({ name, label, checked, onChange }: VisibilityCheckboxProps) {
+  return (
+    <label className="flex items-center gap-2 cursor-pointer select-none">
+      <input
+        type="checkbox"
+        name={name}
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="h-4 w-4 rounded border-input text-brand accent-brand cursor-pointer"
+      />
+      <span className="text-sm text-foreground">{label}</span>
+    </label>
+  );
+}
+
+/**
+ * Настройка контактов для клиентов.
+ *
+ * Один номер телефона на три канала: звонки, WhatsApp и Viber работают по
+ * одному и тому же номеру, поэтому вводится он один раз, а галочки говорят,
+ * каким способом с человеком можно связаться. Telegram отдельным полем —
+ * там обычно имя пользователя, а не номер.
+ *
+ * Галочка прячет контакт, но не стирает его: снятая видимость сохраняет
+ * значение в базе, и вернуть показ можно не набирая номер заново.
+ */
 export function ContactSettingsForm({ initialValues }: ContactSettingsFormProps) {
-  const [enabled, setEnabled] = useState<Record<ChannelConfig["key"], boolean>>({
-    phone: Boolean(initialValues?.phone),
-    whatsapp: Boolean(initialValues?.whatsapp),
-    telegram: Boolean(initialValues?.telegram),
-    viber: Boolean(initialValues?.viber),
-  });
-  const [values, setValues] = useState<ContactValues>({
-    phone: initialValues?.phone ?? "",
-    whatsapp: initialValues?.whatsapp ?? "",
-    telegram: initialValues?.telegram ?? "",
-    viber: initialValues?.viber ?? "",
-  });
+  const [state, formAction, pending] = useActionState<ActionState<void>, FormData>(
+    updateContacts,
+    idleState,
+  );
 
-  function toggleChannel(key: ChannelConfig["key"], checked: boolean) {
-    setEnabled((prev) => ({ ...prev, [key]: checked }));
-  }
+  const [phone, setPhone] = useState(initialValues.phone);
+  const [phoneVisible, setPhoneVisible] = useState(initialValues.phoneVisible);
+  const [whatsappVisible, setWhatsappVisible] = useState(initialValues.whatsappVisible);
+  const [viberVisible, setViberVisible] = useState(initialValues.viberVisible);
+  const [telegram, setTelegram] = useState(initialValues.telegram);
+  const [telegramVisible, setTelegramVisible] = useState(initialValues.telegramVisible);
 
-  function setValue(key: ChannelConfig["key"], value: string) {
-    setValues((prev) => ({ ...prev, [key]: value }));
-  }
+  const errorMessage = state.status === "error" ? state.message : null;
+  const fieldError = (name: string) =>
+    state.status === "error" ? state.fieldErrors?.[name]?.[0] : undefined;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // TODO: заменить на Server Action при подключении БД
-  }
+  const hasPhone = phone.trim().length > 0;
+  const hasTelegram = telegram.trim().length > 0;
+  const phoneHidden = hasPhone && !phoneVisible && !whatsappVisible && !viberVisible;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       <p className="text-xs text-muted-foreground -mt-1">
-        Клиенты увидят только включённые контакты при нажатии «Показать контакты» на ваших объявлениях
+        Клиенты увидят отмеченные контакты по кнопке «Показать контакты» на ваших объявлениях
       </p>
 
-      <div className="space-y-3">
-        {CHANNELS.map((channel) => {
-          const Icon = channel.icon;
-          const isEnabled = enabled[channel.key];
-          return (
-            <div key={channel.key} className="flex items-start gap-3">
-              <label className="flex items-center gap-2 pt-2 w-32 flex-shrink-0 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={isEnabled}
-                  onChange={(e) => toggleChannel(channel.key, e.target.checked)}
-                  className="h-4 w-4 rounded border-input text-brand accent-brand cursor-pointer"
-                />
-                <Icon className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm text-foreground">{channel.label}</span>
-              </label>
-              <div className="flex-1 min-w-0">
-                <Input
-                  type={channel.type}
-                  value={values[channel.key] ?? ""}
-                  onChange={(e) => setValue(channel.key, e.target.value)}
-                  disabled={!isEnabled}
-                  placeholder={channel.placeholder}
-                  className="border-input focus-visible:ring-brand disabled:opacity-40"
-                />
-              </div>
-            </div>
-          );
-        })}
+      {errorMessage && (
+        <div
+          role="alert"
+          className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+        >
+          {errorMessage}
+        </div>
+      )}
+
+      {state.status === "success" && (
+        <output className="block p-3 rounded-lg bg-secondary/10 border border-secondary/20 text-foreground text-sm">
+          Контакты сохранены
+        </output>
+      )}
+
+      {/* Телефон и мессенджеры на нём */}
+      <div className="space-y-2">
+        <Label
+          htmlFor="phone"
+          className="flex items-center gap-2 text-sm font-medium text-foreground"
+        >
+          <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          Телефон
+        </Label>
+        <Input
+          id="phone"
+          name="phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder="+373 777 12345"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          maxLength={64}
+          aria-invalid={Boolean(fieldError("phone"))}
+          className="border-input focus-visible:ring-brand"
+        />
+        {fieldError("phone") && <p className="text-xs text-destructive">{fieldError("phone")}</p>}
+
+        <fieldset disabled={!hasPhone} className="disabled:opacity-40 pt-1">
+          <legend className="text-xs text-muted-foreground mb-2">
+            Как с вами связаться по этому номеру
+          </legend>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <VisibilityCheckbox
+              name="phoneVisible"
+              label="Звонки"
+              checked={phoneVisible}
+              onChange={setPhoneVisible}
+            />
+            <VisibilityCheckbox
+              name="whatsappVisible"
+              label="WhatsApp"
+              checked={whatsappVisible}
+              onChange={setWhatsappVisible}
+            />
+            <VisibilityCheckbox
+              name="viberVisible"
+              label="Viber"
+              checked={viberVisible}
+              onChange={setViberVisible}
+            />
+          </div>
+        </fieldset>
+
+        {phoneHidden && (
+          <p className="text-xs text-muted-foreground">Номер сохранён, но клиенты его не увидят</p>
+        )}
+      </div>
+
+      {/* Telegram */}
+      <div className="space-y-2">
+        <Label
+          htmlFor="telegram"
+          className="flex items-center gap-2 text-sm font-medium text-foreground"
+        >
+          <Send className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          Telegram
+        </Label>
+        <Input
+          id="telegram"
+          name="telegram"
+          type="text"
+          placeholder="@username"
+          value={telegram}
+          onChange={(e) => setTelegram(e.target.value)}
+          maxLength={64}
+          aria-invalid={Boolean(fieldError("telegram"))}
+          className="border-input focus-visible:ring-brand"
+        />
+        {fieldError("telegram") && (
+          <p className="text-xs text-destructive">{fieldError("telegram")}</p>
+        )}
+
+        <fieldset disabled={!hasTelegram} className="disabled:opacity-40 pt-1">
+          <VisibilityCheckbox
+            name="telegramVisible"
+            label="Показывать клиентам"
+            checked={telegramVisible}
+            onChange={setTelegramVisible}
+          />
+        </fieldset>
+
+        {hasTelegram && !telegramVisible && (
+          <p className="text-xs text-muted-foreground">
+            Telegram сохранён, но клиенты его не увидят
+          </p>
+        )}
       </div>
 
       <Button
         type="submit"
+        disabled={pending}
         className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer"
       >
-        Сохранить контакты
+        {pending ? "Сохранение…" : "Сохранить контакты"}
       </Button>
     </form>
   );
