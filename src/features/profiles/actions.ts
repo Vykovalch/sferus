@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import {
   getProfileIdByUserId,
+  getProfileOwner,
   getVisibleContacts,
   type VisibleContact,
 } from "@/features/profiles/queries";
@@ -72,6 +73,27 @@ export async function revealTaskContacts(taskId: number): Promise<RevealResult> 
   if (!task) return { status: "not-found" };
 
   const contacts = await getVisibleContacts(task.userId);
+  return { status: "ok", contacts };
+}
+
+/**
+ * Контакты с публичной страницы профиля.
+ *
+ * Третий вход в тот же механизм: у услуг и заданий раскрытие привязано
+ * к объявлению, здесь — к самому профилю. Правила те же — сессия обязательна,
+ * контакты не попадают в разметку страницы.
+ */
+export async function revealProfileContacts(profileId: number): Promise<RevealResult> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) return { status: "unauthorized" };
+
+  const parsed = revealSchema.safeParse({ id: profileId });
+  if (!parsed.success) return { status: "not-found" };
+
+  const profile = await getProfileOwner(parsed.data.id);
+  if (!profile) return { status: "not-found" };
+
+  const contacts = await getVisibleContacts(profile.userId);
   return { status: "ok", contacts };
 }
 

@@ -48,6 +48,24 @@ export async function getTaskCards(filters: TaskCatalogFilters) {
     .orderBy(desc(tasks.createdAt));
 }
 
+/**
+ * Открытые задания одного заказчика — блок на публичной странице профиля.
+ *
+ * Только `open`: завершённые и отменённые задания на чужом профиле — архив,
+ * который ничего не сообщает посетителю и мешает увидеть актуальное.
+ */
+export async function getOpenTaskCardsByAuthor(authorId: string) {
+  return db
+    .select(cardColumns)
+    .from(tasks)
+    .innerJoin(categories, eq(tasks.categoryId, categories.id))
+    .innerJoin(cities, eq(tasks.cityId, cities.id))
+    .innerJoin(user, eq(tasks.userId, user.id))
+    .leftJoin(profiles, eq(profiles.userId, tasks.userId))
+    .where(and(isPubliclyVisible, eq(tasks.userId, authorId), eq(tasks.status, "open")))
+    .orderBy(desc(tasks.createdAt));
+}
+
 /** Полная карточка задания для детальной страницы. */
 export async function getTaskDetail(id: number) {
   const [row] = await db

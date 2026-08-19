@@ -57,6 +57,25 @@ export async function getServiceCardsByCategory(
     .orderBy(desc(services.createdAt));
 }
 
+/**
+ * Карточки услуг одного исполнителя — сетка на публичной странице профиля.
+ *
+ * Отдельно от `getOtherServicesByAuthor`: тот отдаёт узкий список для блока
+ * «другие объявления» на детальной странице и исключает текущее объявление.
+ * Здесь нужна полная карточка каталога и ничего не исключается.
+ */
+export async function getServiceCardsByAuthor(authorId: string) {
+  return db
+    .select(cardColumns)
+    .from(services)
+    .innerJoin(categories, eq(services.categoryId, categories.id))
+    .innerJoin(cities, eq(services.cityId, cities.id))
+    .innerJoin(user, eq(services.userId, user.id))
+    .leftJoin(profiles, eq(profiles.userId, services.userId))
+    .where(and(isPubliclyVisible, eq(services.userId, authorId)))
+    .orderBy(desc(services.createdAt));
+}
+
 /** Свежие услуги для главной страницы. */
 export async function getLatestServiceCards(limit = 6) {
   return db

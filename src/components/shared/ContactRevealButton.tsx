@@ -12,18 +12,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { revealServiceContacts, revealTaskContacts } from "@/features/profiles/actions";
+import type { RevealResult } from "@/features/profiles/actions";
+import {
+  revealProfileContacts,
+  revealServiceContacts,
+  revealTaskContacts,
+} from "@/features/profiles/actions";
 import type { VisibleContact } from "@/features/profiles/queries";
 
+/**
+ * Какое серверное действие вызвать раскрытием. Не функция-колбэк: Server
+ * Component не может передать произвольную стрелочную функцию клиентскому
+ * компоненту через границу сервер/клиент — сериализуется только прямая
+ * ссылка на `'use server'` функцию. Поэтому здесь дискриминант + id,
+ * а сами действия импортируются внутри клиентского компонента.
+ *
+ * Третий вариант появился вместе с публичной страницей профиля: там раскрытие
+ * привязано не к объявлению, а к самому профилю.
+ */
+export type RevealTarget =
+  | { kind: "service"; id: number }
+  | { kind: "task"; id: number }
+  | { kind: "profile"; id: number };
+
+function reveal(target: RevealTarget): Promise<RevealResult> {
+  switch (target.kind) {
+    case "service":
+      return revealServiceContacts(target.id);
+    case "task":
+      return revealTaskContacts(target.id);
+    case "profile":
+      return revealProfileContacts(target.id);
+  }
+}
+
 interface ContactRevealButtonProps {
-  /**
-   * Какое серверное действие вызвать раскрытием. Не функция-колбэк: Server
-   * Component не может передать произвольную стрелочную функцию клиентскому
-   * компоненту через границу сервер/клиент — сериализуется только прямая
-   * ссылка на `'use server'` функцию. Поэтому здесь дискриминант + id,
-   * а сами действия импортируются внутри клиентского компонента.
-   */
-  target: { kind: "service"; id: number } | { kind: "task"; id: number };
+  target: RevealTarget;
   isAuthenticated: boolean;
   loginCallbackUrl: string;
   className?: string;
@@ -62,8 +86,8 @@ const CHANNELS = {
  * запрашиваются с сервера по нажатию, после проверки сессии.
  * Иначе их можно было бы прочитать в исходном коде, не нажимая кнопку.
  *
- * Общий для услуг и заданий — какое именно действие вызвать, решает вызывающая
- * страница через `reveal`, сама кнопка не знает про конкретную сущность.
+ * Общий для услуг, заданий и профилей — какое именно действие вызвать, решает
+ * `target`, сама кнопка не знает про конкретную сущность.
  */
 export function ContactRevealButton({
   target,
@@ -91,10 +115,7 @@ export function ContactRevealButton({
     if (!next || contacts !== null) return;
 
     startTransition(async () => {
-      const result =
-        target.kind === "service"
-          ? await revealServiceContacts(target.id)
-          : await revealTaskContacts(target.id);
+      const result = await reveal(target);
       if (result.status === "ok") {
         setContacts(result.contacts);
         setError(null);

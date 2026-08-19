@@ -2,7 +2,7 @@ import "server-only";
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { profileContacts, profiles } from "@/lib/db/schema";
+import { cities, profileContacts, profiles, user } from "@/lib/db/schema";
 
 /**
  * Контакты пользователя, которые он разрешил показывать.
@@ -81,6 +81,55 @@ export async function getProfileIdByUserId(userId: string) {
     .select({ id: profiles.id })
     .from(profiles)
     .where(eq(profiles.userId, userId))
+    .limit(1);
+
+  return row ?? null;
+}
+
+/**
+ * Публичный профиль по адресу страницы.
+ *
+ * Контактов здесь нет намеренно: попади они в возврат, оказались бы в HTML
+ * страницы и читались бы из исходного кода без нажатия кнопки
+ * (ARCHITECTURE.md, раздел 8). Их отдаёт только `revealProfileContacts`.
+ *
+ * Аватар берётся из `user.image`: он и есть источник истины, `profiles.avatar`
+ * удаляется на этапе 2 (DATA-MODEL.md).
+ */
+export async function getProfileByUsername(username: string) {
+  const [row] = await db
+    .select({
+      profileId: profiles.id,
+      userId: profiles.userId,
+      name: user.name,
+      image: user.image,
+      type: profiles.type,
+      bio: profiles.bio,
+      isVerified: profiles.isVerified,
+      experienceYears: profiles.experienceYears,
+      createdAt: profiles.createdAt,
+      cityName: cities.name,
+    })
+    .from(profiles)
+    .innerJoin(user, eq(profiles.userId, user.id))
+    .leftJoin(cities, eq(profiles.cityId, cities.id))
+    .where(eq(profiles.username, username))
+    .limit(1);
+
+  return row ?? null;
+}
+
+export type PublicProfile = NonNullable<Awaited<ReturnType<typeof getProfileByUsername>>>;
+
+/**
+ * Владелец профиля — минимальная выборка для действия раскрытия контактов.
+ * Зеркало `getServiceOwner` и `getTaskOwner`.
+ */
+export async function getProfileOwner(profileId: number) {
+  const [row] = await db
+    .select({ id: profiles.id, userId: profiles.userId })
+    .from(profiles)
+    .where(eq(profiles.id, profileId))
     .limit(1);
 
   return row ?? null;
