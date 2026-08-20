@@ -9,6 +9,7 @@ import {
   setModerationSchema,
   setUserBanSchema,
 } from "@/features/admin/schemas";
+import { getServiceImageUrls } from "@/features/services/queries";
 import {
   type ActionContext,
   ActionError,
@@ -19,6 +20,7 @@ import {
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { services, tasks } from "@/lib/db/schema";
+import { deleteImages } from "@/lib/storage";
 
 /**
  * Мутации админки.
@@ -77,12 +79,18 @@ export const setServiceModeration = authedAction(setModerationSchema, async (inp
 export const deleteService = authedAction(deleteListingSchema, async (input, ctx) => {
   requireAdmin(ctx);
 
+  // Адреса нужно забрать до удаления: каскад унесёт строки `service_images`,
+  // и узнать, какие файлы осиротели, будет уже неоткуда.
+  const imageUrls = await getServiceImageUrls(input.id);
+
   const deleted = await db
     .delete(services)
     .where(eq(services.id, input.id))
     .returning({ id: services.id });
 
   if (deleted.length === 0) throw new NotFoundError("Объявление не найдено");
+
+  await deleteImages(imageUrls);
 
   revalidateServiceLists();
 });

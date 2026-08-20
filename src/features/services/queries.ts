@@ -1,9 +1,9 @@
 import "server-only";
 
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import type { ServiceCatalogFilters } from "@/features/services/schemas";
 import { db } from "@/lib/db";
-import { categories, cities, profiles, services, user } from "@/lib/db/schema";
+import { categories, cities, profiles, serviceImages, services, user } from "@/lib/db/schema";
 
 /**
  * Запросы услуг.
@@ -23,6 +23,21 @@ const isPubliclyVisible = and(
   eq(services.moderationStatus, "approved"),
 );
 
+/**
+ * Первая фотография объявления — превью карточки.
+ *
+ * Подзапрос, а не join: join размножил бы строки по числу фотографий,
+ * и их пришлось бы схлопывать в коде. Индекс `service_images_service_idx`
+ * делает выборку дешёвой, а карточке нужен ровно один адрес.
+ */
+const previewImageUrl = sql<string | null>`(
+  select ${serviceImages.url}
+  from ${serviceImages}
+  where ${serviceImages.serviceId} = ${services.id}
+  order by ${serviceImages.order} asc, ${serviceImages.id} asc
+  limit 1
+)`;
+
 /** Поля, общие для карточек каталога. */
 const cardColumns = {
   id: services.id,
@@ -35,6 +50,7 @@ const cardColumns = {
   categorySlug: categories.slug,
   authorName: user.name,
   authorType: profiles.type,
+  imageUrl: previewImageUrl,
 };
 
 /** Карточки услуг для каталога категории, с необязательными фильтрами из URL. */
@@ -182,6 +198,20 @@ export async function getMyServices(userId: string) {
     .innerJoin(categories, eq(services.categoryId, categories.id))
     .where(eq(services.userId, userId))
     .orderBy(desc(services.createdAt));
+}
+
+/**
+ * Фотографии объявления по порядку — галерея на детальной странице
+ * и предзаполнение формы правки.
+ */
+export async function getServiceImageUrls(serviceId: number) {
+  const rows = await db
+    .select({ url: serviceImages.url })
+    .from(serviceImages)
+    .where(eq(serviceImages.serviceId, serviceId))
+    .orderBy(asc(serviceImages.order), asc(serviceImages.id));
+
+  return rows.map((row) => row.url);
 }
 
 /**

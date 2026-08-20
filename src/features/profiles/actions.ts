@@ -13,6 +13,7 @@ import {
 } from "@/features/profiles/queries";
 import {
   toContactRows,
+  updateAvatarSchema,
   updateContactsSchema,
   updateProfileSchema,
 } from "@/features/profiles/schemas";
@@ -22,6 +23,8 @@ import { ActionError, authedAction, NotFoundError } from "@/lib/action-client";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { profileContacts, profiles } from "@/lib/db/schema";
+import { isUploadedImageUrl } from "@/lib/images";
+import { deleteImages } from "@/lib/storage";
 
 const revealSchema = z.object({
   id: z.coerce.number().int().positive(),
@@ -193,6 +196,39 @@ export const updateProfile = authedAction(updateProfileSchema, async (input, { u
       experienceYears: input.experienceYears,
     })
     .where(eq(profiles.id, profile.id));
+
+  revalidatePath("/dashboard/profile");
+});
+
+/**
+ * Смена и удаление аватара.
+ *
+ * Пишем в `user.image` через API better-auth — по тем же двум причинам, что
+ * и имя: эндпоинт обновляет cookie сессии (иначе шапка показывала бы старый
+ * аватар до перелогина), а таблица `user` остаётся территорией плагина.
+ * Колонки `profiles.avatar` больше нет: источник истины один.
+ *
+ * Старый файл удаляется после успешной замены и best-effort — осиротевший
+ * файл лучше, чем аватар, который не сменился из-за недоступного хранилища.
+ */
+export const updateAvatar = authedAction(updateAvatarSchema, async (input, ctx) => {
+  const previous = ctx.session.user.image ?? null;
+  const next = input.imageUrl === "" ? null : input.imageUrl;
+
+  if (previous === next) return;
+
+  try {
+    await auth.api.updateUser({ body: { image: next }, headers: await headers() });
+  } catch (error) {
+    if (error instanceof APIError) throw new ActionError("Не удалось сохранить фотографию");
+    throw error;
+  }
+
+  // Удаляем только то, что лежит у нас: `user.image` может указывать
+  // на картинку из Google-аккаунта, и её удалять нечем и незачем.
+  if (previous && isUploadedImageUrl(previous)) {
+    await deleteImages([previous]);
+  }
 
   revalidatePath("/dashboard/profile");
 });

@@ -176,3 +176,72 @@ describe("parseServiceCatalogFilters", () => {
     });
   });
 });
+
+const BLOB = "https://abc123.public.blob.vercel-storage.com";
+
+describe("createServiceSchema — фотографии", () => {
+  it("без фотографий поле разбирается в пустой массив", () => {
+    const result = createServiceSchema.safeParse(validInput);
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.imageUrls).toEqual([]);
+  });
+
+  it("одно фото приходит строкой, а не массивом — разбирается в массив", () => {
+    // FormData с одним вхождением ключа отдаёт строку, с несколькими — массив.
+    const result = createServiceSchema.safeParse({
+      ...validInput,
+      imageUrls: `${BLOB}/photo-1.webp`,
+    });
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.imageUrls).toEqual([`${BLOB}/photo-1.webp`]);
+  });
+
+  it("несколько фото сохраняют порядок — первое станет обложкой", () => {
+    const urls = [`${BLOB}/a.webp`, `${BLOB}/b.webp`, `${BLOB}/c.webp`];
+    const result = createServiceSchema.safeParse({ ...validInput, imageUrls: urls });
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.imageUrls).toEqual(urls);
+  });
+
+  it("адрес с чужого домена отклоняется", () => {
+    // Иначе в объявление можно было бы вписать картинку с постороннего сайта —
+    // вплоть до отслеживающего пикселя.
+    for (const url of [
+      "https://example.com/photo.webp",
+      "http://abc123.public.blob.vercel-storage.com/photo.webp",
+      "https://evil.com/abc.public.blob.vercel-storage.com/photo.webp",
+      "не адрес вовсе",
+    ]) {
+      expect(createServiceSchema.safeParse({ ...validInput, imageUrls: url }).success).toBe(false);
+    }
+  });
+
+  it("больше пяти фотографий отклоняется", () => {
+    const urls = Array.from({ length: 6 }, (_, i) => `${BLOB}/photo-${i}.webp`);
+    expect(createServiceSchema.safeParse({ ...validInput, imageUrls: urls }).success).toBe(false);
+  });
+
+  it("пустые значения отбрасываются, а не считаются адресом", () => {
+    const result = createServiceSchema.safeParse({
+      ...validInput,
+      imageUrls: ["", `${BLOB}/a.webp`],
+    });
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.imageUrls).toEqual([`${BLOB}/a.webp`]);
+  });
+
+  it("updateServiceSchema принимает фотографии так же", () => {
+    const result = updateServiceSchema.safeParse({
+      ...validInput,
+      id: "42",
+      imageUrls: `${BLOB}/a.webp`,
+    });
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.data.imageUrls).toHaveLength(1);
+  });
+});

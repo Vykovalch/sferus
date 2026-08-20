@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { CreateServiceForm } from "@/features/services/components/CreateServiceForm";
-import { getServiceForEdit } from "@/features/services/queries";
+import { getServiceForEdit, getServiceImageUrls } from "@/features/services/queries";
 import { auth } from "@/lib/auth";
 
 export default async function EditServicePage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,7 +20,11 @@ export default async function EditServicePage({ params }: { params: Promise<{ id
   // что объявление с таким идентификатором существует.
   if (!service || service.userId !== session.user.id) notFound();
 
-  const [cities, categories] = await Promise.all([getCities(), getCategories()]);
+  const [cities, categories, imageUrls] = await Promise.all([
+    getCities(),
+    getCategories(),
+    getServiceImageUrls(serviceId),
+  ]);
 
   return (
     <>
@@ -40,6 +44,7 @@ export default async function EditServicePage({ params }: { params: Promise<{ id
           isNegotiable: service.isNegotiable,
           priceUnit: service.priceUnit,
           homeVisit: service.homeVisit,
+          imageUrls,
         }}
       />
     </>

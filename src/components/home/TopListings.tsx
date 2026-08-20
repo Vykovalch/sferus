@@ -39,6 +39,7 @@ export async function TopListings() {
                 price={formatServicePrice(listing.price, listing.isNegotiable, listing.priceUnit)}
                 authorName={listing.authorName}
                 authorType={listing.authorType}
+                imageUrl={listing.imageUrl}
                 isFavorite={favorites.serviceIds.has(listing.id)}
                 isAuthenticated={Boolean(session)}
               />

@@ -3,7 +3,12 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
-import { getOtherServicesByAuthor, getServiceDetail } from "@/features/services/queries";
+import { ServiceGallery } from "@/features/services/components/ServiceGallery";
+import {
+  getOtherServicesByAuthor,
+  getServiceDetail,
+  getServiceImageUrls,
+} from "@/features/services/queries";
 import { auth } from "@/lib/auth";
 import { formatMonthYear, formatServicePrice } from "@/lib/format";
 
@@ -23,9 +28,10 @@ export default async function ServiceListingPage({
   // Категория входит в адрес: чужой slug не должен открывать объявление
   if (service.categorySlug !== slug) notFound();
 
-  const [session, otherServices] = await Promise.all([
+  const [session, otherServices, images] = await Promise.all([
     auth.api.getSession({ headers: await headers() }),
     getOtherServicesByAuthor(service.authorId, service.id),
+    getServiceImageUrls(service.id),
   ]);
 
   const isCompany = service.authorType === "company";
@@ -109,6 +115,14 @@ export default async function ServiceListingPage({
                   {isCompany ? "Компания" : "Частный специалист"}
                 </span>
               </div>
+
+              {/* Галерея. Компонент был написан ещё до 1.1 и всё это время
+                  не использовался — показывать было нечего. */}
+              {images.length > 0 && (
+                <div className="mb-6">
+                  <ServiceGallery images={images} title={service.title} />
+                </div>
+              )}
 
               {/* Описание */}
               <h2 className="text-sm font-medium text-foreground mb-2">Описание услуги</h2>

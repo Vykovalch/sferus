@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { contactChannel } from "@/lib/db/schema";
 import { profileType } from "@/lib/db/schema";
+import { isUploadedImageUrl } from "@/lib/images";
 
 /**
  * Схемы контактных каналов профиля.
@@ -206,3 +207,21 @@ export const updateProfileSchema = z.object({
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+/**
+ * Аватар: адрес загруженного файла либо пустая строка — «убрать».
+ *
+ * Проверка принадлежности нашему хранилищу обязательна по той же причине, что
+ * и у фотографий объявления: значение приходит из формы, то есть его
+ * подставляет пользователь.
+ */
+export const updateAvatarSchema = z.object({
+  imageUrl: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value ?? "")
+    .refine((value) => value === "" || isUploadedImageUrl(value), "Недопустимый адрес изображения"),
+});
+
+export type UpdateAvatarInput = z.infer<typeof updateAvatarSchema>;

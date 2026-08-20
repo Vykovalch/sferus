@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { profileType } from "@/lib/db/schema";
+import { IMAGE_UPLOAD, isUploadedImageUrl } from "@/lib/images";
 
 /**
  * Схемы валидации услуги.
@@ -46,6 +47,31 @@ const checkboxField = z
 /** Скрытое поле с явным "true" / "false" — для переключателей, не являющихся чекбоксом. */
 const booleanField = z.enum(["true", "false"]).transform((value) => value === "true");
 
+/**
+ * Адреса загруженных фотографий.
+ *
+ * Одно имя поля повторяется в форме столько раз, сколько фотографий: разбор
+ * `FormData` отдаёт строку при одном вхождении, массив при нескольких
+ * и `undefined`, когда фото нет вовсе, — схема обязана принять все три случая.
+ *
+ * Принадлежность адреса нашему хранилищу проверяется обязательно: значения
+ * приходят из формы, то есть их подставляет пользователь. Без проверки
+ * в объявление можно было бы вписать картинку с чужого домена — вплоть до
+ * отслеживающего пикселя, который собирал бы адреса всех, кто открыл каталог.
+ */
+const imageUrlsField = z
+  .union([z.string(), z.array(z.string())])
+  .optional()
+  .transform((value) => {
+    if (value === undefined) return [];
+    return (Array.isArray(value) ? value : [value]).filter((url) => url.length > 0);
+  })
+  .pipe(
+    z
+      .array(z.string().refine(isUploadedImageUrl, "Недопустимый адрес изображения"))
+      .max(IMAGE_UPLOAD.maxFiles, `Не больше ${IMAGE_UPLOAD.maxFiles} фотографий`),
+  );
+
 /** Ссылка на строку справочника. */
 const referenceId = z.coerce
   .number({ error: "Выберите значение из списка" })
@@ -77,6 +103,7 @@ const serviceFields = {
   categoryId: referenceId,
   cityId: referenceId,
   homeVisit: booleanField,
+  imageUrls: imageUrlsField,
 };
 
 /**

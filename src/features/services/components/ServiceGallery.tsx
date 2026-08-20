@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 interface ServiceGalleryProps {
   images: string[];
@@ -69,7 +69,9 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
                 {/* Оверлей если фото больше 3 */}
                 {index === 1 && images.length > 3 && (
                   <div className="absolute inset-0 bg-background/70 backdrop-blur-[2px] flex items-center justify-center">
-                    <span className="text-foreground text-base font-semibold">+{images.length - 3}</span>
+                    <span className="text-foreground text-base font-semibold">
+                      +{images.length - 3}
+                    </span>
                   </div>
                 )}
               </button>

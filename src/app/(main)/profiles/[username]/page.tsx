@@ -130,6 +130,7 @@ export default async function PublicProfilePage({
                       )}
                       authorName={service.authorName}
                       authorType={service.authorType}
+                      imageUrl={service.imageUrl}
                       isFavorite={favorites.serviceIds.has(service.id)}
                       isAuthenticated={Boolean(session)}
                     />

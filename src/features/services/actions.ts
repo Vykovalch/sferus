@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getServiceOwner } from "@/features/services/queries";
+import { getServiceImageUrls, getServiceOwner } from "@/features/services/queries";
 import {
   createServiceSchema,
   toggleServiceSchema,
@@ -11,7 +11,8 @@ import {
 } from "@/features/services/schemas";
 import { authedAction, ForbiddenError, NotFoundError } from "@/lib/action-client";
 import { db } from "@/lib/db";
-import { categories, services } from "@/lib/db/schema";
+import { categories, serviceImages, services } from "@/lib/db/schema";
+import { deleteImages } from "@/lib/storage";
 
 /**
  * Мутации услуг.
@@ -21,6 +22,37 @@ import { categories, services } from "@/lib/db/schema";
  * и валидацию входа; проверка прав на конкретный объект остаётся здесь, в теле
  * обработчика, и обобщению не подлежит.
  */
+
+/**
+ * Фотографии объявления — полное состояние из формы, а не патч.
+ *
+ * Строки переписываются целиком: порядок задаётся позицией в массиве, а снятые
+ * фотографии удаляются из хранилища. Тот же приём, что у контактов профиля —
+ * форма является источником истины, и сравнивать её с базой по одной записи
+ * незачем.
+ *
+ * Файлы удаляются **после** записи в БД и best-effort: если хранилище недоступно,
+ * объявление всё равно должно сохраниться, а осиротевший файл — это мусор,
+ * а не поломка.
+ */
+async function replaceServiceImages(serviceId: number, urls: string[]) {
+  const previous = await getServiceImageUrls(serviceId);
+
+  await db.delete(serviceImages).where(eq(serviceImages.serviceId, serviceId));
+
+  if (urls.length > 0) {
+    await db.insert(serviceImages).values(
+      urls.map((url, index) => ({
+        serviceId,
+        url,
+        order: index,
+      })),
+    );
+  }
+
+  const kept = new Set(urls);
+  await deleteImages(previous.filter((url) => !kept.has(url)));
+}
 
 /** Slug категории нужен, чтобы собрать адрес созданной услуги. */
 async function getCategorySlug(categoryId: number) {
@@ -52,6 +84,16 @@ export const createService = authedAction(createServiceSchema, async (input, { u
     })
     .returning({ id: services.id });
 
+  if (input.imageUrls.length > 0) {
+    await db.insert(serviceImages).values(
+      input.imageUrls.map((url, index) => ({
+        serviceId: created.id,
+        url,
+        order: index,
+      })),
+    );
+  }
+
   revalidatePath("/services");
   revalidatePath(`/services/${slug}`);
   revalidatePath("/dashboard/services");
@@ -82,6 +124,8 @@ export const updateService = authedAction(updateServiceSchema, async (input, { u
       homeVisit: input.homeVisit,
     })
     .where(eq(services.id, input.id));
+
+  await replaceServiceImages(input.id, input.imageUrls);
 
   revalidatePath("/services");
   revalidatePath(`/services/${slug}`);

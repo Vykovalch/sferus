@@ -144,6 +144,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     )}
                     authorName={service.authorName}
                     authorType={service.authorType}
+                    imageUrl={service.imageUrl}
                     isFavorite={favorites.serviceIds.has(service.id)}
                     isAuthenticated={Boolean(session)}
                   />

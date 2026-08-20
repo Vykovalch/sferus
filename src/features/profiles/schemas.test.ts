@@ -3,6 +3,7 @@ import {
   type ContactRow,
   toContactFormValues,
   toContactRows,
+  updateAvatarSchema,
   updateContactsSchema,
   updateProfileSchema,
 } from "./schemas";
@@ -290,5 +291,38 @@ describe("updateProfileSchema", () => {
     expect(result.success).toBe(true);
     if (!result.success) return;
     expect(result.data).not.toHaveProperty("email");
+  });
+});
+
+describe("updateAvatarSchema", () => {
+  const BLOB = "https://abc123.public.blob.vercel-storage.com";
+
+  it("принимает адрес из нашего хранилища", () => {
+    const result = updateAvatarSchema.safeParse({ imageUrl: `${BLOB}/avatar.webp` });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.imageUrl).toBe(`${BLOB}/avatar.webp`);
+  });
+
+  it("пустая строка означает «убрать фотографию»", () => {
+    const result = updateAvatarSchema.safeParse({ imageUrl: "" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.imageUrl).toBe("");
+  });
+
+  it("отсутствующий ключ разбирается как пустая строка", () => {
+    const result = updateAvatarSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.imageUrl).toBe("");
+  });
+
+  it("чужой домен отклоняется", () => {
+    for (const imageUrl of [
+      "https://example.com/avatar.webp",
+      "http://abc123.public.blob.vercel-storage.com/avatar.webp",
+      "https://evil.com/abc.public.blob.vercel-storage.com/avatar.webp",
+      "javascript:alert(1)",
+    ]) {
+      expect(updateAvatarSchema.safeParse({ imageUrl }).success).toBe(false);
+    }
   });
 });

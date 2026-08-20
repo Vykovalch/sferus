@@ -1,5 +1,6 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { CheckCircle, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
@@ -11,6 +12,7 @@ import type { CityOption } from "@/features/cities/queries";
 import { createService, updateService } from "@/features/services/actions";
 import { PRICE_UNIT_LABELS, PRICE_UNITS } from "@/features/services/schemas";
 import { type ActionState, idleState } from "@/lib/action-state";
+import { compressImage, IMAGE_UPLOAD } from "@/lib/images";
 
 export interface ServiceFormValues {
   id: number;
@@ -22,6 +24,7 @@ export interface ServiceFormValues {
   isNegotiable: boolean;
   priceUnit: string;
   homeVisit: boolean;
+  imageUrls: string[];
 }
 
 interface CreateServiceFormProps {
@@ -58,7 +61,11 @@ export function CreateServiceForm({
   const [isNegotiable, setIsNegotiable] = useState(initialValues?.isNegotiable ?? false);
   const [priceUnit, setPriceUnit] = useState(initialValues?.priceUnit ?? "hour");
   const [homeVisit, setHomeVisit] = useState(initialValues?.homeVisit ?? true);
-  const [photos, setPhotos] = useState<string[]>([]);
+  // Адреса уже загруженных файлов: сам файл ушёл в хранилище напрямую
+  // из браузера, к объявлению его привяжет Server Action при сохранении.
+  const [photos, setPhotos] = useState<string[]>(initialValues?.imageUrls ?? []);
+  const [uploadingCount, setUploadingCount] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const errorMessage = state.status === "error" ? state.message : null;
   const fieldError = (name: string) =>
@@ -93,16 +100,48 @@ export function CreateServiceForm({
   const categoryName = categories.find((c) => String(c.id) === category)?.name ?? "";
   const cityName = cities.find((c) => String(c.id) === city)?.name ?? "";
 
-  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files;
-    if (!files) return;
-    const remaining = 5 - photos.length;
-    const newPhotos = Array.from(files)
-      .slice(0, remaining)
-      .map((f) => URL.createObjectURL(f));
-    setPhotos((prev) => [...prev, ...newPhotos]);
+  /**
+   * Файл уходит из браузера прямо в хранилище: сервер выдаёт только токен,
+   * мегабайты через него не проходят. Перед отправкой фото сжимается —
+   * заодно теряя EXIF с геометкой съёмки.
+   */
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const input = e.currentTarget;
+    const files = input.files;
+    if (!files || files.length === 0) return;
+
+    const selected = Array.from(files).slice(0, IMAGE_UPLOAD.maxFiles - photos.length);
+    // Сброс значения: иначе повторный выбор того же файла не вызовет change.
+    input.value = "";
+
+    setUploadError(null);
+
+    for (const file of selected) {
+      if (file.size > IMAGE_UPLOAD.maxBytes) {
+        setUploadError("Файл больше 10 МБ — выберите фотографию поменьше");
+        continue;
+      }
+
+      setUploadingCount((count) => count + 1);
+      try {
+        const compressed = await compressImage(file);
+        const blob = await upload(compressed.name, compressed, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+        });
+        setPhotos((prev) => [...prev, blob.url]);
+      } catch {
+        setUploadError("Не удалось загрузить фотографию. Попробуйте ещё раз");
+      } finally {
+        setUploadingCount((count) => count - 1);
+      }
+    }
   }
 
+  /**
+   * Убираем фото из формы. Файл в хранилище удалит Server Action при сохранении:
+   * пока объявление не сохранено, пользователь может передумать.
+   */
   function removePhoto(index: number) {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
   }
@@ -356,27 +395,39 @@ export function CreateServiceForm({
 
         {/* Фото работ */}
         <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-foreground mb-1 pb-3 border-b border-border/60 flex items-center justify-between">
-            <span>Фото работ</span>
-            <span className="text-[11px] font-medium text-brand bg-brand/10 px-2 py-0.5 rounded-full">
-              Скоро
-            </span>
+          <h2 className="text-sm font-semibold text-foreground mb-1 pb-3 border-b border-border/60">
+            Фото работ
           </h2>
           <p className="text-xs text-muted-foreground mt-3 mb-3">
-            Загрузка фотографий появится в ближайшем обновлении — пока объявление публикуется без
-            них.
+            До {IMAGE_UPLOAD.maxFiles} фотографий. Первая станет обложкой объявления в каталоге.
           </p>
 
-          {photos.length < 5 && (
+          {/* Адреса уходят в FormData повторяющимся ключом — схема принимает
+              и одно значение, и массив. */}
+          {photos.map((url) => (
+            <input key={url} type="hidden" name="imageUrls" value={url} />
+          ))}
+
+          {uploadError && (
+            <p role="alert" className="text-xs text-destructive mb-3">
+              {uploadError}
+            </p>
+          )}
+
+          {fieldError("imageUrls") && (
+            <p className="text-xs text-destructive mb-3">{fieldError("imageUrls")}</p>
+          )}
+
+          {photos.length < IMAGE_UPLOAD.maxFiles && (
             <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-border rounded-xl py-8 cursor-pointer hover:border-brand hover:bg-brand/5 transition-all group">
               <Upload className="h-8 w-8 text-muted-foreground/60 mb-2 group-hover:text-brand transition-colors" />
               <span className="text-sm text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
                 Нажмите для загрузки фото
               </span>
-              <span className="text-xs text-muted-foreground/60">JPG или PNG, до 5 МБ каждое</span>
+              <span className="text-xs text-muted-foreground/60">JPG, PNG или WebP, до 10 МБ</span>
               <input
                 type="file"
-                accept="image/*"
+                accept={IMAGE_UPLOAD.allowedTypes.join(",")}
                 multiple
                 onChange={handlePhotoUpload}
                 className="hidden"
@@ -384,14 +435,14 @@ export function CreateServiceForm({
             </label>
           )}
 
-          {photos.length > 0 && (
+          {(photos.length > 0 || uploadingCount > 0) && (
             <div className="flex gap-2 flex-wrap mt-3">
               {photos.map((photo, index) => (
                 <div
                   key={photo}
                   className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group"
                 >
-                  {/* biome-ignore lint/performance/noImgElement: локальное превью, файл не загружается */}
+                  {/* biome-ignore lint/performance/noImgElement: превью в форме — оптимизировать нечего */}
                   <img
                     src={photo}
                     alt={`Фото ${index + 1}`}
@@ -407,12 +458,23 @@ export function CreateServiceForm({
                   </button>
                 </div>
               ))}
-              {photos.length < 5 && (
+
+              {Array.from({ length: uploadingCount }).map((_, index) => (
+                <div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: плейсхолдеры без собственной сущности
+                  key={`uploading-${index}`}
+                  role="img"
+                  aria-label="Фотография загружается"
+                  className="w-20 h-20 rounded-lg border border-border bg-muted animate-pulse"
+                />
+              ))}
+
+              {photos.length + uploadingCount < IMAGE_UPLOAD.maxFiles && (
                 <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-brand hover:bg-brand/5 text-muted-foreground/60 hover:text-brand transition-all">
                   <span className="text-2xl font-light">+</span>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept={IMAGE_UPLOAD.allowedTypes.join(",")}
                     multiple
                     onChange={handlePhotoUpload}
                     className="hidden"
@@ -435,7 +497,9 @@ export function CreateServiceForm({
           </Button>
           <Button
             type="submit"
-            disabled={pending}
+            // Пока фото не долетело, сохранять нельзя: его адреса ещё нет
+            // в форме, и объявление сохранилось бы без него.
+            disabled={pending || uploadingCount > 0}
             className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
           >
             {pending
