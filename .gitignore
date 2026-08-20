@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Образец без значений — он нужен в репозитории, иначе новую машину
+# не поднять: README на него ссылается.
+!.env.example
 
 # vercel
 .vercel

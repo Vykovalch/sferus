@@ -1,16 +1,21 @@
 import Link from "next/link";
 import { DeleteListingButton } from "@/features/admin/components/DeleteListingButton";
 import { ModerationToggle } from "@/features/admin/components/ModerationToggle";
+import { requireAdminSession } from "@/features/admin/guard";
 import { getServicesForModeration } from "@/features/admin/queries";
 
 /**
  * Модерация услуг.
  *
- * Проверка роли — в `admin/layout.tsx`, она выполняется до рендера страницы.
- * Действия проверяют роль ещё раз у себя: каждый экспорт из `'use server'` —
- * публичный эндпоинт, и до него можно достучаться в обход интерфейса.
+ * Роль проверяется трижды и это не избыточность: layout закрывает вход в раздел,
+ * страница — чтение (layout не перерендеривается при клиентской навигации),
+ * действия — запись, потому что каждый экспорт из `'use server'` доступен прямым
+ * запросом в обход интерфейса.
  */
 export default async function AdminListingsPage() {
+  // Layout не перерендеривается при клиентской навигации — проверка нужна здесь.
+  await requireAdminSession();
+
   const services = await getServicesForModeration();
 
   return (

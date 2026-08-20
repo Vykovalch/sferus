@@ -225,3 +225,35 @@ export const updateAvatarSchema = z.object({
 });
 
 export type UpdateAvatarInput = z.infer<typeof updateAvatarSchema>;
+
+/**
+ * Смена пароля из кабинета.
+ *
+ * Текущий пароль обязателен: без него любой, кто добрался до открытой вкладки,
+ * менял бы пароль и забирал аккаунт себе. Проверяет его better-auth, но
+ * отсутствие поля нужно отсечь раньше — иначе пользователь получит английскую
+ * ошибку из библиотеки вместо подсказки под полем.
+ *
+ * Подтверждение вводится в форме и до сервера доходит вместе с остальным:
+ * проверять совпадение только на клиенте нельзя — действие является публичным
+ * эндпоинтом, и до него можно достучаться в обход формы.
+ */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string({ error: "Введите текущий пароль" }).min(1, "Введите текущий пароль"),
+    newPassword: z
+      .string({ error: "Введите новый пароль" })
+      .min(8, "Пароль не короче 8 символов")
+      .max(128, "Пароль не длиннее 128 символов"),
+    confirmPassword: z.string({ error: "Повторите новый пароль" }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Пароли не совпадают",
+    path: ["confirmPassword"],
+  })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: "Новый пароль совпадает с текущим",
+    path: ["newPassword"],
+  });
+
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

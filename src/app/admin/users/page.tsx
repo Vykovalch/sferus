@@ -1,7 +1,6 @@
-import { headers } from "next/headers";
 import { UserBanToggle } from "@/features/admin/components/UserBanToggle";
+import { requireAdminSession } from "@/features/admin/guard";
 import { getUsersForAdmin } from "@/features/admin/queries";
-import { auth } from "@/lib/auth";
 import { formatShortDate } from "@/lib/format";
 
 /**
@@ -13,10 +12,10 @@ import { formatShortDate } from "@/lib/format";
  * административная, она приходит из плагина `admin`.
  */
 export default async function AdminUsersPage() {
-  const [session, users] = await Promise.all([
-    auth.api.getSession({ headers: await headers() }),
-    getUsersForAdmin(),
-  ]);
+  // Layout не перерендеривается при клиентской навигации, поэтому проверка
+  // роли стоит и здесь. Заодно отсюда берётся сессия — второй запрос не нужен.
+  const session = await requireAdminSession();
+  const users = await getUsersForAdmin();
 
   return (
     <>
@@ -40,7 +39,7 @@ export default async function AdminUsersPage() {
               .toUpperCase()
               .slice(0, 2);
 
-            const isSelf = user.id === session?.user.id;
+            const isSelf = user.id === session.user.id;
             const isBanned = Boolean(user.banned);
 
             return (

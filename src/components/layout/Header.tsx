@@ -1,11 +1,13 @@
 "use client";
 
+import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { MobileMenu } from "@/components/layout/MobileMenu";
+import { UserMenu } from "@/components/layout/UserMenu";
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
-import { UserMenu } from "@/components/layout/UserMenu";
-import { MobileMenu } from "@/components/layout/MobileMenu";
+import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
 
 interface HeaderProps {
@@ -32,6 +34,42 @@ export function Header({ session }: HeaderProps) {
               <Logo className="text-2xl" />
             </Link>
           </div>
+
+          {/* Поиск.
+              Обычная форма с method="get": состояние живёт в адресной строке,
+              поиск работает без JS, и не нужен ни клиентский компонент,
+              ни синхронизация состояния с URL — тот же принцип, по которому
+              фильтры каталога сделаны ссылками.
+
+              На узких экранах поле не помещается в шапку h-16, поэтому там
+              иконка ведёт на /services, где стоит полная строка поиска. */}
+          <search className="hidden lg:flex flex-1 max-w-sm">
+            <form action="/services" method="get" className="flex w-full items-center relative">
+              <label htmlFor="header-search" className="sr-only">
+                Поиск услуг
+              </label>
+              <Search
+                aria-hidden="true"
+                className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none"
+              />
+              <input
+                id="header-search"
+                name="q"
+                type="search"
+                maxLength={SEARCH_QUERY_MAX_LENGTH}
+                placeholder="Ремонт, уборка, репетитор..."
+                className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand transition-colors"
+              />
+            </form>
+          </search>
+
+          <Link
+            href="/services"
+            aria-label="Поиск услуг"
+            className="lg:hidden text-foreground/80 hover:text-primary transition-colors"
+          >
+            <Search className="h-5 w-5" />
+          </Link>
 
           {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в вишневый) */}
           <nav className="hidden md:flex items-center space-x-8">

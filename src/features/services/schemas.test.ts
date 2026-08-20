@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createServiceSchema,
   parseServiceCatalogFilters,
+  SEARCH_QUERY_MAX_LENGTH,
   toggleServiceSchema,
   updateServiceSchema,
 } from "./schemas";
@@ -243,5 +244,38 @@ describe("createServiceSchema — фотографии", () => {
     expect(result.success).toBe(true);
     if (!result.success) return;
     expect(result.data.imageUrls).toHaveLength(1);
+  });
+});
+
+describe("parseServiceCatalogFilters — поисковый запрос", () => {
+  it("разбирает запрос и обрезает пробелы по краям", () => {
+    expect(parseServiceCatalogFilters({ q: "  ремонт стиральных машин  " }).query).toBe(
+      "ремонт стиральных машин",
+    );
+  });
+
+  it("пустой запрос и одни пробелы — как отсутствующий фильтр", () => {
+    expect(parseServiceCatalogFilters({ q: "" }).query).toBeUndefined();
+    expect(parseServiceCatalogFilters({ q: "   " }).query).toBeUndefined();
+    expect(parseServiceCatalogFilters({}).query).toBeUndefined();
+  });
+
+  it("слишком длинный запрос обрезается, а не отклоняется", () => {
+    // Отклонять целиком незачем: человек мог вставить абзац, и показать ему
+    // результат по первым ста символам полезнее, чем пустую страницу.
+    const query = parseServiceCatalogFilters({ q: "а".repeat(500) }).query;
+    expect(query).toHaveLength(SEARCH_QUERY_MAX_LENGTH);
+  });
+
+  it("повтор ключа в URL — берётся первое значение", () => {
+    expect(parseServiceCatalogFilters({ q: ["ремонт", "уборка"] }).query).toBe("ремонт");
+  });
+
+  it("запрос уживается с остальными фильтрами", () => {
+    expect(parseServiceCatalogFilters({ q: "ремонт", city: "Бендеры", type: "company" })).toEqual({
+      query: "ремонт",
+      cityName: "Бендеры",
+      executorType: "company",
+    });
   });
 });

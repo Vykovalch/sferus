@@ -1,17 +1,15 @@
 import { ArrowLeft, ShieldCheck } from "lucide-react";
-import { headers } from "next/headers";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { AdminSidebar } from "@/features/admin/components/AdminSidebar";
-import { auth } from "@/lib/auth";
+import { requireAdminSession } from "@/features/admin/guard";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/login?callbackUrl=/admin");
-
   // Роль приходит из плагина admin (better-auth). Заблокированных пользователей
   // плагин не пускает ещё на входе, поэтому отдельная проверка здесь не нужна.
-  if (session.user.role !== "admin") redirect("/");
+  //
+  // Та же проверка стоит в каждой странице раздела: layout не перерендеривается
+  // при клиентской навигации, поэтому одного его недостаточно — см. `guard.ts`.
+  await requireAdminSession();
 
   return (
     <div className="min-h-screen bg-background text-foreground">

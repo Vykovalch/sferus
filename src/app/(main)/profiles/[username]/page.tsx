@@ -10,7 +10,7 @@ import { getServiceCardsByAuthor } from "@/features/services/queries";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { getOpenTaskCardsByAuthor } from "@/features/tasks/queries";
 import { auth } from "@/lib/auth";
-import { formatMonthYear, formatServicePrice } from "@/lib/format";
+import { formatMonthYear, formatServicePrice, formatYears } from "@/lib/format";
 
 export default async function PublicProfilePage({
   params,
@@ -96,7 +96,7 @@ export default async function PublicProfilePage({
                   <div className="flex items-center gap-3 flex-wrap mb-3 text-sm text-muted-foreground">
                     <span>На платформе с {formatMonthYear(profile.createdAt)}</span>
                     {profile.experienceYears !== null && (
-                      <span>Опыт работы: {profile.experienceYears} лет</span>
+                      <span>Опыт работы: {formatYears(profile.experienceYears)}</span>
                     )}
                   </div>
 

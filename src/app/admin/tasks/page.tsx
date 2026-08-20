@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { DeleteListingButton } from "@/features/admin/components/DeleteListingButton";
 import { ModerationToggle } from "@/features/admin/components/ModerationToggle";
+import { requireAdminSession } from "@/features/admin/guard";
 import { getTasksForModeration } from "@/features/admin/queries";
 import { TASK_STATUSES } from "@/lib/constants";
 
 /** Модерация заданий. Устройство то же, что у услуг. */
 export default async function AdminTasksPage() {
+  // Layout не перерендеривается при клиентской навигации — проверка нужна здесь.
+  await requireAdminSession();
+
   const tasks = await getTasksForModeration();
 
   return (

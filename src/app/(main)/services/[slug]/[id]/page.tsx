@@ -10,7 +10,7 @@ import {
   getServiceImageUrls,
 } from "@/features/services/queries";
 import { auth } from "@/lib/auth";
-import { formatMonthYear, formatServicePrice } from "@/lib/format";
+import { formatMonthYear, formatServicePrice, formatYears } from "@/lib/format";
 
 export default async function ServiceListingPage({
   params,
@@ -146,7 +146,7 @@ export default async function ServiceListingPage({
                     <div>
                       <p className="text-xs text-muted-foreground mb-0.5">Опыт работы</p>
                       <p className="text-sm font-medium text-foreground">
-                        {service.authorExperienceYears} лет
+                        {formatYears(service.authorExperienceYears)}
                       </p>
                     </div>
                   )}

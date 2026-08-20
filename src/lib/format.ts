@@ -56,6 +56,28 @@ export function formatMonthYear(date: Date): string {
   return monthYear.format(date);
 }
 
+const plural = new Intl.PluralRules("ru");
+
+const YEAR_FORMS: Record<Intl.LDMLPluralRule, string> = {
+  one: "год",
+  few: "года",
+  many: "лет",
+  other: "лет",
+  zero: "лет",
+  two: "лет",
+};
+
+/**
+ * «1 год», «3 года», «10 лет».
+ *
+ * Склонение берёт `Intl`, как и относительные даты выше: руками правила для
+ * русского не пишем. До этапа 2 опыт работы негде было указать, поэтому «1 лет»
+ * никто не видел — с появлением формы профиля стало видно сразу.
+ */
+export function formatYears(value: number): string {
+  return `${value} ${YEAR_FORMS[plural.select(value)]}`;
+}
+
 const shortDate = new Intl.DateTimeFormat("ru", {
   day: "numeric",
   month: "short",

@@ -119,12 +119,22 @@ export function ContactRevealButton({
       if (result.status === "ok") {
         setContacts(result.contacts);
         setError(null);
-      } else {
-        setError(
-          result.status === "unauthorized"
-            ? "Войдите в аккаунт, чтобы увидеть контакты"
-            : "Не удалось получить контакты",
-        );
+        return;
+      }
+
+      switch (result.status) {
+        case "unauthorized":
+          setError("Войдите в аккаунт, чтобы увидеть контакты");
+          break;
+        case "rate-limited":
+          // Квота считает разные контакты за сутки: повторное открытие уже
+          // просмотренного объявления сюда не попадает.
+          setError(
+            `Вы открыли ${result.limit} контактов за сутки — это дневной предел. Попробуйте завтра`,
+          );
+          break;
+        default:
+          setError("Не удалось получить контакты");
       }
     });
   }

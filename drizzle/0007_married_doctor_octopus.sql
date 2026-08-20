@@ -1,0 +1,1 @@
+CREATE INDEX "services_search_idx" ON "services" USING gin ((setweight(to_tsvector('russian', "title"), 'A') || setweight(to_tsvector('russian', "description"), 'B')));

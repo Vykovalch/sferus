@@ -165,16 +165,29 @@ function firstSearchParamValue(value: string | string[] | undefined): string | u
 export interface ServiceCatalogFilters {
   cityName?: string;
   executorType?: (typeof profileType.enumValues)[number];
+  /** Текстовый запрос. Пустой и слишком длинный отбрасываются. */
+  query?: string;
 }
+
+/**
+ * Ограничение длины поискового запроса.
+ *
+ * Не из вредности: `websearch_to_tsquery` разбирает строку целиком, и очень
+ * длинный ввод — это лишняя работа на каждый запрос. Сто символов с запасом
+ * покрывают любую осмысленную фразу.
+ */
+export const SEARCH_QUERY_MAX_LENGTH = 100;
 
 export function parseServiceCatalogFilters(
   searchParams: Record<string, string | string[] | undefined>,
 ): ServiceCatalogFilters {
   const cityName = firstSearchParamValue(searchParams.city)?.trim();
   const executorType = executorTypeParam.safeParse(firstSearchParamValue(searchParams.type));
+  const query = firstSearchParamValue(searchParams.q)?.trim().slice(0, SEARCH_QUERY_MAX_LENGTH);
 
   return {
     cityName: cityName || undefined,
     executorType: executorType.success ? executorType.data : undefined,
+    query: query || undefined,
   };
 }

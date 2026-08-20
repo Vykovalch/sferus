@@ -1,8 +1,15 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { cities, profileContacts, profiles, user } from "@/lib/db/schema";
+import {
+  cities,
+  contactReveals,
+  profileContacts,
+  profiles,
+  type revealTarget,
+  user,
+} from "@/lib/db/schema";
 
 /**
  * Контакты пользователя, которые он разрешил показывать.
@@ -120,6 +127,40 @@ export async function getProfileByUsername(username: string) {
 }
 
 export type PublicProfile = NonNullable<Awaited<ReturnType<typeof getProfileByUsername>>>;
+
+/**
+ * Сколько раскрытий пользователь потратил за сутки и открывал ли он уже
+ * именно этот объект.
+ *
+ * Один запрос вместо двух: `count(*) filter (...)` — тот же приём, что
+ * в `getTaskStatsByAuthor`. Оба числа нужны одновременно, а лишний
+ * round-trip к базе на каждое раскрытие того не стоит.
+ *
+ * Зачем второе число: повторно открыть уже раскрытый контакт — обычное дело
+ * (человек вернулся к объявлению), и квоту это тратить не должно. Ограничиваем
+ * не частоту нажатий, а число **разных** контактов, до которых пользователь
+ * добрался за сутки — именно это и есть сбор базы.
+ */
+export async function getRevealUsage(
+  userId: string,
+  target: { kind: RevealTargetKind; id: number },
+  since: Date,
+) {
+  const [row] = await db
+    .select({
+      total: sql<number>`count(*)::int`,
+      sameTarget: sql<number>`count(*) filter (
+        where ${contactReveals.targetKind} = ${target.kind}
+          and ${contactReveals.targetId} = ${target.id}
+      )::int`,
+    })
+    .from(contactReveals)
+    .where(and(eq(contactReveals.userId, userId), gte(contactReveals.createdAt, since)));
+
+  return row ?? { total: 0, sameTarget: 0 };
+}
+
+export type RevealTargetKind = (typeof revealTarget.enumValues)[number];
 
 /**
  * Владелец профиля — минимальная выборка для действия раскрытия контактов.

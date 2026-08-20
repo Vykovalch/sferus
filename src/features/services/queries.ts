@@ -53,6 +53,59 @@ const cardColumns = {
   imageUrl: previewImageUrl,
 };
 
+/**
+ * Полнотекстовый поиск по объявлению.
+ *
+ * Выражение **дословно повторяет** индекс `services_search_idx` — иначе Postgres
+ * его не применит и будет читать таблицу целиком.
+ *
+ * Заголовок весит больше описания, поэтому совпадение в названии поднимает
+ * объявление выше в выдаче.
+ */
+const searchVector = sql`(setweight(to_tsvector('russian', ${services.title}), 'A') || setweight(to_tsvector('russian', ${services.description}), 'B'))`;
+
+/**
+ * Разбор пользовательского запроса.
+ *
+ * `websearch_to_tsquery`, а не `plainto_tsquery`: он понимает кавычки для точной
+ * фразы и минус для исключения, а главное — **никогда не падает** на кривом
+ * вводе. Пользователь напишет в поле что угодно, и ошибка синтаксиса tsquery
+ * уронила бы страницу.
+ */
+function searchQuery(text: string) {
+  return sql`websearch_to_tsquery('russian', ${text})`;
+}
+
+/**
+ * Поиск услуг по всем категориям.
+ *
+ * Лимит вместо пагинации — временно: постраничная выборка делается отдельным
+ * срезом сразу для каталога, доски и поиска, чтобы не трогать одно и то же
+ * трижды (ROADMAP, этап 3).
+ */
+export async function searchServiceCards(filters: ServiceCatalogFilters, limit = 50) {
+  if (!filters.query) return [];
+
+  const query = searchQuery(filters.query);
+  const conditions = [isPubliclyVisible, sql`${searchVector} @@ ${query}`];
+  if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
+  if (filters.executorType) conditions.push(eq(profiles.type, filters.executorType));
+
+  return (
+    db
+      .select(cardColumns)
+      .from(services)
+      .innerJoin(categories, eq(services.categoryId, categories.id))
+      .innerJoin(cities, eq(services.cityId, cities.id))
+      .innerJoin(user, eq(services.userId, user.id))
+      .leftJoin(profiles, eq(profiles.userId, services.userId))
+      .where(and(...conditions))
+      // Сначала релевантность, при равной — свежесть.
+      .orderBy(desc(sql`ts_rank(${searchVector}, ${query})`), desc(services.createdAt))
+      .limit(limit)
+  );
+}
+
 /** Карточки услуг для каталога категории, с необязательными фильтрами из URL. */
 export async function getServiceCardsByCategory(
   categorySlug: string,
@@ -61,6 +114,9 @@ export async function getServiceCardsByCategory(
   const conditions = [isPubliclyVisible, eq(categories.slug, categorySlug)];
   if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
   if (filters.executorType) conditions.push(eq(profiles.type, filters.executorType));
+  // Тот же разбор параметров, что и у поиска: если `?q=` пришёл на страницу
+  // категории, он должен работать, а не молча игнорироваться.
+  if (filters.query) conditions.push(sql`${searchVector} @@ ${searchQuery(filters.query)}`);
 
   return db
     .select(cardColumns)

@@ -1,15 +1,14 @@
 "use client";
 
+import { ClipboardList, FileText, Heart, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, ClipboardList, FileText, Send, Heart, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { href: "/dashboard/profile", label: "Профиль", icon: User },
   { href: "/dashboard/services", label: "Мои услуги", icon: ClipboardList },
   { href: "/dashboard/tasks", label: "Мои задания", icon: FileText },
-  { href: "/dashboard/responses", label: "Мои отклики", icon: Send },
   { href: "/dashboard/favorites", label: "Избранное", icon: Heart },
   { href: "/dashboard/settings", label: "Настройки", icon: Settings },
 ];

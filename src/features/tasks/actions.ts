@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getTaskOwner } from "@/features/tasks/queries";
@@ -9,7 +9,7 @@ import {
   createTaskSchema,
   updateTaskSchema,
 } from "@/features/tasks/schemas";
-import { authedAction, ForbiddenError, NotFoundError } from "@/lib/action-client";
+import { ActionError, authedAction, ForbiddenError, NotFoundError } from "@/lib/action-client";
 import { db } from "@/lib/db";
 import { tasks } from "@/lib/db/schema";
 
@@ -78,7 +78,19 @@ export const changeTaskStatus = authedAction(changeTaskStatusSchema, async (inpu
   if (!existing) throw new NotFoundError("Задание не найдено");
   if (existing.userId !== userId) throw new ForbiddenError();
 
-  await db.update(tasks).set({ status: input.status }).where(eq(tasks.id, input.id));
+  // Условие `status = 'open'` в самом UPDATE, а не отдельной проверкой перед ним:
+  // так переход остаётся необратимым даже при двух одновременных запросах,
+  // и не нужен лишний SELECT. Интерфейс кнопок для завершённых заданий не
+  // показывает — но действие доступно прямым запросом в обход интерфейса.
+  const updated = await db
+    .update(tasks)
+    .set({ status: input.status })
+    .where(and(eq(tasks.id, input.id), eq(tasks.status, "open")))
+    .returning({ id: tasks.id });
+
+  if (updated.length === 0) {
+    throw new ActionError("Задание уже завершено или отменено — статус не меняется");
+  }
 
   revalidatePath("/tasks");
   revalidatePath(`/tasks/${input.id}`);

@@ -147,6 +147,20 @@ export const services = pgTable(
     index("services_user_idx").on(t.userId),
     index("services_visibility_idx").on(t.isActive, t.moderationStatus),
     index("services_created_at_idx").on(t.createdAt),
+    // Полнотекстовый поиск с русским словарём. Без морфологии поиск на русском
+    // почти бесполезен: «ремонт стиральной машины» не нашёл бы объявление
+    // «Ремонт стиральных машин» — ни целиком, ни по словам.
+    //
+    // Заголовок весит больше описания (`A` против `B`), поэтому совпадение
+    // в названии поднимает объявление выше.
+    //
+    // Выражение обязано **дословно совпадать** с тем, что стоит в запросе,
+    // иначе Postgres индекс не применит. Двухаргументный `to_tsvector`
+    // с явным словарём — immutable, поэтому индексируется; одноаргументный нет.
+    index("services_search_idx").using(
+      "gin",
+      sql`(setweight(to_tsvector('russian', ${t.title}), 'A') || setweight(to_tsvector('russian', ${t.description}), 'B'))`,
+    ),
     check("services_price_or_negotiable", sql`${t.price} IS NOT NULL OR ${t.isNegotiable}`),
   ],
 );
@@ -239,5 +253,50 @@ export const favorites = pgTable(
       "favorites_exactly_one_target",
       sql`(${t.serviceId} IS NOT NULL AND ${t.taskId} IS NULL) OR (${t.serviceId} IS NULL AND ${t.taskId} IS NOT NULL)`,
     ),
+  ],
+);
+
+/* ────────────────────────── раскрытие контактов ────────────────────────── */
+
+export const revealTarget = pgEnum("reveal_target", ["service", "task", "profile"]);
+
+/**
+ * Журнал раскрытий контактов.
+ *
+ * Раскрытие — единственный способ связи между пользователями в v1, и вся его
+ * защита держалась на том, что контакты не попадают в разметку. Этого мало:
+ * действие раскрытия доступно любому авторизованному, а значит один аккаунт
+ * мог перебрать идентификаторы объявлений и выкачать телефоны всей площадки.
+ * Журнал закрывает это сразу с двух сторон — по нему считается суточная квота
+ * и по нему же видно, кто именно собирал контакты.
+ *
+ * **Ссылка на объект намеренно без внешнего ключа**, в отличие от `favorites`,
+ * где полиморфная связь была отвергнута. Требования прямо противоположные:
+ * запись в избранном обязана исчезнуть вместе с объявлением, а запись в журнале
+ * обязана его пережить — иначе достаточно удалить объявление, чтобы стереть
+ * след. Здесь это история, а не ссылка на живой объект.
+ *
+ * `ownerId` — чьи контакты раскрыли. Он не нужен ни квоте, ни защите, но
+ * превращает журнал в основу для отложенной аналитики «ваши контакты открывали
+ * N раз» (DATA-MODEL.md, «Прочее»), и стоит одной колонки.
+ */
+export const contactReveals = pgTable(
+  "contact_reveals",
+  {
+    id: bigint("id", { mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    targetKind: revealTarget("target_kind").notNull(),
+    targetId: bigint("target_id", { mode: "number" }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [
+    // Единственный индекс, который нужен: и квота, и журнал читаются
+    // «раскрытия этого пользователя за последние сутки».
+    index("contact_reveals_user_created_idx").on(t.userId, t.createdAt),
   ],
 );
