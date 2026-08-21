@@ -1,6 +1,7 @@
 import "server-only";
 
 import { and, eq, gte, sql } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "@/lib/db";
 import {
   cities,
@@ -103,7 +104,7 @@ export async function getProfileIdByUserId(userId: string) {
  * Аватар берётся из `user.image`: он и есть источник истины, `profiles.avatar`
  * удаляется на этапе 2 (DATA-MODEL.md).
  */
-export async function getProfileByUsername(username: string) {
+export const getProfileByUsername = cache(async (username: string) => {
   const [row] = await db
     .select({
       profileId: profiles.id,
@@ -124,7 +125,7 @@ export async function getProfileByUsername(username: string) {
     .limit(1);
 
   return row ?? null;
-}
+});
 
 export type PublicProfile = NonNullable<Awaited<ReturnType<typeof getProfileByUsername>>>;
 

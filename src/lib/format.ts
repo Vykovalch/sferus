@@ -49,11 +49,31 @@ export function formatRelativeDate(date: Date): string {
   return relative.format(Math.round(seconds / 31536000), "year");
 }
 
-const monthYear = new Intl.DateTimeFormat("ru", { month: "long", year: "numeric" });
+/**
+ * День здесь не нужен и в результат не попадёт — он добавлен ради падежа.
+ *
+ * Без `day` в опциях `Intl` отдаёт месяц в именительном падеже («июнь 2026 г.»),
+ * потому что считает его самостоятельной подписью. В строке «На платформе
+ * с …» нужен родительный, а он появляется только когда месяц стоит внутри
+ * полной даты.
+ */
+const dayMonthYear = new Intl.DateTimeFormat("ru", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
 
-/** «января 2025» — для строки «На платформе с …». */
+/** «июня 2026 г.» — для строки «На платформе с …». */
 export function formatMonthYear(date: Date): string {
-  return monthYear.format(date);
+  const parts = dayMonthYear.formatToParts(date);
+  const monthIndex = parts.findIndex((part) => part.type === "month");
+
+  // Отбрасываем всё до месяца — и сам день, и разделитель после него.
+  // Хвост («2026 г.») склеивается как есть, вместе с разделителями локали.
+  return parts
+    .slice(monthIndex)
+    .map((part) => part.value)
+    .join("");
 }
 
 const plural = new Intl.PluralRules("ru");

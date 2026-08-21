@@ -1,6 +1,10 @@
 import { FilterLinkGroup } from "@/components/shared/FilterLinkGroup";
 import type { CityOption } from "@/features/cities/queries";
-import { EXECUTOR_TYPE_LABELS, type ServiceCatalogFilters } from "@/features/services/schemas";
+import {
+  EXECUTOR_TYPE_LABELS,
+  type ServiceCatalogFilters,
+  serviceCatalogSearchParams,
+} from "@/features/services/schemas";
 import { profileType } from "@/lib/db/schema";
 
 interface CategorySidebarProps extends ServiceCatalogFilters {
@@ -9,18 +13,23 @@ interface CategorySidebarProps extends ServiceCatalogFilters {
   categorySlug: string;
 }
 
-/** Собирает адрес каталога с обновлённым набором фильтров, остальные сохраняя. */
+/**
+ * Собирает адрес каталога с обновлённым набором фильтров, остальные сохраняя.
+ *
+ * Параметры собирает `serviceCatalogSearchParams`, а не эта функция: раньше
+ * список параметров был записан здесь и не включал `q`, поэтому клик по городу
+ * на странице категории молча терял поисковый запрос.
+ *
+ * Номер страницы сюда не передаётся намеренно — смена фильтра возвращает
+ * на первую страницу. Иначе человек с пятой страницы переключил бы город
+ * и попал в пустоту при непустой выдаче.
+ */
 function buildCatalogHref(
   categorySlug: string,
   filters: ServiceCatalogFilters,
   overrides: ServiceCatalogFilters,
 ) {
-  const next = { ...filters, ...overrides };
-  const search = new URLSearchParams();
-  if (next.cityName) search.set("city", next.cityName);
-  if (next.executorType) search.set("type", next.executorType);
-
-  const query = search.toString();
+  const query = serviceCatalogSearchParams({ ...filters, ...overrides }).toString();
   return `/services/${categorySlug}${query ? `?${query}` : ""}`;
 }
 
@@ -29,8 +38,12 @@ export function CategorySidebar({
   categorySlug,
   cityName,
   executorType,
+  query,
 }: CategorySidebarProps) {
-  const activeFilters: ServiceCatalogFilters = { cityName, executorType };
+  // `query` здесь не используется напрямую, но обязан попасть в ссылки:
+  // без него клик по городу на странице категории с активным поиском
+  // терял бы поисковый запрос.
+  const activeFilters: ServiceCatalogFilters = { cityName, executorType, query };
 
   const executorOptions = [
     { label: "Все исполнители", value: undefined },

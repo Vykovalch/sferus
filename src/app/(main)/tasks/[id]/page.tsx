@@ -1,4 +1,5 @@
 import { ChevronRight, Clock, MapPin } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -7,6 +8,7 @@ import { getTaskDetail, getTaskStatsByAuthor } from "@/features/tasks/queries";
 import { auth } from "@/lib/auth";
 import { TASK_STATUSES, type TaskStatus } from "@/lib/constants";
 import { formatRelativeDate, formatTaskBudget } from "@/lib/format";
+import { metaDescription } from "@/lib/site";
 
 const statusColors: Record<TaskStatus, string> = {
   open: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -14,11 +16,48 @@ const statusColors: Record<TaskStatus, string> = {
   cancelled: "bg-destructive/10 text-destructive",
 };
 
+/** Разбор идентификатора из адреса. Один и тот же для метаданных и страницы. */
+function parseTaskId(id: string): number | null {
+  const parsed = Number(id);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+/**
+ * Метаданные задания.
+ *
+ * Завершённые и отменённые закрыты от индексации: страница остаётся доступной
+ * по ссылке, но в выдаче показывать задание, по которому уже ничего не сделать,
+ * — значит приводить людей в тупик. В карту сайта такие тоже не попадают.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const taskId = parseTaskId(id);
+  if (taskId === null) return {};
+
+  const task = await getTaskDetail(taskId);
+  if (!task) return {};
+
+  const path = `/tasks/${task.id}`;
+  const description = metaDescription(task.description);
+
+  return {
+    title: task.title,
+    description,
+    alternates: { canonical: path },
+    robots: task.status === "open" ? undefined : { index: false, follow: true },
+    openGraph: { title: task.title, description, url: path, type: "article" },
+  };
+}
+
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const taskId = Number(id);
-  if (!Number.isInteger(taskId) || taskId <= 0) notFound();
+  const taskId = parseTaskId(id);
+  if (taskId === null) notFound();
 
   const task = await getTaskDetail(taskId);
   if (!task) notFound();

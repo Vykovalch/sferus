@@ -1,4 +1,5 @@
 import { Building2, ChevronRight, MapPin, User } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +12,56 @@ import {
 } from "@/features/services/queries";
 import { auth } from "@/lib/auth";
 import { formatMonthYear, formatServicePrice, formatYears } from "@/lib/format";
+import { metaDescription } from "@/lib/site";
+
+/** Разбор идентификатора из адреса. Один и тот же для метаданных и страницы. */
+function parseServiceId(id: string): number | null {
+  const parsed = Number(id);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+/**
+ * Метаданные объявления.
+ *
+ * Это главная страница площадки с точки зрения выдачи: именно её ищут словами
+ * «ремонт стиральных машин Тирасполь». Заголовок и описание берутся из самого
+ * объявления, а не из общего шаблона сайта.
+ *
+ * Фотография уходит в превью ссылки. Для Приднестровья это существенно:
+ * объявлениями делятся в мессенджерах, и ссылка с картинкой открывается заметно
+ * чаще, чем голая строка. Запросы к базе не дублируются — `getServiceDetail`
+ * и `getServiceImageUrls` обёрнуты в `cache`, и страница получит те же данные.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; id: string }>;
+}): Promise<Metadata> {
+  const { slug, id } = await params;
+  const serviceId = parseServiceId(id);
+  if (serviceId === null) return {};
+
+  const service = await getServiceDetail(serviceId);
+  // Метаданные несуществующей страницы не нужны — ниже она отдаст 404.
+  if (!service || service.categorySlug !== slug) return {};
+
+  const images = await getServiceImageUrls(service.id);
+  const path = `/services/${service.categorySlug}/${service.id}`;
+  const description = metaDescription(service.description);
+
+  return {
+    title: service.title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title: service.title,
+      description,
+      url: path,
+      type: "article",
+      images: images.length > 0 ? [{ url: images[0], alt: service.title }] : undefined,
+    },
+  };
+}
 
 export default async function ServiceListingPage({
   params,
@@ -19,8 +70,8 @@ export default async function ServiceListingPage({
 }) {
   const { slug, id } = await params;
 
-  const serviceId = Number(id);
-  if (!Number.isInteger(serviceId) || serviceId <= 0) notFound();
+  const serviceId = parseServiceId(id);
+  if (serviceId === null) notFound();
 
   const service = await getServiceDetail(serviceId);
   if (!service) notFound();

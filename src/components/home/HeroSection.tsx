@@ -1,4 +1,4 @@
-import { Briefcase, FileText, PlusCircle, Users } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { getCities } from "@/features/cities/queries";
@@ -30,7 +30,16 @@ export async function HeroSection() {
             <SearchBar cities={cities} />
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-base mb-14">
+          {/* Счётчики «400+ исполнителей / 500+ объявлений / 50+ активных заданий»
+              удалены: цифры были вписаны руками и не сходились с базой на два
+              порядка. Для площадки услуг это не украшение вёрстки, а заявление
+              о размере рынка, и оно должно быть правдой.
+
+              Реальные значения сюда не подставлены сознательно: на старте они
+              честные, но выглядят хуже, чем их отсутствие. Вернуть счётчики
+              имеет смысл тогда, когда цифра начнёт работать на площадку —
+              и уже запросом к БД, а не константой в разметке. */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-base">
             <span className="text-muted-foreground font-medium">
               Нужен исполнитель под конкретную задачу?
             </span>
@@ -41,26 +50,6 @@ export async function HeroSection() {
               <PlusCircle className="w-4 h-4" />
               Создать задание
             </Link>
-          </div>
-
-          {/* Иконки нейтральные: они сопровождают подписи, а не действия.
-              Кармин здесь ничего не сообщал и размывал сигнал «сюда можно нажать» */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 max-w-2xl mx-auto">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/50 rounded-full border border-white/80">
-              <Users className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span className="text-sm font-semibold text-foreground">400+</span>
-              <span className="text-sm text-muted-foreground font-medium">исполнителей</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/50 rounded-full border border-white/80">
-              <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span className="text-sm font-semibold text-foreground">500+</span>
-              <span className="text-sm text-muted-foreground font-medium">объявлений</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/50 rounded-full border border-white/80">
-              <Briefcase className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span className="text-sm font-semibold text-foreground">50+</span>
-              <span className="text-sm text-muted-foreground font-medium">активных заданий</span>
-            </div>
           </div>
         </div>
       </div>

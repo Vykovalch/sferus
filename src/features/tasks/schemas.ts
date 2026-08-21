@@ -107,3 +107,23 @@ export function parseTaskCatalogFilters(
     status: status.success ? status.data : "open",
   };
 }
+
+/**
+ * Фильтры доски обратно в параметры адреса — обратная сторона разбора выше.
+ *
+ * Одно место на сайдбар и пагинацию, чтобы наборы параметров не разъехались:
+ * у услуг такое расхождение уже случалось и стоило потерянного `q`.
+ *
+ * `status=open` в адрес не пишется — это значение по умолчанию, и лишний
+ * параметр только плодил бы разные адреса для одного и того же списка.
+ * Номер страницы сюда не входит: смена фильтра возвращает на первую.
+ */
+export function taskCatalogSearchParams(filters: TaskCatalogFilters): URLSearchParams {
+  const search = new URLSearchParams();
+
+  if (filters.categorySlug) search.set("category", filters.categorySlug);
+  if (filters.cityName) search.set("city", filters.cityName);
+  if (filters.status !== "open") search.set("status", filters.status);
+
+  return search;
+}

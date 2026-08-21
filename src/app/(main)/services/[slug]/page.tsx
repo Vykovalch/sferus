@@ -1,7 +1,9 @@
 import { ChevronRight, SlidersHorizontal } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Pagination } from "@/components/shared/Pagination";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -9,29 +11,71 @@ import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { CategorySidebar } from "@/features/services/components/CategorySidebar";
-import { getServiceCardsByCategory } from "@/features/services/queries";
-import { parseServiceCatalogFilters } from "@/features/services/schemas";
+import { countServicesByCategory, getServiceCardsByCategory } from "@/features/services/queries";
+import {
+  parseServiceCatalogFilters,
+  serviceCatalogSearchParams,
+} from "@/features/services/schemas";
 import { auth } from "@/lib/auth";
 import { formatServicePrice } from "@/lib/format";
+import { buildPageHref, isPageOutOfRange, pageCount, parsePageParam } from "@/lib/pagination";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+/**
+ * Метаданные страницы категории.
+ *
+ * Канонический адрес — категория **без фильтров**: `?city=` и `?type=` дают
+ * десятки адресов с почти одинаковым содержимым, и без этого они конкурировали
+ * бы друг с другом в выдаче. Номер страницы в каноническом адресе сохраняется —
+ * вторая страница это отдельное содержимое, а не дубль первой.
+ */
+export async function generateMetadata({
+  params,
+  searchParams,
+}: CategoryPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const page = parsePageParam((await searchParams).page);
+
+  const categories = await getCategories();
+  const category = categories.find((c) => c.slug === slug);
+  if (!category) return {};
+
+  const title = page > 1 ? `${category.name} — страница ${page}` : category.name;
+  const canonical = buildPageHref(`/services/${slug}`, new URLSearchParams(), page);
+
+  return {
+    title,
+    description: `${category.name} в Приднестровье: объявления исполнителей с ценами и контактами. Тирасполь, Бендеры, Рыбница и другие города.`,
+    alternates: { canonical },
+    openGraph: { title, url: canonical, type: "website" },
+  };
+}
+
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
-  const filters = parseServiceCatalogFilters(await searchParams);
+  const urlParams = await searchParams;
+  const filters = parseServiceCatalogFilters(urlParams);
+  const page = parsePageParam(urlParams.page);
 
   const [categories, cities] = await Promise.all([getCategories(), getCities()]);
   const category = categories.find((c) => c.slug === slug);
   if (!category) notFound();
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const [services, favorites] = await Promise.all([
-    getServiceCardsByCategory(slug, filters),
+  const [services, total, favorites] = await Promise.all([
+    getServiceCardsByCategory(slug, filters, page),
+    countServicesByCategory(slug, filters),
     getFavoriteTargetIds(session?.user.id),
   ]);
+
+  if (isPageOutOfRange(page, total)) notFound();
+
+  const totalPages = pageCount(total);
+  const pageParams = serviceCatalogSearchParams(filters);
   const hasActiveFilters = Boolean(filters.cityName || filters.executorType);
 
   return (
@@ -129,27 +173,36 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
-                {services.map((service) => (
-                  <ServiceCard
-                    key={service.id}
-                    id={service.id}
-                    title={service.title}
-                    categorySlug={service.categorySlug}
-                    city={service.cityName}
-                    price={formatServicePrice(
-                      service.price,
-                      service.isNegotiable,
-                      service.priceUnit,
-                    )}
-                    authorName={service.authorName}
-                    authorType={service.authorType}
-                    imageUrl={service.imageUrl}
-                    isFavorite={favorites.serviceIds.has(service.id)}
-                    isAuthenticated={Boolean(session)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+                  {services.map((service) => (
+                    <ServiceCard
+                      key={service.id}
+                      id={service.id}
+                      title={service.title}
+                      categorySlug={service.categorySlug}
+                      city={service.cityName}
+                      price={formatServicePrice(
+                        service.price,
+                        service.isNegotiable,
+                        service.priceUnit,
+                      )}
+                      authorName={service.authorName}
+                      authorType={service.authorType}
+                      imageUrl={service.imageUrl}
+                      isFavorite={favorites.serviceIds.has(service.id)}
+                      isAuthenticated={Boolean(session)}
+                    />
+                  ))}
+                </div>
+
+                <Pagination
+                  page={page}
+                  pageCount={totalPages}
+                  buildHref={(target) => buildPageHref(`/services/${slug}`, pageParams, target)}
+                  label="Страницы каталога"
+                />
+              </>
             )}
           </div>
         </div>

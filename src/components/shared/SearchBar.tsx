@@ -9,11 +9,23 @@ interface SearchBarProps {
   /** Пробрасывается в CityDropdown — данные приходят из серверного компонента. */
   cities: CityOption[];
   placeholder?: string;
+  /**
+   * Текущий запрос и город из адресной строки.
+   *
+   * Приходят со страницы уже разобранными, а не читаются здесь через
+   * `useSearchParams`: источник состояния — URL, и разбирает его сервер
+   * ровно один раз, тем же `parseServiceCatalogFilters`, что и выдачу.
+   * Иначе форма и результаты расходились бы по правилам разбора.
+   */
+  defaultQuery?: string;
+  defaultCity?: string;
 }
 
 export function SearchBar({
   cities,
   placeholder = "Ремонт, уборка, репетитор...",
+  defaultQuery,
+  defaultCity,
 }: SearchBarProps) {
   const router = useRouter();
 
@@ -40,6 +52,7 @@ export function SearchBar({
         <input
           name="query"
           type="search"
+          defaultValue={defaultQuery}
           placeholder={placeholder}
           className="w-full pl-12 pr-4 py-3.5 text-base bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none font-medium"
         />
@@ -48,7 +61,7 @@ export function SearchBar({
       <div className="hidden md:block h-8 my-auto w-px bg-gradient-to-b from-transparent via-border to-transparent" />
 
       <div className="flex items-center px-2 py-1 md:py-0 bg-secondary/10 md:bg-transparent rounded-xl md:rounded-none">
-        <CityDropdown cities={cities} />
+        <CityDropdown cities={cities} defaultCity={defaultCity} />
       </div>
 
       <button

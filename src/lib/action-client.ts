@@ -5,6 +5,7 @@ import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
 import type { ActionState } from "@/lib/action-state";
 import { auth, type Session } from "@/lib/auth";
+import { logError } from "@/lib/logger";
 
 // Контракт состояния живёт в `action-state.ts`: этот модуль помечен `server-only`,
 // а клиентским компонентам нужны те же типы и начальное значение.
@@ -136,7 +137,13 @@ export function authedAction<TSchema extends z.ZodType, TData>(
         return { status: "error", message: error.message };
       }
 
-      console.error("[action]", error);
+      // Ошибку видит только лог: наружу уходит общее сообщение, чтобы
+      // подробности внутреннего сбоя не утекли пользователю.
+      //
+      // `userId` в контексте — не личные данные, а то, без чего разбор жалобы
+      // невозможен: он позволяет найти запись по обращению конкретного человека.
+      // Содержимое формы сюда не кладётся: там бывают контакты.
+      logError("action", error, { userId: session.user.id });
       return { status: "error", message: INTERNAL };
     }
   };

@@ -1,5 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { formatYears } from "./format";
+import { formatMonthYear, formatYears } from "./format";
+
+/**
+ * Intl ставит перед «г.» узкий неразрывной пробел (U+202F) — это правильная
+ * русская типографика, и портить её ради теста нельзя. Но и вписывать
+ * невидимый символ в ожидаемую строку не стоит: такой тест не читается
+ * глазами и ломается, если ICU поменяет разделитель. Поэтому сравниваем
+ * с точностью до вида пробела.
+ */
+const spaces = (value: string) => value.replace(/\s/g, " ");
+
+describe("formatMonthYear", () => {
+  it("ставит месяц в родительный падеж — строка читается как «На платформе с …»", () => {
+    // Полдень UTC, а не полночь: даты разбираются в местном поясе, и полночь
+    // уехала бы на соседний месяц в любом поясе западнее Гринвича.
+    // Именительный («июнь 2026 г.») — то, что Intl отдаёт без `day` в опциях.
+    expect(spaces(formatMonthYear(new Date("2026-06-15T12:00:00Z")))).toBe("июня 2026 г.");
+    expect(spaces(formatMonthYear(new Date("2025-01-20T12:00:00Z")))).toBe("января 2025 г.");
+    expect(spaces(formatMonthYear(new Date("2024-08-02T12:00:00Z")))).toBe("августа 2024 г.");
+  });
+
+  it("день в результат не попадает ни при какой дате месяца", () => {
+    expect(spaces(formatMonthYear(new Date("2026-03-02T12:00:00Z")))).toBe("марта 2026 г.");
+    expect(spaces(formatMonthYear(new Date("2026-03-30T12:00:00Z")))).toBe("марта 2026 г.");
+  });
+});
 
 describe("formatYears", () => {
   it("склоняет по правилам русского языка", () => {

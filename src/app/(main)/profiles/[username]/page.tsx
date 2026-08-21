@@ -1,4 +1,5 @@
 import { Building2, CheckCircle2, MapPin, User } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
@@ -11,6 +12,47 @@ import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { getOpenTaskCardsByAuthor } from "@/features/tasks/queries";
 import { auth } from "@/lib/auth";
 import { formatMonthYear, formatServicePrice, formatYears } from "@/lib/format";
+import { metaDescription } from "@/lib/site";
+
+/**
+ * Метаданные публичного профиля.
+ *
+ * Описание берётся из «о себе», если человек его заполнил; иначе собирается
+ * из того, что известно наверняка. Пустой профиль без подстановки отдал бы
+ * в выдачу общее описание сайта — то есть выглядел бы как дубль главной.
+ *
+ * Аватар уходит в превью ссылки: профилем делятся так же, как объявлением.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await params;
+  const profile = await getProfileByUsername(username);
+  if (!profile) return {};
+
+  const role = profile.type === "company" ? "Компания" : "Частный специалист";
+  const place = profile.cityName ? `, ${profile.cityName}` : "";
+  const path = `/profiles/${username}`;
+
+  const description = profile.bio
+    ? metaDescription(profile.bio)
+    : `${role}${place} на Sferus. Услуги, задания и контакты.`;
+
+  return {
+    title: profile.name,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      title: `${profile.name} — ${role}`,
+      description,
+      url: path,
+      type: "profile",
+      images: profile.image ? [{ url: profile.image, alt: profile.name }] : undefined,
+    },
+  };
+}
 
 export default async function PublicProfilePage({
   params,

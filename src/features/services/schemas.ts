@@ -191,3 +191,24 @@ export function parseServiceCatalogFilters(
     query: query || undefined,
   };
 }
+
+/**
+ * Фильтры обратно в параметры адреса — обратная сторона `parseServiceCatalogFilters`.
+ *
+ * Единственное место, где решается, что из фильтров попадает в URL. Раньше
+ * сборка адреса жила в сайдбаре и не переносила `q`: клик по городу на странице
+ * категории молча терял поисковый запрос. Пока таких сборок было две — расхождение
+ * было вопросом времени; теперь и фильтры, и пагинация читают отсюда.
+ *
+ * Номер страницы сюда **не входит**: он не фильтр, и смена фильтра обязана
+ * возвращать на первую страницу — см. `lib/pagination.ts`.
+ */
+export function serviceCatalogSearchParams(filters: ServiceCatalogFilters): URLSearchParams {
+  const search = new URLSearchParams();
+
+  if (filters.query) search.set("q", filters.query);
+  if (filters.cityName) search.set("city", filters.cityName);
+  if (filters.executorType) search.set("type", filters.executorType);
+
+  return search;
+}

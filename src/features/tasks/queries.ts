@@ -1,9 +1,11 @@
 import "server-only";
 
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
+import { cache } from "react";
 import type { TaskCatalogFilters } from "@/features/tasks/schemas";
 import { db } from "@/lib/db";
 import { categories, cities, profiles, tasks, user } from "@/lib/db/schema";
+import { offsetFor, PAGE_SIZE } from "@/lib/pagination";
 
 /**
  * Запросы заданий.
@@ -31,21 +33,57 @@ const cardColumns = {
   authorType: profiles.type,
 };
 
-/** Карточки заданий для доски, с фильтрами из URL. */
-export async function getTaskCards(filters: TaskCatalogFilters) {
+/**
+ * Условия доски — общие для выборки карточек и для их подсчёта.
+ *
+ * Как и у услуг, разделены условия, а не цепочка `join`: расхождение в `WHERE`
+ * дало бы пагинацию, ведущую на пустые страницы. Соединения ниже повторяются
+ * дословно — типы конструктора Drizzle не переживают обёртку с обобщённым
+ * набором колонок.
+ */
+function boardConditions(filters: TaskCatalogFilters) {
   const conditions = [isPubliclyVisible, eq(tasks.status, filters.status)];
   if (filters.categorySlug) conditions.push(eq(categories.slug, filters.categorySlug));
   if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
+  return conditions;
+}
 
-  return db
-    .select(cardColumns)
+/** Карточки заданий для доски, с фильтрами из URL. */
+export async function getTaskCards(
+  filters: TaskCatalogFilters,
+  page = 1,
+  pageSize: number = PAGE_SIZE,
+) {
+  return (
+    db
+      .select(cardColumns)
+      .from(tasks)
+      .innerJoin(categories, eq(tasks.categoryId, categories.id))
+      .innerJoin(cities, eq(tasks.cityId, cities.id))
+      .innerJoin(user, eq(tasks.userId, user.id))
+      .leftJoin(profiles, eq(profiles.userId, tasks.userId))
+      .where(and(...boardConditions(filters)))
+      // `id` вторым ключом обязателен для постраничной выборки: при совпадении
+      // дат порядок иначе не определён, и `OFFSET` начнёт терять или повторять
+      // задания на стыке страниц.
+      .orderBy(desc(tasks.createdAt), desc(tasks.id))
+      .limit(pageSize)
+      .offset(offsetFor(page, pageSize))
+  );
+}
+
+/** Сколько всего заданий на доске с учётом фильтров — задаёт число страниц. */
+export async function countTaskCards(filters: TaskCatalogFilters) {
+  const [row] = await db
+    .select({ value: count() })
     .from(tasks)
     .innerJoin(categories, eq(tasks.categoryId, categories.id))
     .innerJoin(cities, eq(tasks.cityId, cities.id))
     .innerJoin(user, eq(tasks.userId, user.id))
     .leftJoin(profiles, eq(profiles.userId, tasks.userId))
-    .where(and(...conditions))
-    .orderBy(desc(tasks.createdAt));
+    .where(and(...boardConditions(filters)));
+
+  return row?.value ?? 0;
 }
 
 /**
@@ -66,8 +104,14 @@ export async function getOpenTaskCardsByAuthor(authorId: string) {
     .orderBy(desc(tasks.createdAt));
 }
 
-/** Полная карточка задания для детальной страницы. */
-export async function getTaskDetail(id: number) {
+/**
+ * Полная карточка задания для детальной страницы.
+ *
+ * Под `cache`: `generateMetadata` и компонент страницы просят одно и то же
+ * задание. Кеш действует в пределах одного запроса — это дедупликация,
+ * а не хранение между посетителями.
+ */
+export const getTaskDetail = cache(async (id: number) => {
   const [row] = await db
     .select({
       id: tasks.id,
@@ -92,6 +136,20 @@ export async function getTaskDetail(id: number) {
     .limit(1);
 
   return row ?? null;
+});
+
+/**
+ * Адреса заданий для карты сайта — только открытые.
+ *
+ * Завершённые и отменённые из карты исключены: страница остаётся доступной,
+ * но звать на неё робота незачем — предложить по такому заданию уже нечего.
+ */
+export async function getTaskSitemapEntries() {
+  return db
+    .select({ id: tasks.id, updatedAt: tasks.updatedAt })
+    .from(tasks)
+    .where(and(isPubliclyVisible, eq(tasks.status, "open")))
+    .orderBy(desc(tasks.updatedAt));
 }
 
 /** Сколько заданий разместил автор и сколько из них завершено — для карточки заказчика. */

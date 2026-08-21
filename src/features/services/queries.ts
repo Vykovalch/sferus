@@ -1,9 +1,11 @@
 import "server-only";
 
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, sql } from "drizzle-orm";
+import { cache } from "react";
 import type { ServiceCatalogFilters } from "@/features/services/schemas";
 import { db } from "@/lib/db";
 import { categories, cities, profiles, serviceImages, services, user } from "@/lib/db/schema";
+import { offsetFor, PAGE_SIZE } from "@/lib/pagination";
 
 /**
  * Запросы услуг.
@@ -76,20 +78,55 @@ function searchQuery(text: string) {
   return sql`websearch_to_tsquery('russian', ${text})`;
 }
 
-/**
- * Поиск услуг по всем категориям.
+/*
+ * Условия ниже — общие для выборки карточек и для их подсчёта.
  *
- * Лимит вместо пагинации — временно: постраничная выборка делается отдельным
- * срезом сразу для каталога, доски и поиска, чтобы не трогать одно и то же
- * трижды (ROADMAP, этап 3).
+ * Разделены именно условия, а не цепочка `join`: расхождение в `WHERE` даёт
+ * пагинацию, которая обещает страницы и ведёт на пустые. Цепочка соединений
+ * повторяется в каждом запросе дословно — обернуть её в общую функцию не
+ * выходит, типы конструктора Drizzle после первого `innerJoin` зависят
+ * от набора колонок и через обобщённый параметр не выводятся. Дублирование
+ * механическое и заметное; молчаливое расхождение фильтров было бы дороже.
+ *
+ * Подсчёт строк соединения не размножают: `profiles.user_id` уникален,
+ * остальные идут по первичным ключам.
  */
-export async function searchServiceCards(filters: ServiceCatalogFilters, limit = 50) {
+
+/** Условия, общие для каталога и поиска: видимость плюс фильтры из URL. */
+function catalogConditions(filters: ServiceCatalogFilters) {
+  const conditions = [isPubliclyVisible];
+  if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
+  if (filters.executorType) conditions.push(eq(profiles.type, filters.executorType));
+  return conditions;
+}
+
+/** Условия поиска: к общим добавляется совпадение по полнотекстовому индексу. */
+function searchConditions(filters: ServiceCatalogFilters & { query: string }) {
+  return [...catalogConditions(filters), sql`${searchVector} @@ ${searchQuery(filters.query)}`];
+}
+
+/** Условия каталога категории. `?q=` здесь тоже работает, а не игнорируется молча. */
+function categoryConditions(categorySlug: string, filters: ServiceCatalogFilters) {
+  const conditions = [...catalogConditions(filters), eq(categories.slug, categorySlug)];
+  if (filters.query) conditions.push(sql`${searchVector} @@ ${searchQuery(filters.query)}`);
+  return conditions;
+}
+
+/**
+ * Поиск услуг по всем категориям, страницами.
+ *
+ * Пустой запрос отдаёт пустой список, а не всю таблицу: сюда приходят только
+ * когда в адресе есть `?q=`, и «ничего не спросили» не должно означать
+ * «покажи всё».
+ */
+export async function searchServiceCards(
+  filters: ServiceCatalogFilters,
+  page = 1,
+  pageSize: number = PAGE_SIZE,
+) {
   if (!filters.query) return [];
 
   const query = searchQuery(filters.query);
-  const conditions = [isPubliclyVisible, sql`${searchVector} @@ ${query}`];
-  if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
-  if (filters.executorType) conditions.push(eq(profiles.type, filters.executorType));
 
   return (
     db
@@ -99,34 +136,107 @@ export async function searchServiceCards(filters: ServiceCatalogFilters, limit =
       .innerJoin(cities, eq(services.cityId, cities.id))
       .innerJoin(user, eq(services.userId, user.id))
       .leftJoin(profiles, eq(profiles.userId, services.userId))
-      .where(and(...conditions))
-      // Сначала релевантность, при равной — свежесть.
-      .orderBy(desc(sql`ts_rank(${searchVector}, ${query})`), desc(services.createdAt))
-      .limit(limit)
+      .where(and(...searchConditions({ ...filters, query: filters.query })))
+      // Сначала релевантность, при равной — свежесть, при равной — id.
+      //
+      // `id` в конце не украшение, а обязательное условие постраничной выборки:
+      // если у двух строк совпадают и ранг, и дата, порядок между ними Postgres
+      // не гарантирует, и он может отличаться от запроса к запросу. С `OFFSET`
+      // это означает, что строка либо покажется дважды на соседних страницах,
+      // либо не покажется вовсе. Уникальная колонка в конце делает порядок
+      // полным и воспроизводимым.
+      .orderBy(
+        desc(sql`ts_rank(${searchVector}, ${query})`),
+        desc(services.createdAt),
+        desc(services.id),
+      )
+      .limit(pageSize)
+      .offset(offsetFor(page, pageSize))
   );
+}
+
+/**
+ * Сколько всего объявлений отвечает запросу.
+ *
+ * Нужен не для красоты: строка «Найдено объявлений: N» после нарезки на страницы
+ * иначе показывала бы размер страницы, то есть врала бы. Он же задаёт число
+ * страниц. Уходит в `Promise.all` рядом с выборкой — по тем же индексам.
+ */
+export async function countSearchServices(filters: ServiceCatalogFilters) {
+  if (!filters.query) return 0;
+
+  const [row] = await db
+    .select({ value: count() })
+    .from(services)
+    .innerJoin(categories, eq(services.categoryId, categories.id))
+    .innerJoin(cities, eq(services.cityId, cities.id))
+    .innerJoin(user, eq(services.userId, user.id))
+    .leftJoin(profiles, eq(profiles.userId, services.userId))
+    .where(and(...searchConditions({ ...filters, query: filters.query })));
+
+  return row?.value ?? 0;
+}
+
+/**
+ * Адреса объявлений для карты сайта.
+ *
+ * Только публично видимые: выключенное владельцем или скрытое модератором
+ * объявление в карте сайта — это приглашение роботу на страницу, отдающую 404.
+ *
+ * `updatedAt` уходит в `lastModified`: по нему робот решает, стоит ли
+ * перечитывать страницу. Карточка целиком тут не нужна — только адрес и дата.
+ */
+export async function getServiceSitemapEntries() {
+  return db
+    .select({
+      id: services.id,
+      categorySlug: categories.slug,
+      updatedAt: services.updatedAt,
+    })
+    .from(services)
+    .innerJoin(categories, eq(services.categoryId, categories.id))
+    .where(isPubliclyVisible)
+    .orderBy(desc(services.updatedAt));
 }
 
 /** Карточки услуг для каталога категории, с необязательными фильтрами из URL. */
 export async function getServiceCardsByCategory(
   categorySlug: string,
   filters: ServiceCatalogFilters = {},
+  page = 1,
+  pageSize: number = PAGE_SIZE,
 ) {
-  const conditions = [isPubliclyVisible, eq(categories.slug, categorySlug)];
-  if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
-  if (filters.executorType) conditions.push(eq(profiles.type, filters.executorType));
-  // Тот же разбор параметров, что и у поиска: если `?q=` пришёл на страницу
-  // категории, он должен работать, а не молча игнорироваться.
-  if (filters.query) conditions.push(sql`${searchVector} @@ ${searchQuery(filters.query)}`);
+  return (
+    db
+      .select(cardColumns)
+      .from(services)
+      .innerJoin(categories, eq(services.categoryId, categories.id))
+      .innerJoin(cities, eq(services.cityId, cities.id))
+      .innerJoin(user, eq(services.userId, user.id))
+      .leftJoin(profiles, eq(profiles.userId, services.userId))
+      .where(and(...categoryConditions(categorySlug, filters)))
+      // `id` вторым ключом — чтобы порядок был полным: см. пояснение в поиске выше.
+      .orderBy(desc(services.createdAt), desc(services.id))
+      .limit(pageSize)
+      .offset(offsetFor(page, pageSize))
+  );
+}
 
-  return db
-    .select(cardColumns)
+/** Сколько всего объявлений в категории с учётом фильтров. */
+export async function countServicesByCategory(
+  categorySlug: string,
+  filters: ServiceCatalogFilters = {},
+) {
+  const [row] = await db
+    .select({ value: count() })
     .from(services)
     .innerJoin(categories, eq(services.categoryId, categories.id))
     .innerJoin(cities, eq(services.cityId, cities.id))
     .innerJoin(user, eq(services.userId, user.id))
     .leftJoin(profiles, eq(profiles.userId, services.userId))
-    .where(and(...conditions))
-    .orderBy(desc(services.createdAt));
+    .where(and(...categoryConditions(categorySlug, filters)));
+
+  return row?.value ?? 0;
 }
 
 /**
@@ -181,8 +291,13 @@ export async function getServiceCountsByCategory() {
  *
  * Контактов владельца здесь нет намеренно: они попали бы в HTML страницы
  * и стали бы доступны любому, кто откроет исходный код, без нажатия кнопки.
+ *
+ * Обёрнута в `cache`: `generateMetadata` и сам компонент страницы запрашивают
+ * одно и то же объявление, и без этого на каждый показ уходило бы два
+ * одинаковых запроса. Кеш живёт в пределах одного запроса — это дедупликация,
+ * а не хранение между посетителями.
  */
-export async function getServiceDetail(id: number) {
+export const getServiceDetail = cache(async (id: number) => {
   const [row] = await db
     .select({
       id: services.id,
@@ -213,7 +328,7 @@ export async function getServiceDetail(id: number) {
     .limit(1);
 
   return row ?? null;
-}
+});
 
 /** Другие услуги того же исполнителя — блок на детальной странице. */
 export async function getOtherServicesByAuthor(authorId: string, exceptId: number) {
@@ -259,8 +374,11 @@ export async function getMyServices(userId: string) {
 /**
  * Фотографии объявления по порядку — галерея на детальной странице
  * и предзаполнение формы правки.
+ *
+ * Тоже под `cache`: первая фотография нужна и разметке галереи, и превью
+ * ссылки в метаданных.
  */
-export async function getServiceImageUrls(serviceId: number) {
+export const getServiceImageUrls = cache(async (serviceId: number) => {
   const rows = await db
     .select({ url: serviceImages.url })
     .from(serviceImages)
@@ -268,7 +386,7 @@ export async function getServiceImageUrls(serviceId: number) {
     .orderBy(asc(serviceImages.order), asc(serviceImages.id));
 
   return rows.map((row) => row.url);
-}
+});
 
 /**
  * Услуга для формы редактирования. Возвращает и владельца, чтобы вызывающий код

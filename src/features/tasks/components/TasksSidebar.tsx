@@ -1,7 +1,7 @@
 import { FilterLinkGroup } from "@/components/shared/FilterLinkGroup";
 import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
-import type { TaskCatalogFilters } from "@/features/tasks/schemas";
+import { type TaskCatalogFilters, taskCatalogSearchParams } from "@/features/tasks/schemas";
 import { TASK_STATUSES } from "@/lib/constants";
 
 interface TasksSidebarProps extends TaskCatalogFilters {
@@ -10,15 +10,15 @@ interface TasksSidebarProps extends TaskCatalogFilters {
   categories: CategoryOption[];
 }
 
-/** Собирает адрес доски заданий с обновлённым набором фильтров, остальные сохраняя. */
+/**
+ * Собирает адрес доски заданий с обновлённым набором фильтров, остальные сохраняя.
+ *
+ * Список параметров живёт в `taskCatalogSearchParams` — там же, откуда его
+ * берёт пагинация. Номер страницы не передаётся намеренно: смена фильтра
+ * возвращает на первую страницу.
+ */
 function buildBoardHref(filters: TaskCatalogFilters, overrides: Partial<TaskCatalogFilters>) {
-  const next = { ...filters, ...overrides };
-  const search = new URLSearchParams();
-  if (next.categorySlug) search.set("category", next.categorySlug);
-  if (next.cityName) search.set("city", next.cityName);
-  if (next.status !== "open") search.set("status", next.status);
-
-  const query = search.toString();
+  const query = taskCatalogSearchParams({ ...filters, ...overrides }).toString();
   return `/tasks${query ? `?${query}` : ""}`;
 }
 

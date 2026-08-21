@@ -1,6 +1,7 @@
 import "server-only";
 
 import { del } from "@vercel/blob";
+import { logError } from "@/lib/logger";
 
 /**
  * Единственный модуль, который знает про конкретное хранилище файлов.
@@ -28,6 +29,8 @@ export async function deleteImages(urls: string[]): Promise<void> {
   try {
     await del(urls);
   } catch (error) {
-    console.error("[storage] не удалось удалить файлы", { count: urls.length, error });
+    // Адреса файлов в лог не кладутся — только их количество: ссылки Vercel Blob
+    // публичные, и складывать их в логи незачем.
+    logError("storage", error, { operation: "delete", count: urls.length });
   }
 }

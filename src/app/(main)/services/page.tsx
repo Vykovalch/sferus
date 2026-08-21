@@ -1,20 +1,62 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { CategoryCard } from "@/components/shared/CategoryCard";
+import { Pagination } from "@/components/shared/Pagination";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
-import { getServiceCountsByCategory, searchServiceCards } from "@/features/services/queries";
-import { parseServiceCatalogFilters } from "@/features/services/schemas";
+import {
+  countSearchServices,
+  getServiceCountsByCategory,
+  searchServiceCards,
+} from "@/features/services/queries";
+import {
+  parseServiceCatalogFilters,
+  serviceCatalogSearchParams,
+} from "@/features/services/schemas";
 import { auth } from "@/lib/auth";
 import { categoryIcon, categoryStyle } from "@/lib/constants";
 import { formatServicePrice } from "@/lib/format";
+import { buildPageHref, isPageOutOfRange, pageCount, parsePageParam } from "@/lib/pagination";
 
 interface ServicesPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+/**
+ * Метаданные каталога и результатов поиска.
+ *
+ * **Результаты поиска закрыты от индексации.** Адресов вида `?q=…` бесконечно
+ * много, содержимое у них то же, что в каталоге, и поисковики прямо не советуют
+ * пускать в индекс внутренний поиск по сайту: в выдаче он выглядит как мусор
+ * и тянет вниз оценку всего домена. `follow` при этом остаётся — по ссылкам
+ * с такой страницы робот пройти может, просто саму её не покажет.
+ */
+export async function generateMetadata({ searchParams }: ServicesPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const filters = parseServiceCatalogFilters(params);
+
+  if (filters.query) {
+    return {
+      title: `Поиск: ${filters.query}`,
+      robots: { index: false, follow: true },
+    };
+  }
+
+  const page = parsePageParam(params.page);
+  const title = page > 1 ? `Услуги — страница ${page}` : "Все категории услуг";
+
+  return {
+    title,
+    description:
+      "Каталог услуг в Приднестровье: ремонт, уборка, репетиторы, автосервис и другие категории. Исполнители с ценами и контактами.",
+    alternates: { canonical: buildPageHref("/services", new URLSearchParams(), page) },
+  };
 }
 
 /**
@@ -25,27 +67,45 @@ interface ServicesPageProps {
  * на два адреса незачем.
  */
 export default async function ServicesPage({ searchParams }: ServicesPageProps) {
-  const filters = parseServiceCatalogFilters(await searchParams);
+  const params = await searchParams;
+  const filters = parseServiceCatalogFilters(params);
+  const page = parsePageParam(params.page);
 
   const [categories, cities] = await Promise.all([getCategories(), getCities()]);
 
   if (filters.query) {
     const session = await auth.api.getSession({ headers: await headers() });
-    const [results, favorites] = await Promise.all([
-      searchServiceCards(filters),
+    // Выборка и подсчёт идут вместе: подсчёт задаёт число страниц, и без него
+    // строка «Найдено объявлений» показывала бы размер страницы вместо итога.
+    const [results, total, favorites] = await Promise.all([
+      searchServiceCards(filters, page),
+      countSearchServices(filters),
       getFavoriteTargetIds(session?.user.id),
     ]);
+
+    // Адрес за пределом диапазона — 404, а не пустая сетка: иначе у робота
+    // появляется бесконечное пространство пустых страниц.
+    if (isPageOutOfRange(page, total)) notFound();
+
+    const totalPages = pageCount(total);
+    const pageParams = serviceCatalogSearchParams(filters);
 
     return (
       <div className="bg-background min-h-screen">
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Поиск: «{filters.query}»</h1>
           <p className="text-sm text-muted-foreground mb-6">
-            {results.length === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${results.length}`}
+            {total === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${total}`}
           </p>
 
+          {/* Запрос и город возвращаются в форму: человек пришёл сюда уточнять
+              выдачу, а не набирать всё заново. */}
           <div className="max-w-3xl mb-8">
-            <SearchBar cities={cities} />
+            <SearchBar
+              cities={cities}
+              defaultQuery={filters.query}
+              defaultCity={filters.cityName}
+            />
           </div>
 
           {results.length === 0 ? (
@@ -88,13 +148,12 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                 ))}
               </div>
 
-              {/* Пагинации пока нет — она делается отдельным срезом сразу
-                  для каталога, доски и поиска. Молча обрезать выдачу нельзя. */}
-              {results.length === 50 && (
-                <p className="text-xs text-muted-foreground mt-4">
-                  Показаны первые 50 объявлений. Уточните запрос, чтобы сузить поиск
-                </p>
-              )}
+              <Pagination
+                page={page}
+                pageCount={totalPages}
+                buildHref={(target) => buildPageHref("/services", pageParams, target)}
+                label="Страницы результатов поиска"
+              />
             </>
           )}
         </div>
@@ -109,7 +168,8 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
         <div className="max-w-3xl mb-8">
-          <SearchBar cities={cities} />
+          {/* Запроса здесь нет по условию ветки, но город в адресе быть может. */}
+          <SearchBar cities={cities} defaultCity={filters.cityName} />
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {categories.map((cat) => {

@@ -1,6 +1,9 @@
 import { SlidersHorizontal } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { getCategories } from "@/features/categories/queries";
@@ -8,25 +11,53 @@ import { getCities } from "@/features/cities/queries";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
 import { TasksSidebar } from "@/features/tasks/components/TasksSidebar";
-import { getTaskCards } from "@/features/tasks/queries";
-import { parseTaskCatalogFilters } from "@/features/tasks/schemas";
+import { countTaskCards, getTaskCards } from "@/features/tasks/queries";
+import { parseTaskCatalogFilters, taskCatalogSearchParams } from "@/features/tasks/schemas";
 import { auth } from "@/lib/auth";
+import { buildPageHref, isPageOutOfRange, pageCount, parsePageParam } from "@/lib/pagination";
 
 interface TasksPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+/**
+ * Метаданные доски заданий.
+ *
+ * Канонический адрес — доска без фильтров, как и у каталога категорий:
+ * `?category=` и `?city=` порождают десятки почти одинаковых адресов.
+ * Номер страницы сохраняется — это разное содержимое.
+ */
+export async function generateMetadata({ searchParams }: TasksPageProps): Promise<Metadata> {
+  const page = parsePageParam((await searchParams).page);
+  const title = page > 1 ? `Задания — страница ${page}` : "Задания от заказчиков";
+
+  return {
+    title,
+    description:
+      // Не «откликаются»: откликов в v1 нет, связь идёт через раскрытие контактов.
+      "Доска заданий Приднестровья: заказчики публикуют задачи, исполнители связываются напрямую. Ремонт, доставка, услуги на дом.",
+    alternates: { canonical: buildPageHref("/tasks", new URLSearchParams(), page) },
+  };
+}
+
 export default async function TasksPage({ searchParams }: TasksPageProps) {
-  const filters = parseTaskCatalogFilters(await searchParams);
+  const params = await searchParams;
+  const filters = parseTaskCatalogFilters(params);
+  const page = parsePageParam(params.page);
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const [cities, categories, tasks, favorites] = await Promise.all([
+  const [cities, categories, tasks, total, favorites] = await Promise.all([
     getCities(),
     getCategories(),
-    getTaskCards(filters),
+    getTaskCards(filters, page),
+    countTaskCards(filters),
     getFavoriteTargetIds(session?.user.id),
   ]);
 
+  if (isPageOutOfRange(page, total)) notFound();
+
+  const totalPages = pageCount(total);
+  const pageParams = taskCatalogSearchParams(filters);
   const hasActiveFilters = Boolean(filters.categorySlug || filters.cityName);
 
   return (
@@ -104,16 +135,25 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                 )}
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
-                {tasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    isFavorite={favorites.taskIds.has(task.id)}
-                    isAuthenticated={Boolean(session)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="flex flex-col gap-3">
+                  {tasks.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      isFavorite={favorites.taskIds.has(task.id)}
+                      isAuthenticated={Boolean(session)}
+                    />
+                  ))}
+                </div>
+
+                <Pagination
+                  page={page}
+                  pageCount={totalPages}
+                  buildHref={(target) => buildPageHref("/tasks", pageParams, target)}
+                  label="Страницы доски заданий"
+                />
+              </>
             )}
           </div>
         </div>
