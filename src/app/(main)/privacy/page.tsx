@@ -12,20 +12,20 @@ export default function PrivacyPage() {
   return (
     <LegalDoc
       title="Политика конфиденциальности"
-      updatedAt="5 августа 2026 года"
+      updatedAt="25 августа 2026 года"
       intro={
         <>
           <p>
             Настоящая Политика описывает, какие персональные данные обрабатывает платформа Sferus
-            (sferus.md), с какой целью, на каком основании, кому они передаются и какие права есть у
-            пользователя.
+            (sferus.net), с какой целью, на каком основании, кому они передаются и какие права есть
+            у пользователя.
           </p>
           <p>
             Оператором персональных данных является{" "}
             <Fill>ФИО / наименование владельца Платформы, регистрационные данные, адрес</Fill>. По
             вопросам обработки персональных данных можно обратиться по адресу{" "}
-            <a href="mailto:hello@sferus.md" className="text-brand hover:underline">
-              hello@sferus.md
+            <a href="mailto:hello@sferus.net" className="text-brand hover:underline">
+              hello@sferus.net
             </a>
             .
           </p>
@@ -161,8 +161,8 @@ export default function PrivacyPage() {
         />
         <p>
           Для реализации прав направьте обращение на{" "}
-          <a href="mailto:hello@sferus.md" className="text-brand hover:underline">
-            hello@sferus.md
+          <a href="mailto:hello@sferus.net" className="text-brand hover:underline">
+            hello@sferus.net
           </a>{" "}
           с адреса электронной почты, указанного в вашей учётной записи. Ответ предоставляется в
           срок, установленный применимым законодательством.

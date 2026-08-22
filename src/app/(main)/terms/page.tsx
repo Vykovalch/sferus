@@ -17,7 +17,7 @@ export default function TermsPage() {
         <>
           <p>
             Настоящие Условия использования (далее — «Условия») регулируют порядок пользования
-            платформой Sferus, размещённой в сети Интернет по адресу sferus.md (далее —
+            платформой Sferus, размещённой в сети Интернет по адресу sferus.net (далее —
             «Платформа»), и заключаются между{" "}
             <Fill>ФИО / наименование владельца Платформы, регистрационные данные</Fill> (далее —
             «Администрация») и любым лицом, использующим Платформу (далее — «Пользователь»).
@@ -35,7 +35,7 @@ export default function TermsPage() {
         <LegalList
           items={[
             <>
-              <strong className="text-foreground">Платформа</strong> — сайт sferus.md и его
+              <strong className="text-foreground">Платформа</strong> — сайт sferus.net и его
               функциональность, предоставляющая возможность размещать и находить объявления об
               услугах и задания.
             </>,
@@ -211,8 +211,8 @@ export default function TermsPage() {
       <LegalSection title="12. Контакты">
         <p>
           По вопросам, связанным с работой Платформы, можно обратиться по адресу{" "}
-          <a href="mailto:hello@sferus.md" className="text-brand hover:underline">
-            hello@sferus.md
+          <a href="mailto:hello@sferus.net" className="text-brand hover:underline">
+            hello@sferus.net
           </a>
           .
         </p>

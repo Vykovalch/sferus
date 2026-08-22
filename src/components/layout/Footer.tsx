@@ -76,10 +76,10 @@ export function Footer() {
             <div className="flex flex-col gap-3">
               <Link
                 className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white transition-colors"
-                href="mailto:hello@sferus.md"
+                href="mailto:hello@sferus.net"
               >
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                hello@sferus.md
+                hello@sferus.net
               </Link>
               <Link
                 className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white transition-colors"

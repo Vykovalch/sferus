@@ -18,7 +18,7 @@ const FALLBACK_URL = "http://localhost:3000";
  * Канонический адрес без завершающего слэша.
  *
  * Слэш убирается, потому что адреса собираются склейкой (`${SITE_URL}${path}`),
- * и `https://sferus.md//services` — это другой URL для поискового робота.
+ * и `https://sferus.net//services` — это другой URL для поискового робота.
  */
 export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL || FALLBACK_URL).replace(/\/+$/, "");
 

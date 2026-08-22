@@ -27,7 +27,7 @@ export default async function SettingsPage() {
         <h2 className="text-sm font-medium text-destructive mb-2">Удаление аккаунта</h2>
         <p className="text-xs text-muted-foreground">
           Чтобы удалить аккаунт,{" "}
-          <Link href="mailto:hello@sferus.md" className="text-brand hover:underline">
+          <Link href="mailto:hello@sferus.net" className="text-brand hover:underline">
             свяжитесь с нами
           </Link>
           . Вместе с аккаунтом будут удалены ваши объявления, задания и избранное — отменить это
