@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { unstable_cache } from "next/cache";
 import { getCategories } from "@/features/categories/queries";
 import { getServiceSitemapEntries } from "@/features/services/queries";
 import { getTaskSitemapEntries } from "@/features/tasks/queries";
@@ -7,12 +8,32 @@ import { absoluteUrl } from "@/lib/site";
 /**
  * Карта сайта.
  *
- * Перечитывается раз в час, а не на каждый запрос: объявления добавляются
- * штучно, и гонять три запроса к базе на каждое обращение робота незачем.
- * Час — компромисс между свежестью и нагрузкой; новое объявление всё равно
- * находится по внутренним ссылкам раньше, чем робот перечитает карту.
+ * `revalidate` на файле metadata-роута НЕ делает его динамическим — Next
+ * всё равно пытается статически сгенерировать /sitemap.xml на `next build`,
+ * то есть реально сходить в БД во время сборки. На CI сборка идёт с
+ * заглушечным DATABASE_URL (см. ci.yml, шаг «Сборка») и падает с
+ * `fetch failed`, потому что до заглушки в БД физически не достучаться.
+ *
+ * Поэтому роут явно сделан динамическим (`force-dynamic`) — Next не трогает
+ * БД на сборке, запрос выполняется при обращении робота. А чтобы не гонять
+ * три запроса к базе на каждое обращение, сами запросы обёрнуты в
+ * `unstable_cache` на час — тот же компромисс "свежесть vs нагрузка", что
+ * был задуман изначально, но реализован так, чтобы не требовать БД на сборке.
  */
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
+
+const getCachedSitemapData = unstable_cache(
+  async () => {
+    const [categories, services, tasks] = await Promise.all([
+      getCategories(),
+      getServiceSitemapEntries(),
+      getTaskSitemapEntries(),
+    ]);
+    return { categories, services, tasks };
+  },
+  ["sitemap-data"],
+  { revalidate: 3600, tags: ["sitemap"] },
+);
 
 /**
  * В карту попадает только то, что публично доступно и имеет смысл в выдаче.
@@ -26,11 +47,7 @@ export const revalidate = 3600;
  * приблизимся, карта разбивается через `generateSitemaps`.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, services, tasks] = await Promise.all([
-    getCategories(),
-    getServiceSitemapEntries(),
-    getTaskSitemapEntries(),
-  ]);
+  const { categories, services, tasks } = await getCachedSitemapData();
 
   const now = new Date();
 
