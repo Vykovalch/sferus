@@ -90,7 +90,7 @@ export function ServiceCard({
 
         <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
           <Wallet className="h-4 w-4 flex-shrink-0" />
-          <span>{price}</span>
+          <span className="truncate">{price}</span>
         </div>
       </div>
     </article>
