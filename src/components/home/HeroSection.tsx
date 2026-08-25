@@ -1,5 +1,6 @@
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { getCities } from "@/features/cities/queries";
 
@@ -15,7 +16,7 @@ export async function HeroSection() {
         backgroundPosition: "center center",
       }}
     >
-      <div className="container mx-auto px-4 relative z-10">
+      <PageContainer className="relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
             Найдите услугу
@@ -52,7 +53,7 @@ export async function HeroSection() {
             </Link>
           </div>
         </div>
-      </div>
+      </PageContainer>
     </section>
   );
 }

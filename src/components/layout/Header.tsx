@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { Logo } from "@/components/shared/Logo";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { Button } from "@/components/ui/button";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
@@ -26,7 +27,7 @@ export function Header({ session }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
-      <div className="container mx-auto px-4 max-w-[1280px]">
+      <PageContainer>
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Левая часть: Логотип Sferus */}
           <div className="flex items-center">
@@ -127,7 +128,7 @@ export function Header({ session }: HeaderProps) {
             <MobileMenu session={session} />
           </div>
         </div>
-      </div>
+      </PageContainer>
     </header>
   );
 }

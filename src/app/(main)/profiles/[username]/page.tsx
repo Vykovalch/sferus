@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
@@ -83,7 +84,7 @@ export default async function PublicProfilePage({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
+      <PageContainer className="py-6 pb-24 lg:pb-6">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
@@ -222,7 +223,7 @@ export default async function PublicProfilePage({
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
 
       {/* Мобильная закреплённая панель */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 flex items-center gap-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">

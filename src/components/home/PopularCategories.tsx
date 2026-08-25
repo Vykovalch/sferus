@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CategoryCard } from "@/components/shared/CategoryCard";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { getCategories } from "@/features/categories/queries";
 import { getServiceCountsByCategory } from "@/features/services/queries";
 import { categoryIcon, categoryStyle } from "@/lib/constants";
@@ -30,7 +31,7 @@ export async function PopularCategories() {
 
   return (
     <section className="py-16 bg-background">
-      <div className="container mx-auto px-4">
+      <PageContainer>
         <div className="flex items-end justify-between mb-12">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
             Популярные категории
@@ -65,7 +66,7 @@ export async function PopularCategories() {
             })}
           </div>
         )}
-      </div>
+      </PageContainer>
     </section>
   );
 }

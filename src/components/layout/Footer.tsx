@@ -1,11 +1,12 @@
 import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/shared/Logo";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 export function Footer() {
   return (
     <footer className="bg-footer-bg py-16">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <PageContainer>
         {/* Основная сетка */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-4">
           {/* Логотип и описание */}
@@ -112,7 +113,7 @@ export function Footer() {
             </Link>
           </div>
         </div>
-      </div>
+      </PageContainer>
     </footer>
   );
 }

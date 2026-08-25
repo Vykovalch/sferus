@@ -1,4 +1,5 @@
 import { ShoppingCart, Wrench } from "lucide-react";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 type StepItem = {
   n: number;
@@ -58,7 +59,7 @@ const executorSteps: StepItem[] = [
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="py-20 scroll-mt-16 bg-background">
-      <div className="container mx-auto px-4">
+      <PageContainer>
         {/* Заголовок */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
@@ -107,7 +108,7 @@ export function HowItWorks() {
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
     </section>
   );
 }

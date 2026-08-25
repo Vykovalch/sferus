@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { Pagination } from "@/components/shared/Pagination";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Button } from "@/components/ui/button";
@@ -82,7 +83,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
       <div className="bg-background">
-        <div className="container mx-auto px-4 py-3">
+        <PageContainer className="py-3">
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-1.5 text-sm text-muted-foreground"
@@ -98,10 +99,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               {category.name}
             </span>
           </nav>
-        </div>
+        </PageContainer>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
+      <PageContainer className="py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">{category.name}</h1>
         <div className="flex gap-6">
           {/* Сайдбар */}
@@ -206,7 +207,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             )}
           </div>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }

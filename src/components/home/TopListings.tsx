@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { getLatestServiceCards } from "@/features/services/queries";
@@ -20,7 +21,7 @@ export async function TopListings() {
 
   return (
     <section className="py-16 bg-card">
-      <div className="container mx-auto px-4">
+      <PageContainer>
         <div className="mb-10">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Свежие объявления</h2>
         </div>
@@ -46,7 +47,7 @@ export async function TopListings() {
             ))}
           </div>
         )}
-      </div>
+      </PageContainer>
     </section>
   );
 }

@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 /**
  * Плейсхолдер для данных, которые невозможно заполнить из кода:
@@ -15,13 +16,7 @@ export function Fill({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function LegalSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+export function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="border-t border-border pt-5">
       <h2 className="text-sm font-semibold text-foreground mb-3">{title}</h2>
@@ -62,7 +57,7 @@ export function LegalDoc({
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
       <div className="bg-background">
-        <div className="container mx-auto px-4 py-3">
+        <PageContainer className="py-3">
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap"
@@ -81,10 +76,10 @@ export function LegalDoc({
               {title}
             </span>
           </nav>
-        </div>
+        </PageContainer>
       </div>
 
-      <div className="container mx-auto px-4 py-6 max-w-3xl">
+      <PageContainer className="py-6 max-w-3xl">
         <div className="bg-background border border-border rounded-xl p-5 md:p-8 shadow-sm">
           <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight mb-1">
             {title}
@@ -99,7 +94,7 @@ export function LegalDoc({
 
           <div className="space-y-6">{children}</div>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }

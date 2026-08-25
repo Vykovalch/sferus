@@ -1,11 +1,12 @@
 import { Briefcase, UserSearch } from "lucide-react";
 import Link from "next/link";
+import { PageContainer } from "@/components/shared/PageContainer";
 
 export function CtaSection() {
   return (
     <section className="py-20 bg-muted">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-6 max-w-7xl mx-auto">
+      <PageContainer>
+        <div className="grid md:grid-cols-2 gap-6">
           {/* Для клиентов */}
           <div className="p-12 rounded-3xl bg-primary text-primary-foreground relative overflow-hidden group">
             <div className="absolute top-8 right-8 xl:top-8 xl:right-8 opacity-10 group-hover:scale-125 transition-transform duration-500 hidden sm:block md:hidden xl:block">
@@ -48,7 +49,7 @@ export function CtaSection() {
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
     </section>
   );
 }

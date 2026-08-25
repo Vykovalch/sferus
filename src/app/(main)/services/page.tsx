@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CategoryCard } from "@/components/shared/CategoryCard";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { Pagination } from "@/components/shared/Pagination";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { ServiceCard } from "@/components/shared/ServiceCard";
@@ -92,7 +93,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
     return (
       <div className="bg-background min-h-screen">
-        <div className="container mx-auto px-4 py-8">
+        <PageContainer className="py-8">
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Поиск: «{filters.query}»</h1>
           <p className="text-sm text-muted-foreground mb-6">
             {total === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${total}`}
@@ -156,7 +157,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               />
             </>
           )}
-        </div>
+        </PageContainer>
       </div>
     );
   }
@@ -165,7 +166,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
   return (
     <div className="bg-background min-h-screen">
-      <div className="container mx-auto px-4 py-8">
+      <PageContainer className="py-8">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
         <div className="max-w-3xl mb-8">
           {/* Запроса здесь нет по условию ветки, но город в адресе быть может. */}
@@ -186,7 +187,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             );
           })}
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }

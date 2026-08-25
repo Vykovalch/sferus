@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { getTaskDetail, getTaskStatsByAuthor } from "@/features/tasks/queries";
 import { auth } from "@/lib/auth";
 import { TASK_STATUSES, type TaskStatus } from "@/lib/constants";
@@ -89,7 +90,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
       <div className="bg-background">
-        <div className="container mx-auto px-4 py-3">
+        <PageContainer className="py-3">
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap"
@@ -108,10 +109,10 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
               {task.title}
             </span>
           </nav>
-        </div>
+        </PageContainer>
       </div>
 
-      <div className="container mx-auto px-4 py-6 pb-28 lg:pb-6">
+      <PageContainer className="py-6 pb-28 lg:pb-6">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
@@ -214,7 +215,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
 
       {/* Мобильная закреплённая панель: основное действие */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">

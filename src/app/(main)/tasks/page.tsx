@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PageContainer } from "@/components/shared/PageContainer";
 import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -62,7 +63,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <PageContainer className="py-8">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Задания</h1>
         <div className="flex gap-6">
           {/* Сайдбар */}
@@ -157,7 +158,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             )}
           </div>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }
