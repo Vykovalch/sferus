@@ -13,7 +13,7 @@ export async function HeroSection() {
       style={{
         backgroundImage: `linear-gradient(rgba(250, 250, 250, 0.85), rgba(250, 250, 250, 0.85)), url('/hero-bg.png')`,
         backgroundSize: "cover",
-        backgroundPosition: "center center",
+        backgroundPosition: "center top",
       }}
     >
       <PageContainer className="relative z-10">
