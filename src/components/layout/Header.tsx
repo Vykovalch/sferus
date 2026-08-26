@@ -46,7 +46,7 @@ export function Header({ session }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
       <PageContainer>
-        <div className="flex h-16 items-center justify-between gap-4">
+        <div className="flex h-16 lg:h-[72px] items-center justify-between gap-4">
           {/* Левая часть: Логотип Sferus */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
@@ -140,7 +140,8 @@ export function Header({ session }: HeaderProps) {
 
                 <Button
                   asChild
-                  className="hidden md:inline-flex h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm transition-colors px-5"
+                  variant="outline"
+                  className="hidden md:inline-flex h-11 border-primary text-primary hover:bg-primary/5 font-semibold transition-colors px-5"
                 >
                   <Link href="/tasks/new">Создать задание</Link>
                 </Button>

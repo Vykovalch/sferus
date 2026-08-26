@@ -116,9 +116,12 @@ export function categoryStyle(slug: string) {
 export const ALL_OPTION = "all";
 
 /**
- * Высота шапки в пикселях — держать синхронно с `h-16` в `Header.tsx`.
+ * Высота шапки на десктопе в пикселях — держать синхронно с `lg:h-[72px]`
+ * в `Header.tsx`. На мобильном шапка остаётся `h-16` (64px), но здесь это
+ * неважно: компактный поиск, для которого нужна эта компенсация, скрыт
+ * ниже `lg` (`hidden lg:flex` в Header.tsx).
  * Используется как компенсация `rootMargin` в IntersectionObserver, который
  * следит за Hero-инпутом поиска: без неё триггер срабатывал бы по геометрии
  * вьюпорта, а не по факту перекрытия sticky-шапкой.
  */
-export const HEADER_HEIGHT_PX = 64;
+export const HEADER_HEIGHT_PX = 72;

@@ -58,7 +58,7 @@ const executorSteps: StepItem[] = [
  */
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 scroll-mt-16 bg-background">
+    <section id="how-it-works" className="py-20 scroll-mt-16 lg:scroll-mt-[72px] bg-background">
       <PageContainer>
         {/* Заголовок */}
         <div className="text-center mb-16">

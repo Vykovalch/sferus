@@ -1,15 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { Menu } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { Session } from "@/lib/auth";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-} from "@/components/ui/sheet";
 
 interface MobileMenuProps {
   session: Session | null;
@@ -63,20 +59,24 @@ export function MobileMenu({ session }: MobileMenuProps) {
 
             {session && (
               <div className="border-t border-border mt-2 pt-4 flex flex-col gap-3">
-                <Link
-                  href="/services/new"
-                  onClick={handleClose}
-                  className="inline-flex items-center justify-center rounded-md border border-brand px-4 py-2 text-sm font-medium text-brand hover:bg-brand/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full h-11 border-secondary text-secondary hover:bg-secondary/5 font-semibold transition-colors"
                 >
-                  Создать услугу
-                </Link>
-                <Link
-                  href="/tasks/new"
-                  onClick={handleClose}
-                  className="inline-flex items-center justify-center rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:bg-brand/90 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  <Link href="/services/new" onClick={handleClose}>
+                    Создать услугу
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full h-11 border-primary text-primary hover:bg-primary/5 font-semibold transition-colors"
                 >
-                  Создать задание
-                </Link>
+                  <Link href="/tasks/new" onClick={handleClose}>
+                    Создать задание
+                  </Link>
+                </Button>
               </div>
             )}
           </nav>
