@@ -3,6 +3,12 @@
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
+import {
+  getHeroIntersecting,
+  getHeroIntersectingServerSnapshot,
+  subscribeHeroIntersecting,
+} from "@/components/layout/hero-search-store";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { Logo } from "@/components/shared/Logo";
@@ -10,6 +16,7 @@ import { PageContainer } from "@/components/shared/PageContainer";
 import { Button } from "@/components/ui/button";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   session: Session | null; // Сессия из серверного layout (auth.api.getSession)
@@ -17,6 +24,17 @@ interface HeaderProps {
 
 export function Header({ session }: HeaderProps) {
   const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  // Видимость Hero-инпута приходит из стора, за которым следит SearchBar
+  // в Hero (см. hero-search-store.ts). На остальных страницах Hero нет,
+  // поэтому источник неважен — компактный поиск виден всегда.
+  const heroVisible = useSyncExternalStore(
+    subscribeHeroIntersecting,
+    getHeroIntersecting,
+    getHeroIntersectingServerSnapshot,
+  );
+  const showCompactSearch = isHome ? !heroVisible : true;
 
   // Ваши ссылки навигации
   const navLinks = [
@@ -43,8 +61,23 @@ export function Header({ session }: HeaderProps) {
               фильтры каталога сделаны ссылками.
 
               На узких экранах поле не помещается в шапку h-16, поэтому там
-              иконка ведёт на /services, где стоит полная строка поиска. */}
-          <search className="hidden lg:flex flex-1 max-w-sm">
+              иконка ведёт на /services, где стоит полная строка поиска.
+
+              Sticky-поведение (только на главной): пока в Hero виден его
+              собственный инпут поиска, здесь этого блока нет — появляется
+              плавно (opacity + max-width), когда Hero-инпут скрывается под
+              шапкой, и уходит обратно при скролле вверх. На остальных
+              страницах Hero нет, поэтому блок виден сразу и без анимации —
+              transition-классы навешиваются только когда isHome, иначе при
+              переходе с главной (где он был скрыт) на другую страницу он бы
+              «доезжал» с анимацией вместо мгновенного появления. */}
+          <search
+            className={cn(
+              "hidden lg:flex flex-1 items-center overflow-hidden",
+              isHome && "transition-[opacity,max-width] duration-300 ease-out",
+              showCompactSearch ? "opacity-100 max-w-sm" : "opacity-0 max-w-0 pointer-events-none",
+            )}
+          >
             <form action="/services" method="get" className="flex w-full items-center relative">
               <label htmlFor="header-search" className="sr-only">
                 Поиск услуг

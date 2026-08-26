@@ -2,8 +2,11 @@
 
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { setHeroIntersecting } from "@/components/layout/hero-search-store";
 import { CityDropdown } from "@/components/shared/CityDropdown";
 import type { CityOption } from "@/features/cities/queries";
+import { HEADER_HEIGHT_PX } from "@/lib/constants";
 
 interface SearchBarProps {
   /** Пробрасывается в CityDropdown — данные приходят из серверного компонента. */
@@ -19,6 +22,13 @@ interface SearchBarProps {
    */
   defaultQuery?: string;
   defaultCity?: string;
+  /**
+   * Только для инстанса в Hero на главной. Включает IntersectionObserver,
+   * который пишет видимость этого инпута во внешний стор — на неё реагирует
+   * компактный поиск в `Header`. Инстансы на `/services` этот проп не
+   * передают, поэтому не наблюдаются и не влияют на стор.
+   */
+  trackVisibility?: boolean;
 }
 
 export function SearchBar({
@@ -26,8 +36,31 @@ export function SearchBar({
   placeholder = "Ремонт, уборка, репетитор...",
   defaultQuery,
   defaultCity,
+  trackVisibility = false,
 }: SearchBarProps) {
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!trackVisibility) return;
+    const input = inputRef.current;
+    if (!input) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroIntersecting(entry.isIntersecting),
+      // Компенсация высоты sticky-шапки: без неё «пересечение» считается по
+      // геометрии вьюпорта, а нужно — по факту, скрылся ли инпут под хедером.
+      { rootMargin: `-${HEADER_HEIGHT_PX}px 0px 0px 0px` },
+    );
+    observer.observe(input);
+
+    return () => {
+      observer.disconnect();
+      // Возврат к дефолту, чтобы при повторном монтировании Hero (например,
+      // после навигации назад на главную) не осталось устаревшее значение.
+      setHeroIntersecting(true);
+    };
+  }, [trackVisibility]);
 
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -50,6 +83,7 @@ export function SearchBar({
       <div className="relative flex-1 flex items-center group/input">
         <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand" />
         <input
+          ref={inputRef}
           name="query"
           type="search"
           defaultValue={defaultQuery}

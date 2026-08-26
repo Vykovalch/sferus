@@ -5,11 +5,9 @@ import { notFound } from "next/navigation";
 import { CategoryCard } from "@/components/shared/CategoryCard";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { Pagination } from "@/components/shared/Pagination";
-import { SearchBar } from "@/components/shared/SearchBar";
 import { ServiceCard } from "@/components/shared/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { getCategories } from "@/features/categories/queries";
-import { getCities } from "@/features/cities/queries";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import {
   countSearchServices,
@@ -72,7 +70,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const filters = parseServiceCatalogFilters(params);
   const page = parsePageParam(params.page);
 
-  const [categories, cities] = await Promise.all([getCategories(), getCities()]);
+  const categories = await getCategories();
 
   if (filters.query) {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -98,16 +96,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <p className="text-sm text-muted-foreground mb-6">
             {total === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${total}`}
           </p>
-
-          {/* Запрос и город возвращаются в форму: человек пришёл сюда уточнять
-              выдачу, а не набирать всё заново. */}
-          <div className="max-w-3xl mb-8">
-            <SearchBar
-              cities={cities}
-              defaultQuery={filters.query}
-              defaultCity={filters.cityName}
-            />
-          </div>
 
           {results.length === 0 ? (
             <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
@@ -168,10 +156,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     <div className="bg-background min-h-screen">
       <PageContainer className="py-8">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
-        <div className="max-w-3xl mb-8">
-          {/* Запроса здесь нет по условию ветки, но город в адресе быть может. */}
-          <SearchBar cities={cities} defaultCity={filters.cityName} />
-        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {categories.map((cat) => {
             const style = categoryStyle(cat.slug);

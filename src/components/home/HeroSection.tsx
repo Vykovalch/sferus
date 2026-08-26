@@ -28,7 +28,7 @@ export async function HeroSection() {
           </h1>
 
           <div className="mb-10 max-w-3xl mx-auto">
-            <SearchBar cities={cities} />
+            <SearchBar cities={cities} trackVisibility />
           </div>
 
           {/* Счётчики «400+ исполнителей / 500+ объявлений / 50+ активных заданий»

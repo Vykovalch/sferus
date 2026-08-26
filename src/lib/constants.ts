@@ -114,3 +114,11 @@ export function categoryStyle(slug: string) {
 
 /** Значение фильтра «все города» / «все категории» — не выбранный вариант. */
 export const ALL_OPTION = "all";
+
+/**
+ * Высота шапки в пикселях — держать синхронно с `h-16` в `Header.tsx`.
+ * Используется как компенсация `rootMargin` в IntersectionObserver, который
+ * следит за Hero-инпутом поиска: без неё триггер срабатывал бы по геометрии
+ * вьюпорта, а не по факту перекрытия sticky-шапкой.
+ */
+export const HEADER_HEIGHT_PX = 64;
