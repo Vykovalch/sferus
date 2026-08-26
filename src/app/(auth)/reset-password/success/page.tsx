@@ -17,7 +17,7 @@ export default function ResetPasswordSuccessPage() {
         </Link>
       </div>
 
-      <div className="w-full md:max-w-[400px] text-center animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm bg-white">
+      <div className="w-full md:max-w-[420px] text-center animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm bg-white">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
             <CheckCircle className="h-8 w-8 text-emerald-500" />

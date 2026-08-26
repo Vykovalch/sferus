@@ -19,7 +19,7 @@ export default function LoginPage() {
       </div>
 
       {/* Форма */}
-      <div className="w-full md:max-w-[400px]">
+      <div className="w-full md:max-w-[420px]">
         <Suspense>
           <LoginForm />
         </Suspense>

@@ -16,7 +16,7 @@ export default function RegisterPage() {
         </Link>
       </div>
 
-      <div className="w-full md:max-w-[400px]">
+      <div className="w-full md:max-w-[420px]">
         <RegisterForm />
       </div>
     </div>

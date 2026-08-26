@@ -16,7 +16,7 @@ export default function VerifyEmailPage({ searchParams }: { searchParams: { emai
         </Link>
       </div>
 
-      <div className="w-full md:max-w-[400px]">
+      <div className="w-full md:max-w-[420px]">
         <VerifyEmailClient email={searchParams.email} />
       </div>
     </div>

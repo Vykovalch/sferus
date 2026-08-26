@@ -16,7 +16,7 @@ export default function ResetPasswordPage({ searchParams }: { searchParams: { to
         </Link>
       </div>
 
-      <div className="w-full md:max-w-[400px]">
+      <div className="w-full md:max-w-[420px]">
         <ResetPasswordForm token={searchParams.token} />
       </div>
     </div>
