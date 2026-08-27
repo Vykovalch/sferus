@@ -43,6 +43,15 @@ export function Header({ session }: HeaderProps) {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
+  // Раскрытая по клику панель не должна пережить условие, при котором её
+  // вообще не должно быть видно: если при скролле вверх Hero-инпут снова
+  // показался (showCompactSearch → false), закрываем панель за пользователя
+  // — иначе получилось бы то самое дублирование, ради предотвращения
+  // которого показ лупы и завязан на showCompactSearch.
+  useEffect(() => {
+    if (!showCompactSearch) setIsMobileSearchOpen(false);
+  }, [showCompactSearch]);
+
   useEffect(() => {
     if (!isMobileSearchOpen) return;
     mobileSearchInputRef.current?.focus();
