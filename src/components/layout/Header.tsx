@@ -97,13 +97,19 @@ export function Header({ session }: HeaderProps) {
             </form>
           </search>
 
-          <Link
-            href="/services"
-            aria-label="Поиск услуг"
-            className="lg:hidden text-foreground/80 hover:text-primary transition-colors"
-          >
-            <Search className="h-5 w-5" />
-          </Link>
+          {/* Лупа на узких экранах подчиняется тому же правилу, что и
+              компактная форма выше: не главная страница, либо Hero-инпут
+              уже скрылся при скролле. Без этого условия на главной, пока
+              Hero-строка поиска ещё видна, лупа в хедере дублировала бы её. */}
+          {showCompactSearch && (
+            <Link
+              href="/services"
+              aria-label="Поиск услуг"
+              className="lg:hidden text-foreground/80 hover:text-primary transition-colors"
+            >
+              <Search className="h-5 w-5" />
+            </Link>
+          )}
 
           {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в вишневый) */}
           <nav className="hidden md:flex items-center space-x-8">
