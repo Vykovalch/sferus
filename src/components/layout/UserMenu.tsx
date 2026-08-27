@@ -54,7 +54,7 @@ export function UserMenu({ session }: UserMenuProps) {
       <DropdownMenuContent align="end" className="w-52 shadow-xl">
         {/* Шапка с именем и почтой */}
         <div className="px-3 py-2">
-          <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
+          <p className="text-base font-semibold text-foreground truncate">{user.name}</p>
           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
         </div>
 
