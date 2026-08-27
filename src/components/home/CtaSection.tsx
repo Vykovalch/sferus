@@ -2,7 +2,11 @@ import { Briefcase, UserSearch } from "lucide-react";
 import Link from "next/link";
 import { PageContainer } from "@/components/shared/PageContainer";
 
-export function CtaSection() {
+interface CtaSectionProps {
+  isAuthenticated: boolean;
+}
+
+export function CtaSection({ isAuthenticated }: CtaSectionProps) {
   return (
     <section className="py-20 bg-muted">
       <PageContainer>
@@ -41,7 +45,7 @@ export function CtaSection() {
                 Разместите услугу бесплатно — без комиссий и предоплаты. Получайте заказы напрямую.
               </p>
               <Link
-                href="/register"
+                href={isAuthenticated ? "/services/new" : "/register"}
                 className="inline-block border-2 border-secondary text-secondary px-8 py-4 rounded-xl font-semibold hover:bg-secondary hover:text-white transition-all active:scale-95"
               >
                 Разместить услугу
