@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, LogOut, ShieldCheck, User } from "lucide-react";
+import { LogOut, ShieldCheck, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -40,7 +40,7 @@ export function UserMenu({ session }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-full hover:bg-accent p-1 pr-2 transition-colors outline-none"
+          className="flex items-center rounded-full hover:bg-accent p-1 transition-colors outline-none"
         >
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.image ?? undefined} alt={user.name} />
@@ -48,12 +48,6 @@ export function UserMenu({ session }: UserMenuProps) {
               {initials}
             </AvatarFallback>
           </Avatar>
-
-          <span className="text-sm font-medium text-foreground hidden lg:block">
-            {user.name.split(" ")[0]}
-          </span>
-
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden lg:block" />
         </button>
       </DropdownMenuTrigger>
 
