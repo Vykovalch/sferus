@@ -62,7 +62,10 @@ export function UserMenu({ session }: UserMenuProps) {
 
         {/* Единая точка входа в личный кабинет — детальная навигация уже в сайдбаре дашборда */}
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
+          <Link
+            href="/dashboard/profile"
+            className="flex items-center gap-2 text-base font-medium py-2 px-2 cursor-pointer"
+          >
             <User className="h-4 w-4 text-muted-foreground" />
             Личный кабинет
           </Link>
@@ -73,7 +76,10 @@ export function UserMenu({ session }: UserMenuProps) {
             администратору — доступ всё равно проверяет layout админки. */}
         {user.role === "admin" && (
           <DropdownMenuItem asChild>
-            <Link href="/admin/listings" className="flex items-center gap-2 cursor-pointer">
+            <Link
+              href="/admin/listings"
+              className="flex items-center gap-2 text-base font-medium py-2 px-2 cursor-pointer"
+            >
               <ShieldCheck className="h-4 w-4 text-muted-foreground" />
               Админ-панель
             </Link>
@@ -84,7 +90,7 @@ export function UserMenu({ session }: UserMenuProps) {
 
         <DropdownMenuItem
           onClick={handleSignOut}
-          className="flex items-center gap-2 text-muted-foreground focus:text-muted-foreground cursor-pointer"
+          className="flex items-center gap-2 text-base font-medium py-2 px-2 text-muted-foreground focus:text-muted-foreground cursor-pointer"
         >
           <LogOut className="h-4 w-4" />
           Выйти
