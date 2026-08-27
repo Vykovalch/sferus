@@ -61,11 +61,8 @@ export function UserMenu({ session }: UserMenuProps) {
         <DropdownMenuSeparator />
 
         {/* Единая точка входа в личный кабинет — детальная навигация уже в сайдбаре дашборда */}
-        <DropdownMenuItem asChild>
-          <Link
-            href="/dashboard/profile"
-            className="flex items-center gap-2 text-base font-medium py-2 px-2 cursor-pointer"
-          >
+        <DropdownMenuItem asChild className="text-base font-medium py-2 px-2">
+          <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
             <User className="h-4 w-4 text-muted-foreground" />
             Личный кабинет
           </Link>
@@ -75,11 +72,8 @@ export function UserMenu({ session }: UserMenuProps) {
             вообще, адрес приходилось набирать руками. Пункт виден только
             администратору — доступ всё равно проверяет layout админки. */}
         {user.role === "admin" && (
-          <DropdownMenuItem asChild>
-            <Link
-              href="/admin/listings"
-              className="flex items-center gap-2 text-base font-medium py-2 px-2 cursor-pointer"
-            >
+          <DropdownMenuItem asChild className="text-base font-medium py-2 px-2">
+            <Link href="/admin/listings" className="flex items-center gap-2 cursor-pointer">
               <ShieldCheck className="h-4 w-4 text-muted-foreground" />
               Админ-панель
             </Link>
