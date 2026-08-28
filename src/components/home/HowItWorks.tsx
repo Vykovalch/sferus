@@ -85,7 +85,16 @@ export function HowItWorks() {
                 <div key={step.n} className="relative">
                   <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-primary ring-4 ring-background" />
                   <h4 className="text-base font-semibold text-foreground mb-1">{step.title}</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                  {/* min-h-12 ≈ 2 строки text-sm/leading-relaxed — грубая
+                      подгонка под сегодняшний текст, чтобы однострочные пункты
+                      клиента не расходились с двухстрочными у исполнителей.
+                      Не переживёт правку текста без пересчёта вручную — если
+                      понадобится настоящая синхронизация по фактической
+                      высоте контента, а не по текущей длине строк, тут нужен
+                      CSS subgrid, а не min-height. */}
+                  <p className="text-sm text-muted-foreground leading-relaxed min-h-12">
+                    {step.desc}
+                  </p>
                 </div>
               ))}
             </div>
@@ -102,7 +111,9 @@ export function HowItWorks() {
                 <div key={step.n} className="relative">
                   <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-secondary ring-4 ring-background" />
                   <h4 className="text-base font-semibold text-foreground mb-1">{step.title}</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed min-h-12">
+                    {step.desc}
+                  </p>
                 </div>
               ))}
             </div>
