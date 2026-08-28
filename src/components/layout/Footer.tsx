@@ -50,15 +50,15 @@ export function Footer() {
             <nav className="flex flex-col gap-2">
               <Link
                 className="text-sm text-neutral-300 hover:text-white transition-colors"
-                href="/tasks"
-              >
-                Поиск заданий
-              </Link>
-              <Link
-                className="text-sm text-neutral-300 hover:text-white transition-colors"
                 href="/services/new"
               >
                 Разместить услугу
+              </Link>
+              <Link
+                className="text-sm text-neutral-300 hover:text-white transition-colors"
+                href="/tasks"
+              >
+                Поиск заданий
               </Link>
               <Link
                 className="text-sm text-neutral-300 hover:text-white transition-colors"
