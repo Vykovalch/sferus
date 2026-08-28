@@ -20,7 +20,7 @@ export function CategoryCard({
   return (
     <Link
       href={`/services/${slug}`}
-      className="group flex flex-col items-start text-left p-6 h-full bg-card border border-border rounded-2xl transition-colors duration-200 hover:border-brand/40"
+      className="group flex flex-col items-start text-left p-6 h-full bg-card border border-border rounded-2xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
     >
       {/* Иконка без подложки: цветной квадрат перетягивал внимание с названия
           и добавлял вложенную рамку внутрь карточки. Размер увеличен с 28 до
