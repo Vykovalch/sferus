@@ -14,8 +14,7 @@ export function Footer() {
             <Logo className="text-2xl" variant="inverse" />
             <div className="pt-2">
               <p className="text-sm text-neutral-300 leading-relaxed">
-                Маркетплейс услуг в Приднестровье. Мы объединяем заказчиков и профессиональных
-                исполнителей.
+                Объединяем заказчиков и профессиональных исполнителей.
               </p>
             </div>
           </div>
