@@ -18,16 +18,16 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
             </div>
             <div className="relative z-10">
               <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-primary">
-                Нужен специалист?
+                Нужна услуга?
               </h3>
               <p className="text-base text-muted-foreground mb-8 max-w-sm leading-relaxed">
-                Найдите профессионала для вашей задачи бесплатно и без посредников прямо сейчас.
+                Изучите каталог категорий и найдите специалиста под любую задачу.
               </p>
               <Link
-                href="/services"
+                href="/categories"
                 className="inline-block border-2 border-primary text-primary px-8 py-4 rounded-xl font-semibold hover:bg-primary hover:text-white transition-all active:scale-95"
               >
-                Найти специалиста
+                Смотреть все категории
               </Link>
             </div>
           </div>
