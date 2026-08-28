@@ -42,7 +42,7 @@ export function ServiceCard({
   const isCompany = authorType === "company";
 
   return (
-    <article className="group relative bg-card border border-border rounded-2xl overflow-hidden transition-colors duration-200 hover:border-brand/40">
+    <article className="group relative bg-card border border-border rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
       {/* Фото */}
       <div className="aspect-[1.5] relative overflow-hidden bg-muted">
         {imageUrl ? (
