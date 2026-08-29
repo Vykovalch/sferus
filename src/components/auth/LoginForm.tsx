@@ -182,11 +182,7 @@ export function LoginForm() {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Checkbox
-              id="remember"
-              name="remember"
-              className="cursor-pointer border-input data-[state=checked]:bg-brand data-[state=checked]:text-brand-foreground"
-            />
+            <Checkbox id="remember" name="remember" className="cursor-pointer" />
             <Label
               htmlFor="remember"
               className="text-sm font-normal text-muted-foreground cursor-pointer select-none"
