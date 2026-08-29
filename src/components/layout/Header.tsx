@@ -100,7 +100,7 @@ export function Header({ session }: HeaderProps) {
                   type="search"
                   maxLength={SEARCH_QUERY_MAX_LENGTH}
                   placeholder="Ремонт, уборка, репетитор..."
-                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand transition-colors"
+                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
                 />
               </div>
               <button
@@ -168,7 +168,7 @@ export function Header({ session }: HeaderProps) {
                   type="search"
                   maxLength={SEARCH_QUERY_MAX_LENGTH}
                   placeholder="Ремонт, уборка, репетитор..."
-                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand transition-colors"
+                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
                 />
               </form>
             </search>
