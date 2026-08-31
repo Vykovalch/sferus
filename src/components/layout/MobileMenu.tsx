@@ -62,7 +62,7 @@ export function MobileMenu({ session }: MobileMenuProps) {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full h-10 border-secondary text-secondary hover:bg-secondary/5 font-semibold transition-colors"
+                  className="w-full h-10 border-secondary text-secondary hover:bg-secondary hover:text-white font-semibold transition-colors"
                 >
                   <Link href="/services/new" onClick={handleClose}>
                     Создать услугу
@@ -71,7 +71,7 @@ export function MobileMenu({ session }: MobileMenuProps) {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full h-10 border-primary text-primary hover:bg-primary/5 font-semibold transition-colors"
+                  className="w-full h-10 border-primary text-primary hover:bg-primary hover:text-white font-semibold transition-colors"
                 >
                   <Link href="/tasks/new" onClick={handleClose}>
                     Создать задание

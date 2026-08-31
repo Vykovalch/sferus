@@ -220,7 +220,7 @@ export function Header({ session }: HeaderProps) {
                   <Button
                     asChild
                     variant="outline"
-                    className="hidden md:inline-flex h-10 border-secondary text-secondary hover:bg-secondary/5 font-semibold transition-colors px-5"
+                    className="hidden md:inline-flex h-10 border-secondary text-secondary hover:bg-secondary hover:text-white font-semibold transition-colors px-5"
                   >
                     <Link href="/services/new">Создать услугу</Link>
                   </Button>
@@ -228,7 +228,7 @@ export function Header({ session }: HeaderProps) {
                   <Button
                     asChild
                     variant="outline"
-                    className="hidden md:inline-flex h-10 border-primary text-primary hover:bg-primary/5 font-semibold transition-colors px-5"
+                    className="hidden md:inline-flex h-10 border-primary text-primary hover:bg-primary hover:text-white font-semibold transition-colors px-5"
                   >
                     <Link href="/tasks/new">Создать задание</Link>
                   </Button>
