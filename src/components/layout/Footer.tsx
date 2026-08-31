@@ -83,10 +83,10 @@ export function Footer() {
               </Link>
               <Link
                 className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white transition-colors"
-                href="tel:+373778543333"
+                href="tel:+37300000000"
               >
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                +373 778 54 333
+                +373 000 000 00
               </Link>
             </div>
           </div>
