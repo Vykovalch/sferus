@@ -41,7 +41,6 @@ export async function PopularCategories() {
             className="inline-flex items-center gap-1.5 text-base font-medium text-primary hover:underline underline-offset-4 transition-colors"
           >
             Все категории
-            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
