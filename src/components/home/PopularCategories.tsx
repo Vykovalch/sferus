@@ -1,4 +1,3 @@
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CategoryCard } from "@/components/shared/CategoryCard";
 import { PageContainer } from "@/components/shared/PageContainer";

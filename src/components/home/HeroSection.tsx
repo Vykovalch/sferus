@@ -1,4 +1,3 @@
-import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { SearchBar } from "@/components/shared/SearchBar";
