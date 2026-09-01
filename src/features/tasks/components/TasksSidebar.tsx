@@ -47,7 +47,7 @@ export function TasksSidebar({
   }));
 
   return (
-    <div className="space-y-3">
+    <div className="bg-card rounded-xl overflow-hidden divide-y divide-border">
       <FilterLinkGroup
         title="Категория"
         options={categoryOptions.map((option) => ({
