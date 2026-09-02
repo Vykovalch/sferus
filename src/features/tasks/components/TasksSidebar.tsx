@@ -2,7 +2,6 @@ import { FilterLinkGroup } from "@/components/shared/FilterLinkGroup";
 import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
 import { type TaskCatalogFilters, taskCatalogSearchParams } from "@/features/tasks/schemas";
-import { TASK_STATUSES } from "@/lib/constants";
 
 interface TasksSidebarProps extends TaskCatalogFilters {
   /** Справочники из БД: серверный компонент получает их от страницы. */
@@ -22,14 +21,8 @@ function buildBoardHref(filters: TaskCatalogFilters, overrides: Partial<TaskCata
   return `/tasks${query ? `?${query}` : ""}`;
 }
 
-export function TasksSidebar({
-  cities,
-  categories,
-  categorySlug,
-  cityName,
-  status,
-}: TasksSidebarProps) {
-  const activeFilters: TaskCatalogFilters = { categorySlug, cityName, status };
+export function TasksSidebar({ cities, categories, categorySlug, cityName }: TasksSidebarProps) {
+  const activeFilters: TaskCatalogFilters = { categorySlug, cityName };
 
   const categoryOptions = [
     { label: "Все категории", value: undefined },
@@ -40,11 +33,6 @@ export function TasksSidebar({
     { label: "Все города", value: undefined },
     ...cities.map((city) => ({ label: city.name, value: city.name })),
   ];
-
-  const statusOptions = Object.entries(TASK_STATUSES).map(([value, label]) => ({
-    label,
-    value: value as TaskCatalogFilters["status"],
-  }));
 
   return (
     <div className="bg-card rounded-xl overflow-hidden divide-y divide-border">
@@ -62,14 +50,6 @@ export function TasksSidebar({
           label: option.label,
           href: buildBoardHref(activeFilters, { cityName: option.value }),
           active: cityName === option.value,
-        }))}
-      />
-      <FilterLinkGroup
-        title="Статус"
-        options={statusOptions.map((option) => ({
-          label: option.label,
-          href: buildBoardHref(activeFilters, { status: option.value }),
-          active: status === option.value,
         }))}
       />
     </div>

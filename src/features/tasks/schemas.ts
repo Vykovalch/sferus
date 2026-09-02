@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { taskStatus } from "@/lib/db/schema";
 
 /**
  * Схемы валидации задания.
@@ -75,14 +74,14 @@ export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 
 /**
  * Фильтры каталога заданий — вход из query-строки, тот же принцип, что у
- * `features/services/schemas.ts#parseServiceCatalogFilters`. `status` — enum
- * на уровне БД, невалидное значение должно тихо откатиться к дефолту, а не
- * уронить запрос ошибкой Postgres.
+ * `features/services/schemas.ts#parseServiceCatalogFilters`.
  *
- * У статуса, в отличие от города и категории, нет состояния «все»: доска
- * заданий по умолчанию показывает открытые, а не историю целиком.
+ * Статуса тут больше нет: доска заданий показывает только открытые, и это
+ * не пользовательский фильтр, а инвариант запроса — закреплён прямо в
+ * `boardConditions` (`features/tasks/queries.ts`), а не передаётся сюда
+ * значением, которое в принципе можно было бы подменить. История заданий
+ * (для их автора) — отдельный экран, не публичная доска.
  */
-const taskStatusParam = z.enum(taskStatus.enumValues);
 
 function firstSearchParamValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
@@ -91,7 +90,6 @@ function firstSearchParamValue(value: string | string[] | undefined): string | u
 export interface TaskCatalogFilters {
   categorySlug?: string;
   cityName?: string;
-  status: (typeof taskStatus.enumValues)[number];
 }
 
 export function parseTaskCatalogFilters(
@@ -99,12 +97,10 @@ export function parseTaskCatalogFilters(
 ): TaskCatalogFilters {
   const categorySlug = firstSearchParamValue(searchParams.category)?.trim();
   const cityName = firstSearchParamValue(searchParams.city)?.trim();
-  const status = taskStatusParam.safeParse(firstSearchParamValue(searchParams.status));
 
   return {
     categorySlug: categorySlug || undefined,
     cityName: cityName || undefined,
-    status: status.success ? status.data : "open",
   };
 }
 
@@ -113,17 +109,12 @@ export function parseTaskCatalogFilters(
  *
  * Одно место на сайдбар и пагинацию, чтобы наборы параметров не разъехались:
  * у услуг такое расхождение уже случалось и стоило потерянного `q`.
- *
- * `status=open` в адрес не пишется — это значение по умолчанию, и лишний
- * параметр только плодил бы разные адреса для одного и того же списка.
- * Номер страницы сюда не входит: смена фильтра возвращает на первую.
  */
 export function taskCatalogSearchParams(filters: TaskCatalogFilters): URLSearchParams {
   const search = new URLSearchParams();
 
   if (filters.categorySlug) search.set("category", filters.categorySlug);
   if (filters.cityName) search.set("city", filters.cityName);
-  if (filters.status !== "open") search.set("status", filters.status);
 
   return search;
 }

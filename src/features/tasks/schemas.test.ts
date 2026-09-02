@@ -97,31 +97,31 @@ describe("changeTaskStatusSchema", () => {
 });
 
 describe("parseTaskCatalogFilters", () => {
-  it("пустая query-строка — status по умолчанию 'open', остальное не задано", () => {
+  it("пустая query-строка — ничего не задано", () => {
     expect(parseTaskCatalogFilters({})).toEqual({
       categorySlug: undefined,
       cityName: undefined,
-      status: "open",
     });
   });
 
-  it("валидные category, city и status проходят как есть", () => {
+  it("category и city проходят как есть, status в query не влияет ни на что", () => {
     expect(
       parseTaskCatalogFilters({ category: "digital", city: "Тирасполь", status: "completed" }),
     ).toEqual({
       categorySlug: "digital",
       cityName: "Тирасполь",
-      status: "completed",
     });
   });
 
-  it("невалидный status тихо откатывается к 'open', а не валит остальные фильтры", () => {
-    // Регрессия: status — enum на уровне БД, мусорное значение уронило бы
-    // запрос ошибкой Postgres. Отбрасывать нужно только это поле.
+  it("status не выбираем и не парсится — любое значение в query игнорируется", () => {
+    // Регрессия: раньше status был полем фильтра и мог реально сменить
+    // видимый статус на доске. Теперь его нет даже в возвращаемом объекте —
+    // видимость только открытых заданий закреплена в самом запросе
+    // (`boardConditions`, `features/tasks/queries.ts`), а не значением
+    // отсюда, которое в принципе можно было бы подменить.
     expect(parseTaskCatalogFilters({ city: "Тирасполь", status: "hacked" })).toEqual({
       categorySlug: undefined,
       cityName: "Тирасполь",
-      status: "open",
     });
   });
 
@@ -129,7 +129,6 @@ describe("parseTaskCatalogFilters", () => {
     expect(parseTaskCatalogFilters({ category: ["digital", "auto"] })).toEqual({
       categorySlug: "digital",
       cityName: undefined,
-      status: "open",
     });
   });
 });

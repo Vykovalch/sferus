@@ -40,9 +40,14 @@ const cardColumns = {
  * дало бы пагинацию, ведущую на пустые страницы. Соединения ниже повторяются
  * дословно — типы конструктора Drizzle не переживают обёртку с обобщённым
  * набором колонок.
+ *
+ * `eq(tasks.status, "open")` — не значение из `filters`, а инвариант самого
+ * запроса: публичная доска не должна суметь показать завершённые/отменённые
+ * задания, даже если кто-то вызовет `getTaskCards`/`countTaskCards` напрямую
+ * с чужими фильтрами, минуя `parseTaskCatalogFilters`.
  */
 function boardConditions(filters: TaskCatalogFilters) {
-  const conditions = [isPubliclyVisible, eq(tasks.status, filters.status)];
+  const conditions = [isPubliclyVisible, eq(tasks.status, "open")];
   if (filters.categorySlug) conditions.push(eq(categories.slug, filters.categorySlug));
   if (filters.cityName) conditions.push(eq(cities.name, filters.cityName));
   return conditions;
