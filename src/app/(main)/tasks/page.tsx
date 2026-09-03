@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActiveFilterChips } from "@/components/shared/ActiveFilterChips";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { Pagination } from "@/components/shared/Pagination";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
 import { TaskCard } from "@/features/tasks/components/TaskCard";
-import { TasksSidebar } from "@/features/tasks/components/TasksSidebar";
+import { buildBoardHref, TasksSidebar } from "@/features/tasks/components/TasksSidebar";
 import { countTaskCards, getTaskCards } from "@/features/tasks/queries";
 import { parseTaskCatalogFilters, taskCatalogSearchParams } from "@/features/tasks/schemas";
 import { auth } from "@/lib/auth";
@@ -61,10 +62,33 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
   const pageParams = taskCatalogSearchParams(filters);
   const hasActiveFilters = Boolean(filters.categorySlug || filters.cityName);
 
+  // Тот же принцип, что и на странице категории услуг: снять один фильтр
+  // прямо над результатами, не возвращаясь взглядом к сайдбару/шторке.
+  const filterChips: { label: string; removeHref: string }[] = [];
+  if (filters.categorySlug) {
+    const category = categories.find((cat) => cat.slug === filters.categorySlug);
+    if (category) {
+      filterChips.push({
+        label: category.name,
+        removeHref: buildBoardHref(filters, { categorySlug: undefined }),
+      });
+    }
+  }
+  if (filters.cityName) {
+    filterChips.push({
+      label: filters.cityName,
+      removeHref: buildBoardHref(filters, { cityName: undefined }),
+    });
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <PageContainer className="py-8">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Задания</h1>
+        <ActiveFilterChips
+          chips={filterChips}
+          clearAllHref={buildBoardHref(filters, { categorySlug: undefined, cityName: undefined })}
+        />
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
@@ -102,21 +126,9 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             {tasks.length === 0 ? (
               <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
                 {hasActiveFilters ? (
-                  <>
-                    <p className="text-sm font-medium text-foreground mb-1">
-                      По заданным фильтрам ничего не нашлось
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      Попробуйте выбрать другую категорию или город
-                    </p>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
-                    >
-                      <Link href="/tasks">Сбросить фильтры</Link>
-                    </Button>
-                  </>
+                  <p className="text-sm font-medium text-foreground">
+                    По заданным фильтрам ничего не нашлось
+                  </p>
                 ) : (
                   <>
                     <p className="text-sm font-medium text-foreground mb-1">

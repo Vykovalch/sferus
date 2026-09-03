@@ -24,7 +24,7 @@ interface CategorySidebarProps extends ServiceCatalogFilters {
  * на первую страницу. Иначе человек с пятой страницы переключил бы город
  * и попал в пустоту при непустой выдаче.
  */
-function buildCatalogHref(
+export function buildCatalogHref(
   categorySlug: string,
   filters: ServiceCatalogFilters,
   overrides: ServiceCatalogFilters,

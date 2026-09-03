@@ -16,7 +16,10 @@ interface TasksSidebarProps extends TaskCatalogFilters {
  * берёт пагинация. Номер страницы не передаётся намеренно: смена фильтра
  * возвращает на первую страницу.
  */
-function buildBoardHref(filters: TaskCatalogFilters, overrides: Partial<TaskCatalogFilters>) {
+export function buildBoardHref(
+  filters: TaskCatalogFilters,
+  overrides: Partial<TaskCatalogFilters>,
+) {
   const query = taskCatalogSearchParams({ ...filters, ...overrides }).toString();
   return `/tasks${query ? `?${query}` : ""}`;
 }

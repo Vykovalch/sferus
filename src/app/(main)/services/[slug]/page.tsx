@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActiveFilterChips } from "@/components/shared/ActiveFilterChips";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { Pagination } from "@/components/shared/Pagination";
 import { ServiceCard } from "@/components/shared/ServiceCard";
@@ -11,9 +12,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { getCategories } from "@/features/categories/queries";
 import { getCities } from "@/features/cities/queries";
 import { getFavoriteTargetIds } from "@/features/favorites/queries";
-import { CategorySidebar } from "@/features/services/components/CategorySidebar";
+import { buildCatalogHref, CategorySidebar } from "@/features/services/components/CategorySidebar";
 import { countServicesByCategory, getServiceCardsByCategory } from "@/features/services/queries";
 import {
+  EXECUTOR_TYPE_LABELS,
   parseServiceCatalogFilters,
   serviceCatalogSearchParams,
 } from "@/features/services/schemas";
@@ -79,6 +81,23 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const pageParams = serviceCatalogSearchParams(filters);
   const hasActiveFilters = Boolean(filters.cityName || filters.executorType);
 
+  // Плашки над сеткой — тот же принцип «снять один фильтр», что уже есть
+  // в самом сайдбаре (buildCatalogHref), просто представленный не списком
+  // ссылок, а компактными тегами прямо над результатами.
+  const filterChips: { label: string; removeHref: string }[] = [];
+  if (filters.executorType) {
+    filterChips.push({
+      label: EXECUTOR_TYPE_LABELS[filters.executorType],
+      removeHref: buildCatalogHref(slug, filters, { executorType: undefined }),
+    });
+  }
+  if (filters.cityName) {
+    filterChips.push({
+      label: filters.cityName,
+      removeHref: buildCatalogHref(slug, filters, { cityName: undefined }),
+    });
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Хлебные крошки */}
@@ -104,6 +123,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
       <PageContainer className="py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">{category.name}</h1>
+        <ActiveFilterChips
+          chips={filterChips}
+          clearAllHref={buildCatalogHref(slug, filters, {
+            cityName: undefined,
+            executorType: undefined,
+          })}
+        />
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
@@ -140,21 +166,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             {services.length === 0 ? (
               <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
                 {hasActiveFilters ? (
-                  <>
-                    <p className="text-sm font-medium text-foreground mb-1">
-                      По заданным фильтрам ничего не нашлось
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      Попробуйте выбрать другой город или тип исполнителя
-                    </p>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
-                    >
-                      <Link href={`/services/${slug}`}>Сбросить фильтры</Link>
-                    </Button>
-                  </>
+                  <p className="text-sm font-medium text-foreground">
+                    По заданным фильтрам ничего не нашлось
+                  </p>
                 ) : (
                   <>
                     <p className="text-sm font-medium text-foreground mb-1">
