@@ -192,24 +192,20 @@ export function Header({ session }: HeaderProps) {
               </button>
             )}
 
-            {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в вишневый) */}
+            {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в вишневый).
+                Кармин только на hover, не как индикатор текущей страницы —
+                Услуги/Задания не должны гореть красным постоянно после
+                перехода. */}
             <nav className="hidden md:flex items-center space-x-8">
-              {navLinks.map((link) => {
-                // Строгая проверка активности страницы (якоря не горят красным постоянно)
-                const isActive = pathname === link.href;
-
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`text-base font-semibold tracking-[0.01em] transition-colors ${
-                      isActive ? "text-primary" : "text-foreground/80 hover:text-primary"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-base font-semibold tracking-[0.01em] text-foreground/80 hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </nav>
 
             {/* Правая часть: Блок действий (Кнопки / Меню пользователя) */}
