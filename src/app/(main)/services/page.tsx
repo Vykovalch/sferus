@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -91,6 +92,40 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
     return (
       <div className="bg-background min-h-screen">
+        {/* Хлебные крошки */}
+        <div className="bg-background">
+          <PageContainer className="py-3">
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap"
+            >
+              <Link
+                href="/"
+                className="hover:text-brand transition-colors cursor-pointer font-medium"
+              >
+                Главная
+              </Link>
+              <ChevronRight
+                aria-hidden="true"
+                className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60"
+              />
+              <Link
+                href="/services"
+                className="hover:text-brand transition-colors cursor-pointer font-medium"
+              >
+                Услуги
+              </Link>
+              <ChevronRight
+                aria-hidden="true"
+                className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60"
+              />
+              <span aria-current="page" className="text-foreground font-medium line-clamp-1">
+                Поиск: «{filters.query}»
+              </span>
+            </nav>
+          </PageContainer>
+        </div>
+
         <PageContainer className="py-8">
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Поиск: «{filters.query}»</h1>
           <p className="text-sm text-muted-foreground mb-6">
@@ -154,6 +189,27 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
   return (
     <div className="bg-background min-h-screen">
+      {/* Хлебные крошки */}
+      <div className="bg-background">
+        <PageContainer className="py-3">
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground"
+          >
+            <Link
+              href="/"
+              className="hover:text-brand transition-colors cursor-pointer font-medium"
+            >
+              Главная
+            </Link>
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground/60" />
+            <span aria-current="page" className="text-foreground font-medium">
+              Услуги
+            </span>
+          </nav>
+        </PageContainer>
+      </div>
+
       <PageContainer className="py-8">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
