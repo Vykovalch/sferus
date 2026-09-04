@@ -107,6 +107,16 @@ export default async function ServiceListingPage({
             className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap"
           >
             <Link
+              href="/"
+              className="hover:text-brand transition-colors cursor-pointer font-medium"
+            >
+              Главная
+            </Link>
+            <ChevronRight
+              aria-hidden="true"
+              className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60"
+            />
+            <Link
               href="/services"
               className="hover:text-brand transition-colors cursor-pointer font-medium"
             >

@@ -108,6 +108,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             className="flex items-center gap-1.5 text-sm text-muted-foreground"
           >
             <Link
+              href="/"
+              className="hover:text-brand transition-colors font-medium cursor-pointer"
+            >
+              Главная
+            </Link>
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground/60" />
+            <Link
               href="/services"
               className="hover:text-brand transition-colors font-medium cursor-pointer"
             >
