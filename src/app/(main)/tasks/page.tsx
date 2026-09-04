@@ -104,7 +104,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
         </PageContainer>
       </div>
 
-      <PageContainer className="py-8">
+      <PageContainer className="py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Задания</h1>
         <ActiveFilterChips
           chips={filterChips}

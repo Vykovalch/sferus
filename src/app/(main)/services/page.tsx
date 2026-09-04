@@ -126,7 +126,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           </PageContainer>
         </div>
 
-        <PageContainer className="py-8">
+        <PageContainer className="py-6">
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Поиск: «{filters.query}»</h1>
           <p className="text-sm text-muted-foreground mb-6">
             {total === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${total}`}
@@ -210,7 +210,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
         </PageContainer>
       </div>
 
-      <PageContainer className="py-8">
+      <PageContainer className="py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
           {categories.map((cat) => {
