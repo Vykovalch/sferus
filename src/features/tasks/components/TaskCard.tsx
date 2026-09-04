@@ -21,7 +21,7 @@ export function TaskCard({ task, isFavorite = false, isAuthenticated = false }: 
   const isCompany = task.authorType === "company";
 
   return (
-    <article className="relative bg-card rounded-xl p-5 hover:shadow transition-all duration-200">
+    <article className="relative bg-card border border-border rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
       {/* Категория над заголовком */}
       <p className="text-xs text-muted-foreground font-medium mb-1">{task.categoryName}</p>
 
