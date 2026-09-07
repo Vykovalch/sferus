@@ -251,7 +251,7 @@ export default async function ServiceListingPage({
           </div>
 
           {/* Исполнитель */}
-          <div className="w-full lg:w-60 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
+          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
             <div className="bg-card border border-border rounded-xl p-5">
               <Link
                 href={service.authorUsername ? `/profiles/${service.authorUsername}` : "#"}
