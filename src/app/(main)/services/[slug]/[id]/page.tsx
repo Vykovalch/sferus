@@ -238,7 +238,7 @@ export default async function ServiceListingPage({
                       <span className="text-sm text-muted-foreground group-hover:text-brand transition-colors">
                         {other.title}
                       </span>
-                      <span className="text-sm font-medium text-brand flex-shrink-0 ml-4">
+                      <span className="text-sm font-medium text-foreground flex-shrink-0 ml-4">
                         {other.isNegotiable || other.price === null
                           ? "Договорная"
                           : `от ${other.price} руб.`}
@@ -296,7 +296,7 @@ export default async function ServiceListingPage({
       {/* Мобильная закреплённая панель */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3 flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <div className="text-lg font-bold text-brand leading-tight">{priceLabel}</div>
+          <div className="text-lg font-bold text-foreground leading-tight">{priceLabel}</div>
         </div>
         <ContactRevealButton
           target={{ kind: "service", id: service.id }}
