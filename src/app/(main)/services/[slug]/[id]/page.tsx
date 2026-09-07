@@ -1,4 +1,4 @@
-import { Building2, ChevronRight, MapPin, User } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -155,27 +155,6 @@ export default async function ServiceListingPage({
                 <div className="sm:text-right flex-shrink-0">
                   <div className="text-2xl font-bold text-foreground">{priceLabel}</div>
                 </div>
-              </div>
-
-              {/* Бейджи */}
-              <div className="flex items-center gap-2 flex-wrap mb-6">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                  {service.categoryName}
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                  <MapPin className="h-3 w-3" />
-                  {service.cityName}
-                </span>
-                <span
-                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    isCompany
-                      ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                      : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                  }`}
-                >
-                  {isCompany ? <Building2 className="h-3 w-3" /> : <User className="h-3 w-3" />}
-                  {isCompany ? "Компания" : "Частный специалист"}
-                </span>
               </div>
 
               {/* Галерея. Компонент был написан ещё до 1.1 и всё это время
