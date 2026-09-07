@@ -153,7 +153,7 @@ export default async function ServiceListingPage({
                   {service.title}
                 </h1>
                 <div className="sm:text-right flex-shrink-0">
-                  <div className="text-2xl font-bold text-brand">{priceLabel}</div>
+                  <div className="text-2xl font-bold text-foreground">{priceLabel}</div>
                 </div>
               </div>
 
