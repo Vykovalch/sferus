@@ -147,7 +147,7 @@ export default async function ServiceListingPage({
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
-            <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
+            <div className="bg-card border border-border rounded-xl p-5 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                 <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
                   {service.title}
@@ -224,7 +224,7 @@ export default async function ServiceListingPage({
 
             {/* Другие объявления исполнителя */}
             {otherServices.length > 0 && (
-              <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+              <div className="bg-card border border-border rounded-xl p-5">
                 <h2 className="text-sm font-medium text-foreground mb-3">
                   Другие объявления этого исполнителя
                 </h2>
@@ -252,7 +252,7 @@ export default async function ServiceListingPage({
 
           {/* Исполнитель */}
           <div className="w-full lg:w-60 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
-            <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+            <div className="bg-card border border-border rounded-xl p-5">
               <Link
                 href={service.authorUsername ? `/profiles/${service.authorUsername}` : "#"}
                 className="flex items-center gap-3 mb-4 group cursor-pointer"
@@ -294,7 +294,7 @@ export default async function ServiceListingPage({
       </PageContainer>
 
       {/* Мобильная закреплённая панель */}
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 flex items-center gap-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3 flex items-center gap-3">
         <div className="flex-1 min-w-0">
           <div className="text-lg font-bold text-brand leading-tight">{priceLabel}</div>
         </div>
