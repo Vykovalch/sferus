@@ -176,10 +176,6 @@ export default async function ServiceListingPage({
                 <h2 className="text-sm font-medium text-foreground mb-3">Детали</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div>
-                    <p className="text-xs text-muted-foreground mb-0.5">Стоимость</p>
-                    <p className="text-sm font-medium text-foreground">{priceLabel}</p>
-                  </div>
-                  <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Город</p>
                     <p className="text-sm font-medium text-foreground">{service.cityName}</p>
                   </div>
