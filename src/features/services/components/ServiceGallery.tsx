@@ -21,7 +21,7 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
 
   if (images.length === 0) {
     return (
-      <div className="w-full aspect-[4/3] bg-gradient-to-br from-brand/10 to-brand/5 border border-border rounded-xl flex items-center justify-center">
+      <div className="w-full aspect-[5/3] bg-gradient-to-br from-brand/10 to-brand/5 border border-border rounded-xl flex items-center justify-center">
         <span className="text-7xl font-bold text-brand/15 select-none">{title.charAt(0)}</span>
       </div>
     );
@@ -35,7 +35,7 @@ export function ServiceGallery({ images, title }: ServiceGalleryProps) {
         <button
           type="button"
           onClick={() => openLightbox(0)}
-          className="relative flex-1 aspect-[4/3] rounded-xl overflow-hidden cursor-zoom-in group border border-border"
+          className="relative flex-1 aspect-[5/3] rounded-xl overflow-hidden cursor-zoom-in group border border-border"
         >
           <Image
             src={images[0]}
