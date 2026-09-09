@@ -126,7 +126,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
-            <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
+            <div className="bg-card border border-border rounded-xl p-5 md:p-6">
               {/* Заголовок + бюджет */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                 <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
@@ -184,7 +184,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
           {/* Заказчик — в потоке на мобильном, закреплённый сайдбар на десктопе */}
           <div className="w-full lg:w-60 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2 flex flex-col gap-4">
-            <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+            <div className="bg-card border border-border rounded-xl p-5">
               <Link
                 href={task.authorUsername ? `/profiles/${task.authorUsername}` : "#"}
                 className="flex items-center gap-3 mb-3 group cursor-pointer"
@@ -211,7 +211,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
             </div>
 
             {/* Действие — только на десктопе, на мобильном закреплённая панель ниже */}
-            <div className="hidden lg:flex flex-col bg-background border border-border rounded-xl p-5 shadow-sm">
+            <div className="hidden lg:flex flex-col bg-card border border-border rounded-xl p-5">
               <div className="mb-4">
                 {contactButton(
                   "w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
@@ -228,7 +228,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
       </PageContainer>
 
       {/* Мобильная закреплённая панель: основное действие */}
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3">
         {contactButton(
           "w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
         )}
