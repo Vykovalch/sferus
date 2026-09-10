@@ -1,4 +1,4 @@
-import { ChevronRight, MapPin } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -7,15 +7,9 @@ import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { getTaskDetail, getTaskStatsByAuthor } from "@/features/tasks/queries";
 import { auth } from "@/lib/auth";
-import { TASK_STATUSES, type TaskStatus } from "@/lib/constants";
+import { TASK_STATUSES } from "@/lib/constants";
 import { formatRelativeDate, formatTaskBudget } from "@/lib/format";
 import { metaDescription } from "@/lib/site";
-
-const statusColors: Record<TaskStatus, string> = {
-  open: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  completed: "bg-muted text-muted-foreground",
-  cancelled: "bg-destructive/10 text-destructive",
-};
 
 /** Разбор идентификатора из адреса. Один и тот же для метаданных и страницы. */
 function parseTaskId(id: string): number | null {
@@ -137,21 +131,10 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                 </div>
               </div>
 
-              {/* Бейджи */}
-              <div className="flex items-center gap-2 flex-wrap mb-6">
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[task.status]}`}
-                >
-                  {TASK_STATUSES[task.status]}
-                </span>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">
-                  {task.categoryName}
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                  <MapPin className="h-3 w-3" />
-                  {task.cityName}
-                </span>
-              </div>
+              {/* Категория — простой текст, не бейдж: единственное место на
+                  странице, где она вообще показана (в крошках задания её
+                  нет, в отличие от услуги). */}
+              <p className="text-sm text-muted-foreground mb-6">{task.categoryName}</p>
 
               {/* Описание */}
               <h2 className="text-sm font-medium text-foreground mb-2">Описание задания</h2>
@@ -162,7 +145,13 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
               {/* Детали */}
               <div className="border-t border-border pt-5">
                 <h2 className="text-sm font-medium text-foreground mb-3">Детали</h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-0.5">Статус</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {TASK_STATUSES[task.status]}
+                    </p>
+                  </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Город</p>
                     <p className="text-sm font-medium text-foreground">{task.cityName}</p>
