@@ -1,4 +1,4 @@
-import { ChevronRight, Clock, MapPin } from "lucide-react";
+import { ChevronRight, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -133,7 +133,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                   {task.title}
                 </h1>
                 <div className="sm:text-right flex-shrink-0">
-                  <div className="text-2xl font-bold text-brand">{budgetLabel}</div>
+                  <div className="text-2xl font-bold text-foreground">{budgetLabel}</div>
                 </div>
               </div>
 
@@ -162,11 +162,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
               {/* Детали */}
               <div className="border-t border-border pt-5">
                 <h2 className="text-sm font-medium text-foreground mb-3">Детали</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-0.5">Бюджет</p>
-                    <p className="text-sm font-medium text-foreground">{budgetLabel}</p>
-                  </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Город</p>
                     <p className="text-sm font-medium text-foreground">{task.cityName}</p>
@@ -183,7 +179,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Заказчик — в потоке на мобильном, закреплённый сайдбар на десктопе */}
-          <div className="w-full lg:w-60 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2 flex flex-col gap-4">
+          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2 flex flex-col gap-4">
             <div className="bg-card border border-border rounded-xl p-5">
               <Link
                 href={task.authorUsername ? `/profiles/${task.authorUsername}` : "#"}
@@ -212,16 +208,9 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
             {/* Действие — только на десктопе, на мобильном закреплённая панель ниже */}
             <div className="hidden lg:flex flex-col bg-card border border-border rounded-xl p-5">
-              <div className="mb-4">
-                {contactButton(
-                  "w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-                <Clock className="h-4 w-4 text-muted-foreground/70 flex-shrink-0" />
-                <span>Опубликовано {formatRelativeDate(task.createdAt)}</span>
-              </div>
+              {contactButton(
+                "w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
+              )}
             </div>
           </div>
         </div>
