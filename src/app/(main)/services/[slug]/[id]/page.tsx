@@ -261,7 +261,7 @@ export default async function ServiceListingPage({
                 target={{ kind: "service", id: service.id }}
                 isAuthenticated={Boolean(session)}
                 loginCallbackUrl={listingPath}
-                className="hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+                className="hidden lg:flex w-full h-10 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
               />
             </div>
           </div>
@@ -277,7 +277,7 @@ export default async function ServiceListingPage({
           target={{ kind: "service", id: service.id }}
           isAuthenticated={Boolean(session)}
           loginCallbackUrl={listingPath}
-          className="flex-shrink-0 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+          className="flex-shrink-0 h-10 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
         />
       </div>
     </div>
