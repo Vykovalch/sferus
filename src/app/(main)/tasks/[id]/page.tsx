@@ -168,11 +168,11 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
           </div>
 
           {/* Заказчик — в потоке на мобильном, закреплённый сайдбар на десктопе */}
-          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2 flex flex-col gap-4">
+          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
             <div className="bg-card border border-border rounded-xl p-5">
               <Link
                 href={task.authorUsername ? `/profiles/${task.authorUsername}` : "#"}
-                className="flex items-center gap-3 mb-3 group cursor-pointer"
+                className="flex items-center gap-3 mb-4 group cursor-pointer"
               >
                 <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-base font-bold text-brand flex-shrink-0">
                   {authorInitials}
@@ -184,7 +184,8 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                   <p className="text-xs text-muted-foreground mt-0.5">Заказчик</p>
                 </div>
               </Link>
-              <div className="flex items-center gap-3 text-xs text-muted-foreground border-t border-border pt-3">
+
+              <div className="flex items-center gap-3 text-xs text-muted-foreground border-t border-border pt-3 mb-4">
                 <span>
                   Заданий: <span className="font-medium text-foreground">{authorStats.total}</span>
                 </span>
@@ -193,12 +194,9 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                   <span className="font-medium text-foreground">{authorStats.completed}</span>
                 </span>
               </div>
-            </div>
 
-            {/* Действие — только на десктопе, на мобильном закреплённая панель ниже */}
-            <div className="hidden lg:flex flex-col bg-card border border-border rounded-xl p-5">
               {contactButton(
-                "w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
+                "hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
               )}
             </div>
           </div>
