@@ -196,7 +196,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
               </div>
 
               {contactButton(
-                "hidden lg:flex w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
+                "hidden lg:flex w-full h-10 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
               )}
             </div>
           </div>
@@ -206,7 +206,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
       {/* Мобильная закреплённая панель: основное действие */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3">
         {contactButton(
-          "w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
+          "w-full h-10 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors",
         )}
       </div>
     </div>
