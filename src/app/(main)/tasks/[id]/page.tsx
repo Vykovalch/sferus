@@ -4,7 +4,9 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
+import { FavoriteButton } from "@/components/shared/FavoriteButton";
 import { PageContainer } from "@/components/shared/PageContainer";
+import { getFavoriteId } from "@/features/favorites/queries";
 import { getTaskDetail, getTaskStatsByAuthor } from "@/features/tasks/queries";
 import { auth } from "@/lib/auth";
 import { TASK_STATUSES } from "@/lib/constants";
@@ -61,6 +63,11 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
     auth.api.getSession({ headers: await headers() }),
     getTaskStatsByAuthor(task.authorId),
   ]);
+
+  // Зависит от session.user.id — не может уйти в тот же Promise.all выше.
+  const isFavorite = session?.user?.id
+    ? (await getFavoriteId(session.user.id, "task", task.id)) !== null
+    : false;
 
   const taskPath = `/tasks/${task.id}`;
   const budgetLabel = formatTaskBudget(task.budget, task.isNegotiable);
@@ -126,8 +133,16 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                 <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
                   {task.title}
                 </h1>
-                <div className="sm:text-right flex-shrink-0">
-                  <div className="text-2xl font-bold text-foreground">{budgetLabel}</div>
+                <div className="flex items-start gap-3 flex-shrink-0">
+                  <div className="sm:text-right">
+                    <div className="text-2xl font-bold text-foreground">{budgetLabel}</div>
+                  </div>
+                  <FavoriteButton
+                    target={{ kind: "task", id: task.id }}
+                    isFavorite={isFavorite}
+                    isAuthenticated={!!session}
+                    className="p-2 rounded-full border border-border hover:border-brand/50 transition-colors"
+                  />
                 </div>
               </div>
 

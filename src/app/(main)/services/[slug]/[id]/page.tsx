@@ -4,7 +4,9 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
+import { FavoriteButton } from "@/components/shared/FavoriteButton";
 import { PageContainer } from "@/components/shared/PageContainer";
+import { getFavoriteId } from "@/features/favorites/queries";
 import { ServiceGallery } from "@/features/services/components/ServiceGallery";
 import {
   getOtherServicesByAuthor,
@@ -86,6 +88,11 @@ export default async function ServiceListingPage({
     getServiceImageUrls(service.id),
   ]);
 
+  // Зависит от session.user.id — не может уйти в тот же Promise.all выше.
+  const isFavorite = session?.user?.id
+    ? (await getFavoriteId(session.user.id, "service", service.id)) !== null
+    : false;
+
   const isCompany = service.authorType === "company";
   const listingPath = `/services/${service.categorySlug}/${service.id}`;
   const priceLabel = formatServicePrice(service.price, service.isNegotiable, service.priceUnit);
@@ -152,8 +159,16 @@ export default async function ServiceListingPage({
                 <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
                   {service.title}
                 </h1>
-                <div className="sm:text-right flex-shrink-0">
-                  <div className="text-2xl font-bold text-foreground">{priceLabel}</div>
+                <div className="flex items-start gap-3 flex-shrink-0">
+                  <div className="sm:text-right">
+                    <div className="text-2xl font-bold text-foreground">{priceLabel}</div>
+                  </div>
+                  <FavoriteButton
+                    target={{ kind: "service", id: service.id }}
+                    isFavorite={isFavorite}
+                    isAuthenticated={!!session}
+                    className="p-2 rounded-full border border-border hover:border-brand/50 transition-colors"
+                  />
                 </div>
               </div>
 
