@@ -83,7 +83,7 @@ export function LoginForm() {
         variant="outline"
         onClick={handleGoogleSignIn}
         disabled={googleLoading || loading}
-        className="w-full border-input text-foreground hover:bg-muted h-10 cursor-pointer transition-colors text-sm font-medium mb-4"
+        className="w-full border-input text-foreground hover:bg-muted h-10 rounded-full cursor-pointer transition-colors text-sm font-medium mb-4"
       >
         {googleLoading ? (
           <span className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export function LoginForm() {
               placeholder="your@email.com"
               autoComplete="email"
               required
-              className="pl-10 h-10"
+              className="pl-10 h-10 rounded-full"
             />
           </div>
         </div>
@@ -167,7 +167,7 @@ export function LoginForm() {
               placeholder="Введите пароль"
               autoComplete="current-password"
               required
-              className="pl-10 pr-10 h-10"
+              className="pl-10 pr-10 h-10 rounded-full"
             />
             <button
               type="button"
@@ -201,7 +201,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={loading || googleLoading}
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
         >
           {loading ? "Вход..." : "Войти"}
         </Button>

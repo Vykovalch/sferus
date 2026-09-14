@@ -1,36 +1,36 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useState } from "react";
+import Link from "next/link";
+import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function ForgotPasswordForm() {
-  const [submitted, setSubmitted] = useState(false)
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [submitted, setSubmitted] = useState(false);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.SubmitEvent) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     const { error } = await authClient.requestPasswordReset({
       email,
-      redirectTo: '/reset-password',
-    })
+      redirectTo: "/reset-password",
+    });
 
     if (error) {
-      setSubmitted(true)
+      setSubmitted(true);
     } else {
-      setSubmitted(true)
+      setSubmitted(true);
     }
 
-    setLoading(false)
+    setLoading(false);
   }
 
   if (submitted) {
@@ -44,8 +44,7 @@ export function ForgotPasswordForm() {
 
         <h2 className="text-2xl font-medium tracking-tight mb-2">Письмо отправлено</h2>
         <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
-          Если аккаунт с адресом{' '}
-          <span className="font-medium text-foreground">{email}</span>{' '}
+          Если аккаунт с адресом <span className="font-medium text-foreground">{email}</span>{" "}
           существует — вы получите письмо со ссылкой для сброса пароля.
         </p>
         <p className="text-xs text-muted-foreground mb-8">
@@ -60,15 +59,13 @@ export function ForgotPasswordForm() {
           Вернуться ко входу
         </Link>
       </div>
-    )
+    );
   }
 
   return (
     <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">
-          Забыли пароль?
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Забыли пароль?</h2>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Введите email — мы отправим ссылку для сброса пароля
         </p>
@@ -93,7 +90,7 @@ export function ForgotPasswordForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="pl-10 h-10"
+              className="pl-10 h-10 rounded-full"
             />
           </div>
         </div>
@@ -101,9 +98,9 @@ export function ForgotPasswordForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
         >
-          {loading ? 'Отправляем...' : 'Отправить ссылку'}
+          {loading ? "Отправляем..." : "Отправить ссылку"}
         </Button>
       </form>
 
@@ -117,5 +114,5 @@ export function ForgotPasswordForm() {
         </Link>
       </div>
     </div>
-  )
+  );
 }

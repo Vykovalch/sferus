@@ -1,24 +1,24 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface ResetPasswordFormProps {
-  token?: string
+  token?: string;
 }
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   if (!token) {
     return (
@@ -33,64 +33,61 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           Ссылка недействительна
         </h2>
         <p className="text-sm text-muted-foreground text-center mb-8 leading-relaxed">
-          Ссылка для сброса пароля устарела или уже была использована.
-          Запросите новую.
+          Ссылка для сброса пароля устарела или уже была использована. Запросите новую.
         </p>
 
         <Button
           asChild
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground h-10 font-medium cursor-pointer"
+          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground h-10 rounded-full font-medium cursor-pointer"
         >
           <Link href="/forgot-password">Запросить новую ссылку</Link>
         </Button>
       </div>
-    )
+    );
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
 
-    const formData = new FormData(e.currentTarget)
-    const password = formData.get('password') as string
-    const confirm = formData.get('confirm') as string
+    const formData = new FormData(e.currentTarget);
+    const password = formData.get("password") as string;
+    const confirm = formData.get("confirm") as string;
 
     if (password !== confirm) {
-      setError('Пароли не совпадают')
-      return
+      setError("Пароли не совпадают");
+      return;
     }
 
     if (password.length < 8) {
-      setError('Пароль должен быть не менее 8 символов')
-      return
+      setError("Пароль должен быть не менее 8 символов");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     const { error } = await authClient.resetPassword({
       newPassword: password,
       token,
-    })
+    });
 
     if (error) {
-      if (error.code === 'INVALID_TOKEN' || error.code === 'TOKEN_EXPIRED') {
-        setError('Ссылка устарела. Запросите новую.')
+      if (error.code === "INVALID_TOKEN" || error.code === "TOKEN_EXPIRED") {
+        setError("Ссылка устарела. Запросите новую.");
       } else {
-        setError('Что-то пошло не так. Попробуйте снова.')
+        setError("Что-то пошло не так. Попробуйте снова.");
       }
-      setLoading(false)
-      return
+      setLoading(false);
+      return;
     }
 
-    router.push('/reset-password/success')
+    router.push("/reset-password/success");
   }
 
   return (
     <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">
-          Новый пароль
-        </h2>
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Новый пароль</h2>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Придумайте надёжный пароль для вашего аккаунта
         </p>
@@ -99,7 +96,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
           {error}
-          {error.includes('устарела') && (
+          {error.includes("устарела") && (
             <Link href="/forgot-password" className="block mt-1 underline font-medium">
               Запросить новую ссылку
             </Link>
@@ -115,18 +112,18 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             <Input
               id="password"
               name="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Минимум 8 символов"
               autoComplete="new-password"
               required
               minLength={8}
-              className="pl-10 pr-10 h-10"
+              className="pl-10 pr-10 h-10 rounded-full"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+              aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -140,17 +137,17 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             <Input
               id="confirm"
               name="confirm"
-              type={showConfirm ? 'text' : 'password'}
+              type={showConfirm ? "text" : "password"}
               placeholder="Повторите пароль"
               autoComplete="new-password"
               required
-              className="pl-10 pr-10 h-10"
+              className="pl-10 pr-10 h-10 rounded-full"
             />
             <button
               type="button"
               onClick={() => setShowConfirm((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              aria-label={showConfirm ? 'Скрыть пароль' : 'Показать пароль'}
+              aria-label={showConfirm ? "Скрыть пароль" : "Показать пароль"}
             >
               {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -160,11 +157,11 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
         >
-          {loading ? 'Сохраняем...' : 'Сохранить пароль'}
+          {loading ? "Сохраняем..." : "Сохранить пароль"}
         </Button>
       </form>
     </div>
-  )
+  );
 }
