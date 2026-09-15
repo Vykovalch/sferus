@@ -1,51 +1,51 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Mail, RefreshCw, CheckCircle } from 'lucide-react'
-import Link from 'next/link'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
+import { useState } from "react";
+import { Mail, RefreshCw, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
 
 interface VerifyEmailClientProps {
-  email?: string
+  email?: string;
 }
 
 export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
-  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle')
-  const [cooldown, setCooldown] = useState(0)
+  const [resendStatus, setResendStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const [cooldown, setCooldown] = useState(0);
 
   async function handleResend() {
-    if (!email || cooldown > 0) return
+    if (!email || cooldown > 0) return;
 
-    setResendStatus('loading')
+    setResendStatus("loading");
 
     const { error } = await authClient.sendVerificationEmail({
       email,
-      callbackURL: '/',
-    })
+      callbackURL: "/",
+    });
 
     if (error) {
-      setResendStatus('error')
-      setTimeout(() => setResendStatus('idle'), 3000)
-      return
+      setResendStatus("error");
+      setTimeout(() => setResendStatus("idle"), 3000);
+      return;
     }
 
-    setResendStatus('sent')
+    setResendStatus("sent");
 
-    let seconds = 60
-    setCooldown(seconds)
+    let seconds = 60;
+    setCooldown(seconds);
     const timer = setInterval(() => {
-      seconds -= 1
-      setCooldown(seconds)
+      seconds -= 1;
+      setCooldown(seconds);
       if (seconds <= 0) {
-        clearInterval(timer)
-        setResendStatus('idle')
+        clearInterval(timer);
+        setResendStatus("idle");
       }
-    }, 1000)
+    }, 1000);
   }
 
   return (
-    <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
+    <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center">
           <Mail className="h-8 w-8 text-brand" />
@@ -55,20 +55,16 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
       <div className="text-center mb-6">
         <h2 className="text-2xl font-medium tracking-tight mb-2">Проверьте почту</h2>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Мы отправили письмо с ссылкой для подтверждения на{' '}
-          {email ? (
-            <span className="font-medium text-foreground">{email}</span>
-          ) : (
-            'ваш email'
-          )}
+          Мы отправили письмо с ссылкой для подтверждения на{" "}
+          {email ? <span className="font-medium text-foreground">{email}</span> : "ваш email"}
         </p>
       </div>
 
       <div className="bg-muted/40 rounded-xl p-4 mb-6 space-y-3">
         {[
-          'Откройте письмо от Sferus',
-          'Нажмите кнопку «Подтвердить email»',
-          'Войдите в аккаунт',
+          "Откройте письмо от Sferus",
+          "Нажмите кнопку «Подтвердить email»",
+          "Войдите в аккаунт",
         ].map((step, i) => (
           <div key={step} className="flex items-center gap-3">
             <div className="w-5 h-5 rounded-full bg-brand/15 flex items-center justify-center flex-shrink-0">
@@ -80,7 +76,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
       </div>
 
       <div className="space-y-3">
-        {resendStatus === 'sent' ? (
+        {resendStatus === "sent" ? (
           <div className="flex items-center justify-center gap-2 py-2 text-sm text-emerald-600 dark:text-emerald-400">
             <CheckCircle className="h-4 w-4" />
             <span>Письмо отправлено повторно</span>
@@ -90,10 +86,10 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
             type="button"
             variant="outline"
             onClick={handleResend}
-            disabled={!email || resendStatus === 'loading' || cooldown > 0}
+            disabled={!email || resendStatus === "loading" || cooldown > 0}
             className="w-full border-input text-muted-foreground hover:text-foreground font-medium cursor-pointer"
           >
-            {resendStatus === 'loading' ? (
+            {resendStatus === "loading" ? (
               <>
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 Отправляем...
@@ -101,24 +97,24 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
             ) : cooldown > 0 ? (
               `Отправить повторно (${cooldown}с)`
             ) : (
-              'Отправить письмо повторно'
+              "Отправить письмо повторно"
             )}
           </Button>
         )}
 
-        {resendStatus === 'error' && (
+        {resendStatus === "error" && (
           <p className="text-xs text-destructive text-center">
             Не удалось отправить письмо. Попробуйте позже.
           </p>
         )}
 
         <p className="text-xs text-muted-foreground text-center">
-          Не тот email?{' '}
+          Не тот email?{" "}
           <Link href="/register" className="text-brand hover:underline font-medium">
             Зарегистрироваться заново
           </Link>
         </p>
       </div>
     </div>
-  )
+  );
 }

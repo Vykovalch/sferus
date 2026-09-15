@@ -75,7 +75,7 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="w-full bg-white text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm">
+    <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="text-center mb-6">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Создать аккаунт</h2>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
