@@ -169,7 +169,7 @@ export function CreateServiceForm({
         )}
 
         {/* Основная информация */}
-        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-5">
           <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Основная информация
           </h2>
@@ -228,7 +228,7 @@ export function CreateServiceForm({
         </div>
 
         {/* Категория и город */}
-        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-5">
           <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Категория и местоположение
           </h2>
@@ -292,7 +292,7 @@ export function CreateServiceForm({
         </div>
 
         {/* Стоимость */}
-        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-5">
           <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Стоимость услуги
           </h2>
@@ -394,7 +394,7 @@ export function CreateServiceForm({
         </div>
 
         {/* Фото работ */}
-        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-5">
           <h2 className="text-sm font-semibold text-foreground mb-1 pb-3 border-b border-border/60">
             Фото работ
           </h2>
@@ -491,7 +491,7 @@ export function CreateServiceForm({
             type="button"
             variant="outline"
             asChild
-            className="border-border text-muted-foreground hover:text-foreground cursor-pointer font-medium"
+            className="h-10 rounded-full border-border text-muted-foreground hover:text-foreground cursor-pointer font-medium"
           >
             <Link href={cancelHref}>Отмена</Link>
           </Button>
@@ -500,7 +500,7 @@ export function CreateServiceForm({
             // Пока фото не долетело, сохранять нельзя: его адреса ещё нет
             // в форме, и объявление сохранилось бы без него.
             disabled={pending || uploadingCount > 0}
-            className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+            className="flex-1 h-10 rounded-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
           >
             {pending
               ? isEdit
@@ -515,7 +515,7 @@ export function CreateServiceForm({
 
       {/* Превью + советы */}
       <div className="hidden lg:block w-56 flex-shrink-0 sticky top-6">
-        <div className="bg-background border border-border rounded-xl p-4 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-4">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
             Предпросмотр
           </p>

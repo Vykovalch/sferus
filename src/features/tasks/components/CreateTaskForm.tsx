@@ -95,7 +95,7 @@ export function CreateTaskForm({
         )}
 
         {/* Блок: Основная информация */}
-        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-5">
           <h2 className="text-sm font-medium text-foreground mb-4 pb-3 border-b border-border">
             Основная информация
           </h2>
@@ -156,7 +156,7 @@ export function CreateTaskForm({
         </div>
 
         {/* Блок: Категория и город */}
-        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-5">
           <h2 className="text-sm font-medium text-foreground mb-4 pb-3 border-b border-border">
             Категория и местоположение
           </h2>
@@ -222,7 +222,7 @@ export function CreateTaskForm({
         </div>
 
         {/* Блок: Бюджет */}
-        <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-5">
           <h2 className="text-sm font-medium text-foreground mb-4 pb-3 border-b border-border">
             Бюджет
           </h2>
@@ -274,14 +274,14 @@ export function CreateTaskForm({
             type="button"
             variant="outline"
             asChild
-            className="border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
+            className="h-10 rounded-full border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
           >
             <Link href={cancelHref}>Отмена</Link>
           </Button>
           <Button
             type="submit"
             disabled={pending}
-            className="flex-1 bg-brand hover:bg-brand/90 text-brand-foreground shadow font-medium cursor-pointer transition-colors"
+            className="flex-1 h-10 rounded-full bg-brand hover:bg-brand/90 text-brand-foreground shadow font-medium cursor-pointer transition-colors"
           >
             {pending
               ? isEdit
@@ -296,7 +296,7 @@ export function CreateTaskForm({
 
       {/* Правая панель: Предпросмотр и Советы */}
       <div className="hidden md:block w-full md:w-56 lg:w-64 flex-shrink-0 md:sticky md:top-6">
-        <div className="bg-background border border-border rounded-xl p-4 shadow-sm space-y-4">
+        <div className="bg-card border border-border rounded-xl p-4 space-y-4">
           {/* Виджет предпросмотра */}
           <div>
             <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2.5">
