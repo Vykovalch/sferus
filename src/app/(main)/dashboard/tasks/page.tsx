@@ -27,7 +27,7 @@ export default async function MyTasksPage() {
         <h1 className="text-xl font-medium text-foreground">Мои задания</h1>
         <Button
           asChild
-          className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer"
+          className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"
         >
           <Link href="/tasks/new" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />

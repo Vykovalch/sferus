@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { ArrowLeft, CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
-import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 
 export function ForgotPasswordForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -98,7 +98,7 @@ export function ForgotPasswordForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
         >
           {loading ? "Отправляем..." : "Отправить ссылку"}
         </Button>

@@ -100,7 +100,7 @@ export function ChangePasswordForm() {
       <Button
         type="submit"
         disabled={pending}
-        className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer"
+        className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"
       >
         {pending ? "Сохранение…" : "Изменить пароль"}
       </Button>

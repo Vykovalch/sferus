@@ -104,8 +104,8 @@ export function AvatarUploader({ userName, userEmail, imageUrl }: AvatarUploader
               {initials}
             </AvatarFallback>
           </Avatar>
-          <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-brand flex items-center justify-center">
-            <Camera className="h-3 w-3 text-white" />
+          <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-brand-fill flex items-center justify-center">
+            <Camera className="h-3 w-3 text-brand-fill-foreground" />
           </span>
           <input
             type="file"

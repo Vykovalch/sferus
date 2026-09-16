@@ -20,9 +20,10 @@ export async function HeroSection() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
             Найди услугу
             <br className="hidden sm:inline" />
-            {/* Глубокая ступень бренда, а не --brand: заголовок не кликается
+            {/* Отдельная ступень бренда, а не --brand: заголовок не кликается
                 и не должен спорить с кнопкой «Найти» — она в этом же экране
-                и она здесь целевое действие. */}
+                и она здесь целевое действие. С оранжевым брендом ступень светлее
+                ссылок (#C46D00 против #AD5800): для крупного текста хватает 3:1. */}
             <span className="text-brand-display"> в Приднестровье</span>
           </h1>
 

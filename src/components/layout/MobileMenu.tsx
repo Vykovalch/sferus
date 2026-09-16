@@ -71,7 +71,7 @@ export function MobileMenu({ session }: MobileMenuProps) {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full h-10 rounded-full border-primary text-primary hover:bg-primary hover:text-white font-semibold transition-colors"
+                  className="w-full h-10 rounded-full border-primary text-primary hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground font-semibold transition-colors"
                 >
                   <Link href="/tasks/new" onClick={handleClose}>
                     Создать задание

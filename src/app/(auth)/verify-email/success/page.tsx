@@ -32,7 +32,7 @@ export default function VerifyEmailSuccessPage() {
 
         <Button
           asChild
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground h-10 font-medium cursor-pointer"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 font-medium cursor-pointer"
         >
           <Link href="/login">Войти в аккаунт</Link>
         </Button>

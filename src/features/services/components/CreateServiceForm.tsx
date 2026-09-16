@@ -500,7 +500,7 @@ export function CreateServiceForm({
             // Пока фото не долетело, сохранять нельзя: его адреса ещё нет
             // в форме, и объявление сохранилось бы без него.
             disabled={pending || uploadingCount > 0}
-            className="flex-1 h-10 rounded-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground shadow cursor-pointer font-medium transition-colors"
           >
             {pending
               ? isEdit

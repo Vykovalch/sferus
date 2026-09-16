@@ -83,7 +83,7 @@ export function HowItWorks() {
             <div className="relative pl-8 border-l-2 border-primary/20 space-y-8">
               {clientSteps.map((step) => (
                 <div key={step.n} className="relative">
-                  <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-primary ring-4 ring-background" />
+                  <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-brand-fill ring-4 ring-background" />
                   <h4 className="text-base font-semibold text-foreground mb-1">{step.title}</h4>
                   {/* min-h-12 ≈ 2 строки text-sm/leading-relaxed — грубая
                       подгонка под сегодняшний текст, чтобы однострочные пункты

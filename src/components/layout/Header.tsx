@@ -241,10 +241,10 @@ export function Header({ session, cities }: HeaderProps) {
               </button>
             )}
 
-            {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в вишневый).
-                Кармин только на hover, не как индикатор текущей страницы —
-                Услуги/Задания не должны гореть красным постоянно после
-                перехода. */}
+            {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в тёмно-оранжевый
+                --primary). Цвет бренда только на hover, не как индикатор текущей
+                страницы — Услуги/Задания не должны гореть оранжевым постоянно
+                после перехода. */}
             <nav className="hidden md:flex items-center space-x-8">
               {navLinks.map((link) => (
                 <Link
@@ -273,7 +273,7 @@ export function Header({ session, cities }: HeaderProps) {
                   <Button
                     asChild
                     variant="outline"
-                    className="hidden md:inline-flex h-10 rounded-full border-primary text-primary hover:bg-primary hover:text-white font-semibold transition-colors px-5"
+                    className="hidden md:inline-flex h-10 rounded-full border-primary text-primary hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground font-semibold transition-colors px-5"
                   >
                     <Link href="/tasks/new">Создать задание</Link>
                   </Button>

@@ -60,7 +60,7 @@ export function DashboardSidebar() {
               className={cn(
                 "flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors cursor-pointer",
                 isActive
-                  ? "bg-brand text-brand-foreground"
+                  ? "bg-brand-fill text-brand-fill-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80",
               )}
             >

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { AlertCircle, Eye, EyeOff, Lock } from "lucide-react";
 import Link from "next/link";
-import { Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth-client";
 
 interface ResetPasswordFormProps {
   token?: string;
@@ -38,7 +38,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
         <Button
           asChild
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground h-10 rounded-full font-medium cursor-pointer"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full font-medium cursor-pointer"
         >
           <Link href="/forgot-password">Запросить новую ссылку</Link>
         </Button>
@@ -157,7 +157,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
         >
           {loading ? "Сохраняем..." : "Сохранить пароль"}
         </Button>

@@ -20,7 +20,7 @@ export default async function MyServicesPage() {
         <h1 className="text-xl font-medium text-foreground">Мои услуги</h1>
         <Button
           asChild
-          className="bg-brand hover:bg-brand/90 text-brand-foreground font-medium cursor-pointer"
+          className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"
         >
           <Link href="/services/new" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />

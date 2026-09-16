@@ -218,7 +218,7 @@ export default async function PublicProfilePage({
                 target={{ kind: "profile", id: profile.profileId }}
                 isAuthenticated={Boolean(session)}
                 loginCallbackUrl={profilePath}
-                className="w-full bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+                className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground shadow cursor-pointer font-medium transition-colors"
               />
             </div>
           </div>
@@ -234,7 +234,7 @@ export default async function PublicProfilePage({
           target={{ kind: "profile", id: profile.profileId }}
           isAuthenticated={Boolean(session)}
           loginCallbackUrl={profilePath}
-          className="flex-shrink-0 bg-brand hover:bg-brand/90 text-brand-foreground shadow cursor-pointer font-medium transition-colors"
+          className="flex-shrink-0 bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground shadow cursor-pointer font-medium transition-colors"
         />
       </div>
     </div>
