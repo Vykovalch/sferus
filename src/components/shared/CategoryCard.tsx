@@ -18,18 +18,27 @@ export function CategoryCard({
   iconColor = "text-brand",
 }: CategoryCardProps) {
   return (
+    // Фон — градиент цвета категории: сверху белый, книзу 20% цвета иконки.
+    //
+    // Цвет категории стоит на самой карточке, а не на иконке: иконка наследует
+    // его как `currentColor`, и градиент берёт его же (`to-current/20`).
+    // Совпадение с иконкой обеспечено устройством, а не синхронизацией двух
+    // классов. Название и счётчик задают свой цвет явно и цвет категории
+    // не наследуют.
+    //
+    // 20% — предел с запасом: худший случай среди 20 цветов категорий
+    // (zinc-600) даёт счётчику 5.3:1, на 30% было бы 4.45:1 — ниже нормы.
+    // Верхняя треть остаётся белой (`from-30%`), как у образца.
     <Link
       href={`/services/${slug}`}
-      className="group flex flex-col items-start text-left p-6 h-full bg-card border border-border rounded-2xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+      className={`group flex flex-col items-start text-left p-6 h-full bg-gradient-to-b from-card from-30% to-current/20 ${iconColor} border border-border rounded-2xl transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5`}
     >
       {/* Иконка без подложки: цветной квадрат перетягивал внимание с названия
           и добавлял вложенную рамку внутрь карточки. Размер увеличен с 28 до
           36px — линейной иконке нужен вес, который раньше давала подложка.
           Высота фиксированная, поэтому заголовки всех карточек по-прежнему
-          начинаются на одном уровне. */}
-      <Icon
-        className={`h-9 w-9 mb-4 ${iconColor} transition-transform duration-200 group-hover:scale-110`}
-      />
+          начинаются на одном уровне. Цвет — унаследованный от карточки. */}
+      <Icon className="h-9 w-9 mb-4 transition-transform duration-200 group-hover:scale-110" />
 
       <h3 className="text-base font-medium text-foreground leading-snug">{name}</h3>
 
