@@ -91,7 +91,7 @@ export function SearchBar({
 
       <button
         type="submit"
-        className="px-8 py-3.5 bg-brand-fill text-brand-fill-foreground hover:opacity-90 rounded-full shadow-[0_4px_12px_rgba(255,200,37,0.35)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)] transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 font-semibold text-base cursor-pointer"
+        className="px-8 py-3.5 bg-brand-fill text-brand-fill-foreground hover:opacity-90 rounded-full transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 font-semibold text-base cursor-pointer"
       >
         Найти
       </button>

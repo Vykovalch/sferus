@@ -201,7 +201,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={loading || googleLoading}
-          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground shadow h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
         >
           {loading ? "Вход..." : "Войти"}
         </Button>

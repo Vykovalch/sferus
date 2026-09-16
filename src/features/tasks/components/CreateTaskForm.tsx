@@ -281,7 +281,7 @@ export function CreateTaskForm({
           <Button
             type="submit"
             disabled={pending}
-            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground shadow font-medium cursor-pointer transition-colors"
+            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer transition-colors"
           >
             {pending
               ? isEdit

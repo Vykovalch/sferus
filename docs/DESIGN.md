@@ -75,6 +75,8 @@
 **Правила применения:**
 - **Кнопка с заливкой** — `bg-brand-fill text-brand-fill-foreground`,
   при наведении `hover:bg-brand-fill/90`. **Не** `bg-brand-fill` с белым текстом.
+  **Без тени** — ни `shadow`, ни цветного свечения (решение владельца, 2026-09-16).
+  Раньше у кнопок с заливкой стоял `shadow`, а у «Найти» в герое — цветное свечение.
 - **Контурная кнопка** — `border-primary text-primary`, при наведении заливается:
   `hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground`.
 - **Ссылки и акцентный текст** — `text-brand`. **Не** `text-brand-fill`: 1.6:1.
