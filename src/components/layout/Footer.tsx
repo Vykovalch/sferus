@@ -94,8 +94,8 @@ export function Footer() {
 
         {/* Нижняя полоса */}
         <div className="border-t border-white/10 pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          {/* neutral-300: на фоне --footer-bg даёт 8:1. Более тёмные оттенки
-              не годятся — neutral-400 там 4.7:1 (впритык), neutral-500 — 2.5:1 */}
+          {/* neutral-300: на фоне --footer-bg (#383E41) даёт 7.3:1. Более тёмные
+              оттенки не годятся — neutral-400 там 4.2:1, ниже нормы 4.5:1 */}
           <p className="text-sm text-neutral-300">© 2026 Sferus. Все права защищены.</p>
           <div className="flex gap-6">
             <Link
