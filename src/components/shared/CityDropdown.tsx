@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronDown, MapPin } from "lucide-react";
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,51 +9,89 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { CityOption } from "@/features/cities/queries";
+import { cn } from "@/lib/utils";
 
 const ALL_CITIES = "Все города";
 
 interface CityDropdownProps {
   /** Города из БД: клиентский компонент их сам получить не может. */
   cities: CityOption[];
+  /** Выбранный город; `undefined` — «Все города». */
+  value: string | undefined;
+  onValueChange: (city: string | undefined) => void;
+  /**
+   * `hero` — крупный вариант для строки поиска на главной; `compact` — внутри
+   * поля в шапке на десктопе; `block` — отдельной строкой во всю ширину
+   * в раскрытом мобильном поиске.
+   */
+  variant?: "hero" | "compact" | "block";
 }
 
 /**
- * Выбор города в поиске на главной. Начинает всегда со «Всех городов»:
- * поиска до этой формы ещё не было. Город уже выполненного поиска
- * показывается плашкой на `/services` и переносится полем в шапке.
+ * Выбор города в форме поиска.
+ *
+ * Управляемый: значение хранит черновик поиска (`search-context.tsx`),
+ * общий для Hero и шапки, — иначе выбранный в Hero город не доезжал бы до шапки.
+ *
+ * Скрытое поле `city` при «Всех городах» **не отправляется вовсе**. Раньше в нём
+ * уходила строка «Все города»: Hero вычищал её вручную, а обычная форма
+ * отправила бы `?city=Все города`, и выдача оказалась бы пустой — такого города
+ * в базе нет.
  */
-export function CityDropdown({ cities }: CityDropdownProps) {
-  const [currentCity, setCurrentCity] = React.useState(ALL_CITIES);
-
-  const options = [ALL_CITIES, ...cities.map((c) => c.name)];
+export function CityDropdown({
+  cities,
+  value,
+  onValueChange,
+  variant = "hero",
+}: CityDropdownProps) {
+  const label = value ?? ALL_CITIES;
 
   return (
     <>
-      <input type="hidden" name="city" value={currentCity} />
+      {value !== undefined && <input type="hidden" name="city" value={value} />}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
+            type="button"
             variant="ghost"
-            className="flex items-center gap-1.5 px-2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-0"
+            aria-label={`Город: ${label}`}
+            className={cn(
+              "flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-0",
+              variant === "hero" && "px-2",
+              variant === "compact" && "h-8 px-2 rounded-full max-w-[9.5rem]",
+              variant === "block" &&
+                "h-11 w-full justify-start px-3 rounded-xl border border-input",
+            )}
           >
-            <MapPin className="h-4 w-4" />
-            <span className="text-base font-medium">{currentCity}</span>
-            <ChevronDown className="h-4 w-4 opacity-50" />
+            <MapPin className={cn("shrink-0", variant === "hero" ? "h-4 w-4" : "h-3.5 w-3.5")} />
+            <span
+              className={cn(
+                "font-medium truncate",
+                variant === "hero" ? "text-base" : "text-sm",
+                variant === "block" && "flex-1 text-left",
+              )}
+            >
+              {label}
+            </span>
+            <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          align="start"
+          align={variant === "compact" ? "end" : "start"}
           className="min-w-[calc(var(--radix-dropdown-menu-trigger-width)+2rem)]"
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
-          {options.map((name) => (
+          {[undefined, ...cities.map((c) => c.name)].map((name) => (
             <DropdownMenuItem
-              key={name}
-              onClick={() => setCurrentCity(name)}
-              className="cursor-pointer text-base py-2 font-medium text-foreground"
+              key={name ?? ALL_CITIES}
+              onClick={() => onValueChange(name)}
+              className={cn(
+                "cursor-pointer py-2 font-medium text-foreground",
+                variant === "hero" ? "text-base" : "text-sm",
+              )}
             >
-              {name}
+              {name ?? ALL_CITIES}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

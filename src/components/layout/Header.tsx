@@ -1,88 +1,69 @@
 "use client";
 
 import { Search, X } from "lucide-react";
+import Form from "next/form";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import {
-  getHeroIntersecting,
-  getHeroIntersectingServerSnapshot,
-  subscribeHeroIntersecting,
-} from "@/components/layout/hero-search-store";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-context";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { CityDropdown } from "@/components/shared/CityDropdown";
 import { Logo } from "@/components/shared/Logo";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { Button } from "@/components/ui/button";
-import {
-  parseServiceCatalogFilters,
-  SEARCH_QUERY_MAX_LENGTH,
-  type ServiceCatalogFilters,
-  serviceCatalogSearchParams,
-} from "@/features/services/schemas";
+import type { CityOption } from "@/features/cities/queries";
+import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   session: Session | null; // Сессия из серверного layout (auth.api.getSession)
+  /** Города из БД для выбора в поиске — приходят из серверного layout. */
+  cities: CityOption[];
 }
 
-/**
- * `URLSearchParams` → объект той же формы, что `searchParams` страницы.
- *
- * Повторяющийся ключ даёт массив, одиночный — строку: так Next.js передаёт
- * параметры в `page.tsx`, и `parseServiceCatalogFilters` рассчитан именно на это
- * (при повторе берёт первое значение). `Object.fromEntries` не подходит — он
- * молча оставил бы последнее значение, и шапка разошлась бы с выдачей.
- */
-function searchParamsToRecord(params: URLSearchParams) {
-  const record: Record<string, string | string[]> = {};
-  for (const key of new Set(params.keys())) {
-    const values = params.getAll(key);
-    record[key] = values.length === 1 ? values[0] : values;
-  }
-  return record;
-}
-
-export function Header({ session }: HeaderProps) {
+export function Header({ session, cities }: HeaderProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isHome = pathname === "/";
 
-  // Уточнение поиска. На `/services` поле шапки — единственное место, где
-  // можно изменить запрос: строки поиска на самой странице нет. Поэтому здесь
-  // текущий запрос подставляется в поле, а город и тип исполнителя уходят
-  // вместе с формой скрытыми полями — иначе новый запрос молча сбрасывал бы
-  // фильтры, которые человек видит плашками над выдачей.
+  // Поиск в шапке. Текст и город — общий черновик с Hero на главной
+  // (search-context.tsx): пока человек ничего не менял, это значения
+  // из адреса, поэтому на `/services` в поле уже стоят запрос и город
+  // выполненного поиска.
   //
-  // Шапка живёт в layout, а layout `searchParams` не получает, поэтому адрес
-  // читается здесь. Разбирает его та же `parseServiceCatalogFilters`, что
-  // и страницу, — второго разборщика, который мог бы разойтись с выдачей, нет.
-  // На остальных страницах фильтры не переносятся: там их нет в адресе,
-  // а у заданий они вообще другие.
-  const searchFilters: ServiceCatalogFilters =
-    pathname === "/services" ? parseServiceCatalogFilters(searchParamsToRecord(searchParams)) : {};
-  const preservedFilterFields = [
-    ...serviceCatalogSearchParams({ ...searchFilters, query: undefined }).entries(),
-  ];
-  // `key` по запросу: поле неуправляемое, и без смены ключа после перехода
-  // к другому запросу в нём осталось бы прежнее значение.
-  const searchInputKey = searchFilters.query ?? "";
+  // Тип исполнителя в черновике не участвует — его выбирают в сайдбаре
+  // результатов, а здесь он уходит скрытым полем, чтобы новый запрос
+  // из шапки не сбрасывал фильтр, который человек видит плашкой над выдачей.
+  const { draft, updateDraft, filters } = useSearchDraft();
 
-  // Видимость Hero-инпута приходит из стора, за которым следит SearchBar
-  // в Hero (см. hero-search-store.ts). На остальных страницах Hero нет,
-  // поэтому источник неважен — компактный поиск виден всегда.
-  const heroVisible = useSyncExternalStore(
-    subscribeHeroIntersecting,
-    getHeroIntersecting,
-    getHeroIntersectingServerSnapshot,
+  const searchInputProps = {
+    name: "q",
+    type: "search",
+    value: draft.query,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+      updateDraft({ query: event.target.value }),
+    maxLength: SEARCH_QUERY_MAX_LENGTH,
+    placeholder: "Ремонт, уборка, репетитор...",
+  } as const;
+
+  const executorTypeField = filters.executorType && (
+    <input type="hidden" name="type" value={filters.executorType} />
   );
+
+  function selectCity(city: string | undefined) {
+    updateDraft({ city });
+  }
+
+  // Видимость Hero-инпута приходит из контекста поиска, за ней следит SearchBar
+  // в Hero (см. search-context.tsx). На остальных страницах Hero нет,
+  // поэтому источник неважен — компактный поиск виден всегда.
+  const { heroVisible } = useHeroVisibility();
   const showCompactSearch = isHome ? !heroVisible : true;
 
   // Раскрытие лупы в полноширинную строку поиска ниже lg (см. ниже) —
-  // локальное состояние одного компонента, внешний стор не нужен: в
-  // отличие от hero-search-store.ts, тут нет двух разных поддеревьев,
-  // которым нужно об этом договориться.
+  // локальное состояние одного компонента: в отличие от видимости Hero
+  // и черновика, об этом не нужно договариваться с другими компонентами.
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,6 +80,9 @@ export function Header({ session }: HeaderProps) {
     if (!isMobileSearchOpen) return;
     mobileSearchInputRef.current?.focus();
     function handleKeyDown(event: KeyboardEvent) {
+      // Escape в открытом списке городов закрывает только список: Radix
+      // обрабатывает его раньше и помечает событие `preventDefault`.
+      if (event.defaultPrevented) return;
       if (event.key === "Escape") setIsMobileSearchOpen(false);
     }
     document.addEventListener("keydown", handleKeyDown);
@@ -115,19 +99,19 @@ export function Header({ session }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
       <PageContainer>
-        <div className="flex h-16 lg:h-[72px] items-center gap-4">
-          {/* Раскрытая мобильная строка поиска (ниже lg). Полностью
-              заменяет собой остальное содержимое хедера на время поиска —
-              логотип, навигация и меню всё равно не нужны в этот момент,
-              а места на узком экране на всё сразу не хватит. При lg+ этой
-              панели никогда не место (см. lg:hidden ниже) — на всякий
-              случай, если состояние осталось true при ресайзе окна. */}
-          {isMobileSearchOpen && (
-            <form
-              action="/services"
-              method="get"
-              className="flex lg:hidden items-center gap-2 w-full"
-            >
+        {/* Раскрытый мобильный поиск (ниже lg). Полностью заменяет собой
+            остальное содержимое хедера на время поиска — логотип, навигация
+            и меню всё равно не нужны в этот момент. При lg+ этой панели
+            никогда не место (lg:hidden) — на случай, если состояние осталось
+            true при ресайзе окна.
+
+            Город — второй строкой во всю ширину, а не рядом с полем: на 375px
+            поле сжалось бы примерно до 150px, а кнопке выбора нужна область
+            касания около 44px. Так же устроены мобильные версии крупных
+            площадок объявлений. Шапка на это время становится выше. */}
+        {isMobileSearchOpen && (
+          <Form action="/services" className="lg:hidden pb-3">
+            <div className="flex h-16 items-center gap-2">
               <label htmlFor="mobile-header-search" className="sr-only">
                 Поиск услуг
               </label>
@@ -137,20 +121,12 @@ export function Header({ session }: HeaderProps) {
                   className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
                 />
                 <input
-                  key={searchInputKey}
                   ref={mobileSearchInputRef}
                   id="mobile-header-search"
-                  name="q"
-                  type="search"
-                  defaultValue={searchFilters.query}
-                  maxLength={SEARCH_QUERY_MAX_LENGTH}
-                  placeholder="Ремонт, уборка, репетитор..."
+                  {...searchInputProps}
                   className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
                 />
               </div>
-              {preservedFilterFields.map(([name, value]) => (
-                <input key={name} type="hidden" name={name} value={value} />
-              ))}
               <button
                 type="button"
                 aria-label="Закрыть поиск"
@@ -159,15 +135,24 @@ export function Header({ session }: HeaderProps) {
               >
                 <X className="h-5 w-5" />
               </button>
-            </form>
-          )}
+            </div>
+            <CityDropdown
+              cities={cities}
+              value={draft.city}
+              onValueChange={selectCity}
+              variant="block"
+            />
+            {executorTypeField}
+          </Form>
+        )}
 
-          <div
-            className={cn(
-              "flex items-center justify-between gap-4 w-full",
-              isMobileSearchOpen && "hidden lg:flex",
-            )}
-          >
+        <div
+          className={cn(
+            "flex h-16 lg:h-[72px] items-center gap-4",
+            isMobileSearchOpen && "hidden lg:flex",
+          )}
+        >
+          <div className="flex items-center justify-between gap-4 w-full">
             {/* Левая часть: Логотип Sferus */}
             <div className="flex items-center">
               <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
@@ -176,11 +161,16 @@ export function Header({ session }: HeaderProps) {
             </div>
 
             {/* Поиск.
-                Обычная форма с method="get": состояние живёт в адресной строке
-                и поиск отправляется без JS — тот же принцип, по которому
-                фильтры каталога сделаны ссылками. Из адреса форма только
-                читает: на /services подставляет запрос и переносит фильтры
-                (см. searchFilters выше), сама ничего в URL не синхронизирует.
+                `next/form`: GET-форма, которая отправляется и без JS, а с JS
+                переходит без перезагрузки страницы. Отправленный поиск живёт
+                в адресной строке — тот же принцип, по которому фильтры
+                каталога сделаны ссылками. Hero на главной отправляет ровно
+                такую же форму.
+
+                Выбор города — только с xl. На lg рядом стоят навигация и две
+                кнопки, и у поля остаётся слишком мало места; город при этом
+                не теряется — его скрытое поле рендерит CityDropdown и на lg,
+                просто сам выбор не показан.
 
                 На узких экранах поле не помещается в шапку h-16, поэтому там
                 вместо формы — лупа, разворачивающая точно такую же строку
@@ -199,11 +189,14 @@ export function Header({ session }: HeaderProps) {
                 "hidden lg:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
-                  ? "opacity-100 max-w-sm"
+                  ? "opacity-100 max-w-sm xl:max-w-md"
                   : "opacity-0 max-w-0 pointer-events-none",
               )}
             >
-              <form action="/services" method="get" className="flex w-full items-center relative">
+              <Form
+                action="/services"
+                className="flex w-full h-10 items-center relative bg-background border border-input rounded-full transition-colors focus-within:border-brand-heading/60"
+              >
                 <label htmlFor="header-search" className="sr-only">
                   Поиск услуг
                 </label>
@@ -212,19 +205,21 @@ export function Header({ session }: HeaderProps) {
                   className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none"
                 />
                 <input
-                  key={searchInputKey}
                   id="header-search"
-                  name="q"
-                  type="search"
-                  defaultValue={searchFilters.query}
-                  maxLength={SEARCH_QUERY_MAX_LENGTH}
-                  placeholder="Ремонт, уборка, репетитор..."
-                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
+                  {...searchInputProps}
+                  className="min-w-0 flex-1 h-full pl-9 pr-3 text-sm bg-transparent rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
                 />
-                {preservedFilterFields.map(([name, value]) => (
-                  <input key={name} type="hidden" name={name} value={value} />
-                ))}
-              </form>
+                <div className="hidden xl:flex items-center shrink-0 pr-1">
+                  <div aria-hidden="true" className="h-5 w-px bg-border mr-1" />
+                  <CityDropdown
+                    cities={cities}
+                    value={draft.city}
+                    onValueChange={selectCity}
+                    variant="compact"
+                  />
+                </div>
+                {executorTypeField}
+              </Form>
             </search>
 
             {/* Лупа на узких экранах подчиняется тому же правилу, что и

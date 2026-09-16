@@ -1,6 +1,7 @@
 import "server-only";
 
 import { asc } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "@/lib/db";
 import { cities } from "@/lib/db/schema";
 
@@ -9,13 +10,13 @@ import { cities } from "@/lib/db/schema";
  *
  * Селектим только нужные колонки — правило 3.4 в ARCHITECTURE.md.
  *
- * Обёртка React `cache()` намеренно не используется: сейчас справочник
- * запрашивается один раз на рендер, и мемоизировать нечего. Добавить её стоит,
- * когда один и тот же список понадобится двум серверным компонентам в одном
- * рендере — признак будет виден как несколько одинаковых SELECT на загрузку.
- * Изменение обратное и не затрагивает вызывающий код.
+ * Обёрнута в React `cache()`: с 2026-09 список нужен шапке в `(main)/layout.tsx`
+ * на каждой странице, и та же страница часто запрашивает его сама (Hero на
+ * главной, фильтры каталога, формы объявлений). Без обёртки это были бы
+ * одинаковые SELECT в одном рендере. Кеш живёт в пределах одного запроса —
+ * дедупликация, а не хранение между посетителями.
  */
-export async function getCities() {
+export const getCities = cache(async () => {
   return db
     .select({
       id: cities.id,
@@ -24,7 +25,7 @@ export async function getCities() {
     })
     .from(cities)
     .orderBy(asc(cities.order), asc(cities.name));
-}
+});
 
 /** То, что видит UI. Источник истины — возврат запроса, а не ручной интерфейс. */
 export type CityOption = Awaited<ReturnType<typeof getCities>>[number];

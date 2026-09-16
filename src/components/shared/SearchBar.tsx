@@ -1,11 +1,12 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Form from "next/form";
 import { useEffect, useRef } from "react";
-import { setHeroIntersecting } from "@/components/layout/hero-search-store";
+import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-context";
 import { CityDropdown } from "@/components/shared/CityDropdown";
 import type { CityOption } from "@/features/cities/queries";
+import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import { HEADER_HEIGHT_PX } from "@/lib/constants";
 
 interface SearchBarProps {
@@ -14,12 +15,12 @@ interface SearchBarProps {
   placeholder?: string;
   /**
    * Только для инстанса в Hero на главной. Включает IntersectionObserver,
-   * который пишет видимость этого инпута во внешний стор — на неё реагирует
-   * компактный поиск в `Header`. Без пропа инпут не наблюдается и на стор
+   * который пишет видимость этого инпута в контекст поиска — на неё реагирует
+   * компактный поиск в `Header`. Без пропа инпут не наблюдается и на контекст
    * не влияет.
    *
-   * Подставленного запроса и города у формы нет: она стоит только на главной,
-   * где поиска ещё не было. Уточнение запроса на `/services` — поле в шапке.
+   * Текст и город формы — общий черновик с полем в шапке
+   * (`search-context.tsx`): на главной это один поиск в двух положениях.
    */
   trackVisibility?: boolean;
 }
@@ -29,7 +30,8 @@ export function SearchBar({
   placeholder = "Ремонт, уборка, репетитор...",
   trackVisibility = false,
 }: SearchBarProps) {
-  const router = useRouter();
+  const { draft, updateDraft } = useSearchDraft();
+  const { setHeroVisible } = useHeroVisibility();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function SearchBar({
     if (!input) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setHeroIntersecting(entry.isIntersecting),
+      ([entry]) => setHeroVisible(entry.isIntersecting),
       // Компенсация высоты sticky-шапки: без неё «пересечение» считается по
       // геометрии вьюпорта, а нужно — по факту, скрылся ли инпут под хедером.
       { rootMargin: `-${HEADER_HEIGHT_PX}px 0px 0px 0px` },
@@ -47,36 +49,31 @@ export function SearchBar({
 
     return () => {
       observer.disconnect();
-      // Возврат к дефолту, чтобы при повторном монтировании Hero (например,
-      // после навигации назад на главную) не осталось устаревшее значение.
-      setHeroIntersecting(true);
+      // Возврат к дефолту: провайдер живёт всё время навигации внутри (main),
+      // и без сброса после ухода с главной шапка считала бы Hero скрытым.
+      setHeroVisible(true);
     };
-  }, [trackVisibility]);
+  }, [trackVisibility, setHeroVisible]);
 
-  function handleSearch(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const query = formData.get("query") as string;
-    const city = formData.get("city") as string;
-
-    const params = new URLSearchParams();
-    if (query) params.set("q", query);
-    if (city && city !== "Все города") params.set("city", city);
-
-    router.push(`/services?${params.toString()}`);
-  }
-
+  // `next/form`, как и в шапке: одна и та же отправка из обоих мест —
+  // переход без перезагрузки, работа без JS и одинаковые имена полей
+  // (`q`, `city`). Раньше здесь адрес собирался вручную через `router.push`,
+  // а шапка отправляла обычную форму с полной перезагрузкой страницы.
   return (
-    <form
-      onSubmit={handleSearch}
+    <Form
+      action="/services"
       className="flex flex-col md:flex-row items-stretch bg-card/80 dark:bg-card/40 backdrop-blur-xl p-2 rounded-3xl md:rounded-full border border-border/80 shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 focus-within:border-brand-heading/60 gap-2 md:gap-0"
     >
       <div className="relative flex-1 flex items-center group/input">
         <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand-heading" />
         <input
           ref={inputRef}
-          name="query"
+          name="q"
           type="search"
+          value={draft.query}
+          onChange={(e) => updateDraft({ query: e.target.value })}
+          maxLength={SEARCH_QUERY_MAX_LENGTH}
+          aria-label="Поиск услуг"
           placeholder={placeholder}
           className="w-full pl-12 pr-4 py-3.5 text-base bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none font-medium"
         />
@@ -85,7 +82,11 @@ export function SearchBar({
       <div className="hidden md:block h-8 my-auto w-px bg-gradient-to-b from-transparent via-border to-transparent" />
 
       <div className="flex items-center px-2 py-1 md:py-0 bg-secondary/10 md:bg-transparent rounded-xl md:rounded-none">
-        <CityDropdown cities={cities} />
+        <CityDropdown
+          cities={cities}
+          value={draft.city}
+          onValueChange={(city) => updateDraft({ city })}
+        />
       </div>
 
       <button
@@ -94,6 +95,6 @@ export function SearchBar({
       >
         Найти
       </button>
-    </form>
+    </Form>
   );
 }
