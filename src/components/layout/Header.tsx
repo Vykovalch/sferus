@@ -131,7 +131,7 @@ export function Header({ session, cities }: HeaderProps) {
                 type="button"
                 aria-label="Закрыть поиск"
                 onClick={() => setIsMobileSearchOpen(false)}
-                className="shrink-0 text-foreground/80 hover:text-primary transition-colors p-1"
+                className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -235,7 +235,7 @@ export function Header({ session, cities }: HeaderProps) {
                 aria-label="Найти услугу"
                 aria-expanded={isMobileSearchOpen}
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="lg:hidden text-foreground/80 hover:text-primary transition-colors"
+                className="lg:hidden text-foreground hover:text-primary transition-colors"
               >
                 <Search className="h-5 w-5" />
               </button>
@@ -250,7 +250,7 @@ export function Header({ session, cities }: HeaderProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-base font-semibold tracking-[0.01em] text-foreground/80 hover:text-primary transition-colors"
+                  className="text-base font-semibold tracking-[0.01em] text-foreground hover:text-primary transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -284,7 +284,7 @@ export function Header({ session, cities }: HeaderProps) {
               ) : (
                 <Link
                   href="/login"
-                  className="text-base font-semibold text-foreground/80 hover:text-primary transition-colors px-2"
+                  className="text-base font-semibold text-foreground hover:text-primary transition-colors px-2"
                 >
                   Войти
                 </Link>
