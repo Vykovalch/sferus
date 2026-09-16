@@ -4,10 +4,11 @@ interface LogoProps {
 }
 
 export function Logo({ className, variant = "default" }: LogoProps) {
-  // Логотип — фирменный яркий оранжевый, хотя как текст на светлом фоне
-  // он даёт 2:1. WCAG прямо исключает логотипы из требований к контрасту
-  // (1.4.3, «Logotypes»); остальной текст бренда — тёмная ступень --brand.
-  const color = variant === "inverse" ? "text-white" : "text-brand-fill";
+  // Логотип набран цветом навигации шапки (`text-foreground/80`, как пункты
+  // меню и «Войти») — решение владельца, 2026-09-16. Оранжевый бренд остаётся
+  // на кнопках, ссылках и иконке сайта. Вариант по умолчанию стоит только
+  // в шапке; `inverse` — белый логотип в подвале.
+  const color = variant === "inverse" ? "text-white" : "text-foreground/80";
 
   return (
     <span
