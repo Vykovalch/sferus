@@ -34,25 +34,35 @@ src/
     (main)/                 #   публичная часть + личный кабинет
     admin/                  #   админ-панель (проверка роли в layout И в каждой странице)
     api/auth/[...all]/      #   catch-all better-auth
+    api/upload/             #   выдача токена на прямую загрузку в хранилище, см. 9.2
+    sitemap.ts, robots.ts   #   SEO; карта сайта динамическая, запросы под кешем на час
+    error.tsx, global-error.tsx, not-found.tsx
+
+  instrumentation.ts        # onRequestError — единая точка сбора серверных ошибок
 
   features/                 # ВСЯ бизнес-логика, сгруппирована по домену
     services/
       actions.ts            #   'use server'  — мутации
       queries.ts            #   'server-only' — чтение
       schemas.ts            #   zod-схемы + выведенные типы
+      schemas.test.ts       #   тесты рядом с модулем (vitest)
       components/           #   UI, принадлежащий только этой фиче
     tasks/
-    profiles/               #   профиль + контакты + раскрытие
+    profiles/               #   профиль + контакты + раскрытие;
+                            #   reveal-policy.ts — правило квоты чистыми функциями
     categories/             #   справочник: только queries.ts
     cities/                 #   справочник: только queries.ts
     favorites/
-    admin/
+    admin/                  #   guard.ts — requireAdminSession, см. 3.6
                             #   responses/ и reviews/ — после v1, см. DATA-MODEL.md
 
   components/
     ui/                     # shadcn/radix — не трогаем руками
-    layout/                 # Header, Footer, MobileMenu, UserMenu
-    shared/                 # используется 2+ фичами (SearchBar, CityFilter, ...)
+    layout/                 # Header, Footer, MobileMenu, UserMenu, DashboardSidebar
+    shared/                 # используется 2+ фичами (SearchBar, Pagination, PageContainer, ...)
+    home/                   # секции главной страницы
+    auth/                   # формы входа, регистрации, сброса пароля
+    legal/                  # оболочка страниц соглашения и политики
 
   lib/
     db/
@@ -67,6 +77,11 @@ src/
     constants.ts            # иконки и цвета категорий, статусы заданий
     storage.ts              # хранилище файлов, 'server-only' — см. 9.2
     images.ts               # лимиты загрузки и сжатие, БЕЗ server-only
+    pagination.ts           # LIMIT/OFFSET, номер страницы из адреса, ссылки страниц
+    site.ts                 # канонический адрес сайта и метаданные (NEXT_PUBLIC_APP_URL)
+    logger.ts               # структурный лог ошибок одной строкой JSON
+    safe-redirect.ts        # проверка адреса возврата после входа
+    username.ts             # генерация username при регистрации
     utils.ts                # cn() и мелкие хелперы
 
   emails/                   # React Email шаблоны
@@ -403,11 +418,16 @@ export const updateServiceSchema = createServiceSchema.extend({ id: z.coerce.num
 Обоснование выбора, сравнение с Cloudflare R2 и Cloudinary и условия пересмотра —
 в PROGRESS.md, раздел «Этап 2 — фотографии услуг».
 
-### 9.3. Денежные типы
+### 9.3. Денежные типы — ✅ закрыто на этапе 0
 
-`price` и `budget` объявлены как `bigint`. Для цен в рублях ПМР это, вероятно, избыточно.
-Нужно подтвердить намеренность выбора; альтернативы — `integer` (если суммы целые) или
-`numeric` (если появятся копейки). Менять дешевле сейчас, чем после наполнения таблиц.
+**`price` и `budget` — `integer`, nullable.** Переведены из `bigint` миграцией
+`0004_white_miek` вместе с ограничениями «цена или договорная»
+(`services_price_or_negotiable`, `tasks_budget_or_negotiable`). Суммы в рублях ПМР
+целые, потолка в 2.1 млрд достаточно, а `bigint` в JS-режиме Drizzle требовал
+лишних преобразований. Верхняя граница продублирована в zod-схемах, чтобы
+пользователь видел сообщение под полем, а не ошибку драйвера.
+
+Если появятся копейки, понадобится `numeric(10,2)` — DATA-MODEL.md, открытый вопрос 2.
 
 ---
 

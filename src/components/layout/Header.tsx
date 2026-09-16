@@ -2,7 +2,7 @@
 
 import { Search, X } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   getHeroIntersecting,
@@ -14,7 +14,12 @@ import { UserMenu } from "@/components/layout/UserMenu";
 import { Logo } from "@/components/shared/Logo";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { Button } from "@/components/ui/button";
-import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
+import {
+  parseServiceCatalogFilters,
+  SEARCH_QUERY_MAX_LENGTH,
+  type ServiceCatalogFilters,
+  serviceCatalogSearchParams,
+} from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +27,47 @@ interface HeaderProps {
   session: Session | null; // Сессия из серверного layout (auth.api.getSession)
 }
 
+/**
+ * `URLSearchParams` → объект той же формы, что `searchParams` страницы.
+ *
+ * Повторяющийся ключ даёт массив, одиночный — строку: так Next.js передаёт
+ * параметры в `page.tsx`, и `parseServiceCatalogFilters` рассчитан именно на это
+ * (при повторе берёт первое значение). `Object.fromEntries` не подходит — он
+ * молча оставил бы последнее значение, и шапка разошлась бы с выдачей.
+ */
+function searchParamsToRecord(params: URLSearchParams) {
+  const record: Record<string, string | string[]> = {};
+  for (const key of new Set(params.keys())) {
+    const values = params.getAll(key);
+    record[key] = values.length === 1 ? values[0] : values;
+  }
+  return record;
+}
+
 export function Header({ session }: HeaderProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const isHome = pathname === "/";
+
+  // Уточнение поиска. На `/services` поле шапки — единственное место, где
+  // можно изменить запрос: строки поиска на самой странице нет. Поэтому здесь
+  // текущий запрос подставляется в поле, а город и тип исполнителя уходят
+  // вместе с формой скрытыми полями — иначе новый запрос молча сбрасывал бы
+  // фильтры, которые человек видит плашками над выдачей.
+  //
+  // Шапка живёт в layout, а layout `searchParams` не получает, поэтому адрес
+  // читается здесь. Разбирает его та же `parseServiceCatalogFilters`, что
+  // и страницу, — второго разборщика, который мог бы разойтись с выдачей, нет.
+  // На остальных страницах фильтры не переносятся: там их нет в адресе,
+  // а у заданий они вообще другие.
+  const searchFilters: ServiceCatalogFilters =
+    pathname === "/services" ? parseServiceCatalogFilters(searchParamsToRecord(searchParams)) : {};
+  const preservedFilterFields = [
+    ...serviceCatalogSearchParams({ ...searchFilters, query: undefined }).entries(),
+  ];
+  // `key` по запросу: поле неуправляемое, и без смены ключа после перехода
+  // к другому запросу в нём осталось бы прежнее значение.
+  const searchInputKey = searchFilters.query ?? "";
 
   // Видимость Hero-инпута приходит из стора, за которым следит SearchBar
   // в Hero (см. hero-search-store.ts). На остальных страницах Hero нет,
@@ -94,15 +137,20 @@ export function Header({ session }: HeaderProps) {
                   className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
                 />
                 <input
+                  key={searchInputKey}
                   ref={mobileSearchInputRef}
                   id="mobile-header-search"
                   name="q"
                   type="search"
+                  defaultValue={searchFilters.query}
                   maxLength={SEARCH_QUERY_MAX_LENGTH}
                   placeholder="Ремонт, уборка, репетитор..."
                   className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
                 />
               </div>
+              {preservedFilterFields.map(([name, value]) => (
+                <input key={name} type="hidden" name={name} value={value} />
+              ))}
               <button
                 type="button"
                 aria-label="Закрыть поиск"
@@ -128,10 +176,11 @@ export function Header({ session }: HeaderProps) {
             </div>
 
             {/* Поиск.
-                Обычная форма с method="get": состояние живёт в адресной строке,
-                поиск работает без JS, и не нужен ни клиентский компонент,
-                ни синхронизация состояния с URL — тот же принцип, по которому
-                фильтры каталога сделаны ссылками.
+                Обычная форма с method="get": состояние живёт в адресной строке
+                и поиск отправляется без JS — тот же принцип, по которому
+                фильтры каталога сделаны ссылками. Из адреса форма только
+                читает: на /services подставляет запрос и переносит фильтры
+                (см. searchFilters выше), сама ничего в URL не синхронизирует.
 
                 На узких экранах поле не помещается в шапку h-16, поэтому там
                 вместо формы — лупа, разворачивающая точно такую же строку
@@ -163,13 +212,18 @@ export function Header({ session }: HeaderProps) {
                   className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none"
                 />
                 <input
+                  key={searchInputKey}
                   id="header-search"
                   name="q"
                   type="search"
+                  defaultValue={searchFilters.query}
                   maxLength={SEARCH_QUERY_MAX_LENGTH}
                   placeholder="Ремонт, уборка, репетитор..."
                   className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
                 />
+                {preservedFilterFields.map(([name, value]) => (
+                  <input key={name} type="hidden" name={name} value={value} />
+                ))}
               </form>
             </search>
 

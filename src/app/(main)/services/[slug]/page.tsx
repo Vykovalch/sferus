@@ -88,13 +88,13 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   if (filters.executorType) {
     filterChips.push({
       label: EXECUTOR_TYPE_LABELS[filters.executorType],
-      removeHref: buildCatalogHref(slug, filters, { executorType: undefined }),
+      removeHref: buildCatalogHref(`/services/${slug}`, filters, { executorType: undefined }),
     });
   }
   if (filters.cityName) {
     filterChips.push({
       label: filters.cityName,
-      removeHref: buildCatalogHref(slug, filters, { cityName: undefined }),
+      removeHref: buildCatalogHref(`/services/${slug}`, filters, { cityName: undefined }),
     });
   }
 
@@ -132,7 +132,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <h1 className="text-2xl font-semibold tracking-tight mb-6">{category.name}</h1>
         <ActiveFilterChips
           chips={filterChips}
-          clearAllHref={buildCatalogHref(slug, filters, {
+          clearAllHref={buildCatalogHref(`/services/${slug}`, filters, {
             cityName: undefined,
             executorType: undefined,
           })}
@@ -140,7 +140,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <div className="flex gap-6">
           {/* Сайдбар */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
-            <CategorySidebar cities={cities} categorySlug={slug} {...filters} />
+            <CategorySidebar cities={cities} basePath={`/services/${slug}`} {...filters} />
           </aside>
 
           {/* Контентная область */}
@@ -164,7 +164,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
                   <div className="overflow-y-auto">
-                    <CategorySidebar cities={cities} categorySlug={slug} {...filters} />
+                    <CategorySidebar cities={cities} basePath={`/services/${slug}`} {...filters} />
                   </div>
                 </SheetContent>
               </Sheet>

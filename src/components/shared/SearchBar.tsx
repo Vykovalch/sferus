@@ -13,20 +13,13 @@ interface SearchBarProps {
   cities: CityOption[];
   placeholder?: string;
   /**
-   * Текущий запрос и город из адресной строки.
-   *
-   * Приходят со страницы уже разобранными, а не читаются здесь через
-   * `useSearchParams`: источник состояния — URL, и разбирает его сервер
-   * ровно один раз, тем же `parseServiceCatalogFilters`, что и выдачу.
-   * Иначе форма и результаты расходились бы по правилам разбора.
-   */
-  defaultQuery?: string;
-  defaultCity?: string;
-  /**
    * Только для инстанса в Hero на главной. Включает IntersectionObserver,
    * который пишет видимость этого инпута во внешний стор — на неё реагирует
-   * компактный поиск в `Header`. Инстансы на `/services` этот проп не
-   * передают, поэтому не наблюдаются и не влияют на стор.
+   * компактный поиск в `Header`. Без пропа инпут не наблюдается и на стор
+   * не влияет.
+   *
+   * Подставленного запроса и города у формы нет: она стоит только на главной,
+   * где поиска ещё не было. Уточнение запроса на `/services` — поле в шапке.
    */
   trackVisibility?: boolean;
 }
@@ -34,8 +27,6 @@ interface SearchBarProps {
 export function SearchBar({
   cities,
   placeholder = "Ремонт, уборка, репетитор...",
-  defaultQuery,
-  defaultCity,
   trackVisibility = false,
 }: SearchBarProps) {
   const router = useRouter();
@@ -86,7 +77,6 @@ export function SearchBar({
           ref={inputRef}
           name="query"
           type="search"
-          defaultValue={defaultQuery}
           placeholder={placeholder}
           className="w-full pl-12 pr-4 py-3.5 text-base bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none font-medium"
         />
@@ -95,7 +85,7 @@ export function SearchBar({
       <div className="hidden md:block h-8 my-auto w-px bg-gradient-to-b from-transparent via-border to-transparent" />
 
       <div className="flex items-center px-2 py-1 md:py-0 bg-secondary/10 md:bg-transparent rounded-xl md:rounded-none">
-        <CityDropdown cities={cities} defaultCity={defaultCity} />
+        <CityDropdown cities={cities} />
       </div>
 
       <button

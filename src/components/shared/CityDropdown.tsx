@@ -16,17 +16,15 @@ const ALL_CITIES = "Все города";
 interface CityDropdownProps {
   /** Города из БД: клиентский компонент их сам получить не может. */
   cities: CityOption[];
-  /**
-   * Город из адресной строки — приходит со страницы, уже разобранный
-   * `parseServiceCatalogFilters`. Без него список после поиска показывал бы
-   * «Все города», хотя выдача отфильтрована, и следующий поиск молча
-   * сбрасывал бы фильтр.
-   */
-  defaultCity?: string;
 }
 
-export function CityDropdown({ cities, defaultCity }: CityDropdownProps) {
-  const [currentCity, setCurrentCity] = React.useState(defaultCity ?? ALL_CITIES);
+/**
+ * Выбор города в поиске на главной. Начинает всегда со «Всех городов»:
+ * поиска до этой формы ещё не было. Город уже выполненного поиска
+ * показывается плашкой на `/services` и переносится полем в шапке.
+ */
+export function CityDropdown({ cities }: CityDropdownProps) {
+  const [currentCity, setCurrentCity] = React.useState(ALL_CITIES);
 
   const options = [ALL_CITIES, ...cities.map((c) => c.name)];
 

@@ -10,7 +10,12 @@ import { profileType } from "@/lib/db/schema";
 interface CategorySidebarProps extends ServiceCatalogFilters {
   /** Города из БД: серверный компонент получает их от страницы. */
   cities: CityOption[];
-  categorySlug: string;
+  /**
+   * Страница, на которую ведут ссылки фильтров: `/services/${slug}` для каталога
+   * категории, `/services` для результатов поиска. Фильтры у обеих одни и те же,
+   * отличается только адрес.
+   */
+  basePath: string;
 }
 
 /**
@@ -25,24 +30,24 @@ interface CategorySidebarProps extends ServiceCatalogFilters {
  * и попал в пустоту при непустой выдаче.
  */
 export function buildCatalogHref(
-  categorySlug: string,
+  basePath: string,
   filters: ServiceCatalogFilters,
   overrides: ServiceCatalogFilters,
 ) {
   const query = serviceCatalogSearchParams({ ...filters, ...overrides }).toString();
-  return `/services/${categorySlug}${query ? `?${query}` : ""}`;
+  return `${basePath}${query ? `?${query}` : ""}`;
 }
 
 export function CategorySidebar({
   cities,
-  categorySlug,
+  basePath,
   cityName,
   executorType,
   query,
 }: CategorySidebarProps) {
   // `query` здесь не используется напрямую, но обязан попасть в ссылки:
-  // без него клик по городу на странице категории с активным поиском
-  // терял бы поисковый запрос.
+  // без него клик по городу в результатах поиска или на странице категории
+  // с активным поиском терял бы поисковый запрос.
   const activeFilters: ServiceCatalogFilters = { cityName, executorType, query };
 
   const executorOptions = [
@@ -61,7 +66,7 @@ export function CategorySidebar({
         title="Исполнитель"
         options={executorOptions.map((option) => ({
           label: option.label,
-          href: buildCatalogHref(categorySlug, activeFilters, { executorType: option.value }),
+          href: buildCatalogHref(basePath, activeFilters, { executorType: option.value }),
           active: executorType === option.value,
         }))}
       />
@@ -69,7 +74,7 @@ export function CategorySidebar({
         title="Город"
         options={cityOptions.map((option) => ({
           label: option.label,
-          href: buildCatalogHref(categorySlug, activeFilters, { cityName: option.value }),
+          href: buildCatalogHref(basePath, activeFilters, { cityName: option.value }),
           active: cityName === option.value,
         }))}
       />

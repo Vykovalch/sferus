@@ -3,6 +3,7 @@ import {
   createServiceSchema,
   parseServiceCatalogFilters,
   SEARCH_QUERY_MAX_LENGTH,
+  serviceCatalogSearchParams,
   toggleServiceSchema,
   updateServiceSchema,
 } from "./schemas";
@@ -277,5 +278,52 @@ describe("parseServiceCatalogFilters — поисковый запрос", () =>
       cityName: "Бендеры",
       executorType: "company",
     });
+  });
+});
+
+/*
+ * Обратная сторона разбора. На ней держатся ссылки сайдбара, плашки фильтров,
+ * пагинация и скрытые поля формы поиска в шапке — расхождение с разбором
+ * означало бы, что фильтр теряется на одном из этих переходов.
+ */
+describe("serviceCatalogSearchParams", () => {
+  it("разбор и обратная сборка дают тот же набор фильтров", () => {
+    const filters = parseServiceCatalogFilters({
+      q: "ремонт",
+      city: "Тирасполь",
+      type: "company",
+    });
+    const search = serviceCatalogSearchParams(filters);
+
+    expect(parseServiceCatalogFilters(Object.fromEntries(search))).toEqual(filters);
+  });
+
+  it("пустые фильтры в адрес не пишутся", () => {
+    expect(serviceCatalogSearchParams({}).toString()).toBe("");
+    expect(
+      serviceCatalogSearchParams(
+        parseServiceCatalogFilters({ q: "  ", city: "", type: "hacked" }),
+      ).toString(),
+    ).toBe("");
+  });
+
+  it("без запроса остаются только фильтры — так шапка переносит их в новый поиск", () => {
+    // Шапка отправляет запрос своим полем `q`, а город и тип — скрытыми полями
+    // из этой сборки. Попади сюда старый `q`, форма отправила бы его дважды.
+    const filters = parseServiceCatalogFilters({
+      q: "ремонт",
+      city: "Бендеры",
+      type: "individual",
+    });
+    const search = serviceCatalogSearchParams({ ...filters, query: undefined });
+
+    expect([...search.keys()].sort()).toEqual(["city", "type"]);
+    expect(search.get("city")).toBe("Бендеры");
+    expect(search.get("type")).toBe("individual");
+  });
+
+  it("номер страницы не переносится — смена фильтра возвращает на первую", () => {
+    const filters = parseServiceCatalogFilters({ q: "ремонт", page: "3" });
+    expect(serviceCatalogSearchParams(filters).has("page")).toBe(false);
   });
 });
