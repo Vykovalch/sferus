@@ -18,7 +18,7 @@ export async function HeroSection() {
       <PageContainer className="relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
-            Найдите услугу
+            Найди услугу
             <br className="hidden sm:inline" />
             {/* Глубокая ступень бренда, а не --brand: заголовок не кликается
                 и не должен спорить с кнопкой «Найти» — она в этом же экране
