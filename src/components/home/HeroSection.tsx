@@ -20,7 +20,7 @@ export async function HeroSection() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
             Найди услугу
             <br className="hidden sm:inline" />
-            {/* Весь заголовок одним цветом текста: оранжевый на первом экране —
+            {/* Весь заголовок одним цветом текста: цвет бренда на первом экране —
                 только у кнопки «Найти», целевого действия. Пробел нужен на
                 мобильном, где перенос скрыт. */}
             {" в Приднестровье"}
