@@ -31,7 +31,8 @@ export function MobileMenu({ session }: MobileMenuProps) {
           </button>
         </SheetTrigger>
 
-        <SheetContent side="right" className="w-72 px-0 py-0">
+        {/* Слева — со стороны кнопки: бургер стоит слева от логотипа. */}
+        <SheetContent side="left" className="w-72 px-0 py-0">
           <SheetTitle className="sr-only">Навигация</SheetTitle>
 
           <nav className="px-4 py-6 flex flex-col gap-1">

@@ -153,8 +153,11 @@ export function Header({ session, cities }: HeaderProps) {
           )}
         >
           <div className="flex items-center justify-between gap-4 w-full">
-            {/* Левая часть: Логотип Sferus */}
-            <div className="flex items-center">
+            {/* Левая часть: бургер (только на узких экранах) и логотип Sferus.
+                Бургер слева от логотипа — решение владельца, 2026-09-17; меню
+                выезжает с той же стороны (MobileMenu, side="left"). */}
+            <div className="flex items-center gap-3">
+              <MobileMenu session={session} />
               <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
                 <Logo className="text-2xl" />
               </Link>
@@ -289,9 +292,6 @@ export function Header({ session, cities }: HeaderProps) {
                   Войти
                 </Link>
               )}
-
-              {/* Мобильное меню (бургер) */}
-              <MobileMenu session={session} />
             </div>
           </div>
         </div>
