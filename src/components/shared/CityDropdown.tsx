@@ -21,8 +21,9 @@ interface CityDropdownProps {
   onValueChange: (city: string | undefined) => void;
   /**
    * `hero` — крупный вариант для строки поиска на главной; `compact` — внутри
-   * поля в шапке на десктопе; `block` — отдельной строкой во всю ширину
-   * в раскрытом мобильном поиске.
+   * поля в шапке от 1280px; `block` — в поиске, раскрытом по лупе (до 1280px):
+   * на телефоне отдельной строкой во всю ширину, от 768px — компактной кнопкой
+   * в одну строку с полем.
    */
   variant?: "hero" | "compact" | "block";
 }
@@ -60,7 +61,7 @@ export function CityDropdown({
               variant === "hero" && "px-2",
               variant === "compact" && "h-8 px-2 rounded-full max-w-[9.5rem]",
               variant === "block" &&
-                "h-11 w-full justify-start px-3 rounded-xl border border-input",
+                "h-11 w-full justify-start px-3 rounded-xl border border-input md:h-10 md:w-auto md:max-w-[12rem] md:rounded-full",
             )}
           >
             <MapPin className={cn("shrink-0", variant === "hero" ? "h-4 w-4" : "h-3.5 w-3.5")} />

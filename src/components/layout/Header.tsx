@@ -61,7 +61,7 @@ export function Header({ session, cities }: HeaderProps) {
   const { heroVisible } = useHeroVisibility();
   const showCompactSearch = isHome ? !heroVisible : true;
 
-  // Раскрытие лупы в полноширинную строку поиска ниже lg (см. ниже) —
+  // Раскрытие лупы в полноширинную строку поиска ниже xl (см. ниже) —
   // локальное состояние одного компонента: в отличие от видимости Hero
   // и черновика, об этом не нужно договариваться с другими компонентами.
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -99,49 +99,58 @@ export function Header({ session, cities }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
       <PageContainer>
-        {/* Раскрытый мобильный поиск (ниже lg). Полностью заменяет собой
+        {/* Раскрытый поиск по лупе (ниже xl). Полностью заменяет собой
             остальное содержимое хедера на время поиска — логотип, навигация
-            и меню всё равно не нужны в этот момент. При lg+ этой панели
-            никогда не место (lg:hidden) — на случай, если состояние осталось
+            и меню всё равно не нужны в этот момент. При xl+ этой панели
+            никогда не место (xl:hidden) — на случай, если состояние осталось
             true при ресайзе окна.
 
-            Город — второй строкой во всю ширину, а не рядом с полем: на 375px
-            поле сжалось бы примерно до 150px, а кнопке выбора нужна область
-            касания около 44px. Так же устроены мобильные версии крупных
-            площадок объявлений. Шапка на это время становится выше. */}
+            Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
+            с выбором города. Где полному полю не хватает места — до 1280px —
+            вместо него лупа, и она раскрывает именно полный поиск.
+
+            Город на телефоне — второй строкой во всю ширину: на 375px поле
+            сжалось бы примерно до 150px, а кнопке выбора нужна область касания
+            около 44px. От 768px ширины хватает, и город встаёт в одну строку
+            с полем. Выбор города один на обе раскладки (перенос через
+            flex-wrap и order), а не два экземпляра: каждый CityDropdown
+            рендерит скрытое поле `city`, и в адресе появилось бы два `city`. */}
         {isMobileSearchOpen && (
-          <Form action="/services" className="lg:hidden pb-3">
-            <div className="flex h-16 items-center gap-2">
-              <label htmlFor="mobile-header-search" className="sr-only">
-                Поиск услуг
-              </label>
-              <div className="relative flex-1">
-                <Search
-                  aria-hidden="true"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
-                />
-                <input
-                  ref={mobileSearchInputRef}
-                  id="mobile-header-search"
-                  {...searchInputProps}
-                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
-                />
-              </div>
-              <button
-                type="button"
-                aria-label="Закрыть поиск"
-                onClick={() => setIsMobileSearchOpen(false)}
-                className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
-              >
-                <X className="h-5 w-5" />
-              </button>
+          <Form
+            action="/services"
+            className="xl:hidden flex flex-wrap items-center gap-x-2 gap-y-3 py-3 md:py-0 md:h-16 lg:h-[72px]"
+          >
+            <label htmlFor="mobile-header-search" className="sr-only">
+              Поиск услуг
+            </label>
+            <div className="relative flex-1 min-w-0">
+              <Search
+                aria-hidden="true"
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
+              />
+              <input
+                ref={mobileSearchInputRef}
+                id="mobile-header-search"
+                {...searchInputProps}
+                className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
+              />
             </div>
-            <CityDropdown
-              cities={cities}
-              value={draft.city}
-              onValueChange={selectCity}
-              variant="block"
-            />
+            <div className="order-last basis-full md:order-none md:basis-auto">
+              <CityDropdown
+                cities={cities}
+                value={draft.city}
+                onValueChange={selectCity}
+                variant="block"
+              />
+            </div>
+            <button
+              type="button"
+              aria-label="Закрыть поиск"
+              onClick={() => setIsMobileSearchOpen(false)}
+              className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
+            >
+              <X className="h-5 w-5" />
+            </button>
             {executorTypeField}
           </Form>
         )}
@@ -149,7 +158,7 @@ export function Header({ session, cities }: HeaderProps) {
         <div
           className={cn(
             "flex h-16 lg:h-[72px] items-center gap-4",
-            isMobileSearchOpen && "hidden lg:flex",
+            isMobileSearchOpen && "hidden xl:flex",
           )}
         >
           <div className="flex items-center justify-between gap-4 w-full">
@@ -170,14 +179,12 @@ export function Header({ session, cities }: HeaderProps) {
                 каталога сделаны ссылками. Hero на главной отправляет ровно
                 такую же форму.
 
-                Выбор города — только с xl. На lg рядом стоят навигация и две
-                кнопки, и у поля остаётся слишком мало места; город при этом
-                не теряется — его скрытое поле рендерит CityDropdown и на lg,
-                просто сам выбор не показан.
-
-                На узких экранах поле не помещается в шапку h-16, поэтому там
-                вместо формы — лупа, разворачивающая точно такую же строку
-                поиска на всю ширину (см. isMobileSearchOpen выше).
+                Поле — только с xl (1280px) и всегда вместе с выбором города.
+                На lg (1024–1279px) рядом с навигацией, «Разместить», сердечком
+                и аватаром полю с городом не хватает места, а поле без города —
+                урезанный поиск. Поэтому до xl вместо формы — лупа,
+                разворачивающая полную строку поиска на всю ширину шапки
+                (см. isMobileSearchOpen выше).
 
                 Sticky-поведение (только на главной): пока в Hero виден его
                 собственный инпут поиска, здесь этого блока нет — появляется
@@ -189,10 +196,10 @@ export function Header({ session, cities }: HeaderProps) {
                 «доезжал» с анимацией вместо мгновенного появления. */}
             <search
               className={cn(
-                "hidden lg:flex flex-1 items-center overflow-hidden",
+                "hidden xl:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
-                  ? "opacity-100 max-w-sm xl:max-w-md"
+                  ? "opacity-100 max-w-md"
                   : "opacity-0 max-w-0 pointer-events-none",
               )}
             >
@@ -212,7 +219,7 @@ export function Header({ session, cities }: HeaderProps) {
                   {...searchInputProps}
                   className="min-w-0 flex-1 h-full pl-9 pr-3 text-sm bg-transparent rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
                 />
-                <div className="hidden xl:flex items-center shrink-0 pr-1">
+                <div className="flex items-center shrink-0 pr-1">
                   <div aria-hidden="true" className="h-5 w-px bg-border mr-1" />
                   <CityDropdown
                     cities={cities}
@@ -225,7 +232,7 @@ export function Header({ session, cities }: HeaderProps) {
               </Form>
             </search>
 
-            {/* Лупа на узких экранах подчиняется тому же правилу, что и
+            {/* Лупа до xl подчиняется тому же правилу, что и
                 компактная форма выше: не главная страница, либо Hero-инпут
                 уже скрылся при скролле. Без этого условия на главной, пока
                 Hero-строка поиска ещё видна, лупа в хедере дублировала бы её.
@@ -238,7 +245,7 @@ export function Header({ session, cities }: HeaderProps) {
                 aria-label="Найти услугу"
                 aria-expanded={isMobileSearchOpen}
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="lg:hidden text-foreground hover:text-primary transition-colors"
+                className="xl:hidden text-foreground hover:text-primary transition-colors"
               >
                 <Search className="h-5 w-5" />
               </button>
