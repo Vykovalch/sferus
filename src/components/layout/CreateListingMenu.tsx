@@ -77,6 +77,12 @@ export function CreateListingOptionLabel({ option }: { option: CreateListingOpti
  * (решение владельца, 2026-09-17): одно главное действие вместо двух спорящих,
  * пояснение того, чем задание отличается от услуги, и около 160px ширины шапки.
  * Ниже 768px те же пункты — в мобильном меню.
+ *
+ * Кнопка контурная, а не с заливкой (решение владельца, 2026-09-17): заливка
+ * цветом бренда на первом экране главной зарезервирована за «Найти» в Hero,
+ * две яркие кнопки спорили бы. При наведении и пока меню открыто
+ * (`aria-expanded`) — заливка; иначе вариант `outline` сделал бы открытую
+ * кнопку серой.
  */
 export function CreateListingMenu() {
   return (
@@ -84,7 +90,8 @@ export function CreateListingMenu() {
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
-          className="hidden md:inline-flex h-10 gap-2 rounded-full bg-brand-fill px-5 font-semibold text-brand-fill-foreground hover:bg-brand-fill/90 transition-colors"
+          variant="outline"
+          className="hidden md:inline-flex h-10 gap-2 rounded-full border-primary text-primary px-5 font-semibold hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground aria-expanded:bg-brand-fill aria-expanded:border-brand-fill aria-expanded:text-brand-fill-foreground transition-colors"
         >
           <Plus aria-hidden="true" className="size-4" />
           Разместить
