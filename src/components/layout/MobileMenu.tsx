@@ -3,15 +3,13 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import {
+  CREATE_LISTING_OPTIONS,
+  CreateListingOptionLabel,
+} from "@/components/layout/CreateListingMenu";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import type { Session } from "@/lib/auth";
 
-interface MobileMenuProps {
-  session: Session | null;
-}
-
-export function MobileMenu({ session }: MobileMenuProps) {
+export function MobileMenu() {
   const [open, setOpen] = useState(false);
 
   function handleClose() {
@@ -58,28 +56,22 @@ export function MobileMenu({ session }: MobileMenuProps) {
               Как это работает
             </Link>
 
-            {session && (
-              <div className="border-t border-border mt-2 pt-4 flex flex-col gap-3">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full h-10 rounded-full border-secondary text-secondary hover:bg-secondary hover:text-white font-semibold transition-colors"
+            {/* «Разместить» — те же пункты, что в выпадающем меню шапки
+                (CreateListingMenu). Видны и гостю: страницы создания сами
+                отправят на вход с возвратом в форму. */}
+            <div className="border-t border-border mt-2 pt-4 flex flex-col gap-1">
+              <p className="px-2 pb-1 text-xs font-medium text-muted-foreground">Разместить</p>
+              {CREATE_LISTING_OPTIONS.map((option) => (
+                <Link
+                  key={option.href}
+                  href={option.href}
+                  onClick={handleClose}
+                  className="flex items-start gap-3 rounded-md px-2 py-2.5 hover:bg-accent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <Link href="/services/new" onClick={handleClose}>
-                    Создать услугу
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full h-10 rounded-full border-primary text-primary hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground font-semibold transition-colors"
-                >
-                  <Link href="/tasks/new" onClick={handleClose}>
-                    Создать задание
-                  </Link>
-                </Button>
-              </div>
-            )}
+                  <CreateListingOptionLabel option={option} />
+                </Link>
+              ))}
+            </div>
           </nav>
         </SheetContent>
       </Sheet>

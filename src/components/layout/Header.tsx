@@ -5,13 +5,13 @@ import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { CreateListingMenu } from "@/components/layout/CreateListingMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-context";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { CityDropdown } from "@/components/shared/CityDropdown";
 import { Logo } from "@/components/shared/Logo";
 import { PageContainer } from "@/components/shared/PageContainer";
-import { Button } from "@/components/ui/button";
 import type { CityOption } from "@/features/cities/queries";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
@@ -157,7 +157,7 @@ export function Header({ session, cities }: HeaderProps) {
                 Бургер слева от логотипа — решение владельца, 2026-09-17; меню
                 выезжает с той же стороны (MobileMenu, side="left"). */}
             <div className="flex items-center gap-3">
-              <MobileMenu session={session} />
+              <MobileMenu />
               <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
                 <Logo className="text-2xl" />
               </Link>
@@ -260,27 +260,12 @@ export function Header({ session, cities }: HeaderProps) {
               ))}
             </nav>
 
-            {/* Правая часть: Блок действий (Кнопки / Меню пользователя) */}
+            {/* Правая часть: «Разместить» (для всех, от 768px), затем избранное
+                и аватар — или «Войти» для гостя */}
             <div className="flex items-center gap-2 md:gap-4">
+              <CreateListingMenu />
               {session ? (
                 <>
-                  {/* Кнопки авторизованного пользователя */}
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="hidden md:inline-flex h-10 rounded-full border-secondary text-secondary hover:bg-secondary hover:text-white font-semibold transition-colors px-5"
-                  >
-                    <Link href="/services/new">Создать услугу</Link>
-                  </Button>
-
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="hidden md:inline-flex h-10 rounded-full border-primary text-primary hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground font-semibold transition-colors px-5"
-                  >
-                    <Link href="/tasks/new">Создать задание</Link>
-                  </Button>
-
                   <div className="hidden md:block h-6 w-px bg-border mx-1" />
 
                   {/* Избранное рядом с аватаром — решение владельца, 2026-09-17.
