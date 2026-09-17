@@ -61,7 +61,7 @@ export function Header({ session, cities }: HeaderProps) {
   const { heroVisible } = useHeroVisibility();
   const showCompactSearch = isHome ? !heroVisible : true;
 
-  // Раскрытие лупы в полноширинную строку поиска ниже xl (см. ниже) —
+  // Раскрытие лупы в полноширинную строку поиска ниже lg (см. ниже) —
   // локальное состояние одного компонента: в отличие от видимости Hero
   // и черновика, об этом не нужно договариваться с другими компонентами.
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -99,14 +99,14 @@ export function Header({ session, cities }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
       <PageContainer>
-        {/* Раскрытый поиск по лупе (ниже xl). Полностью заменяет собой
+        {/* Раскрытый поиск по лупе (ниже lg). Полностью заменяет собой
             остальное содержимое хедера на время поиска — логотип, навигация
-            и меню всё равно не нужны в этот момент. При xl+ этой панели
-            никогда не место (xl:hidden) — на случай, если состояние осталось
+            и меню всё равно не нужны в этот момент. При lg+ этой панели
+            никогда не место (lg:hidden) — на случай, если состояние осталось
             true при ресайзе окна.
 
             Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
-            с выбором города. Где полному полю не хватает места — до 1280px —
+            с выбором города. Где полному полю не хватает места — до 1024px —
             вместо него лупа, и она раскрывает именно полный поиск.
 
             Город на телефоне — второй строкой во всю ширину: на 375px поле
@@ -118,7 +118,7 @@ export function Header({ session, cities }: HeaderProps) {
         {isMobileSearchOpen && (
           <Form
             action="/services"
-            className="xl:hidden flex flex-wrap items-center gap-x-2 gap-y-3 py-3 md:py-0 md:h-16 lg:h-[72px]"
+            className="lg:hidden flex flex-wrap items-center gap-x-2 gap-y-3 py-3 md:py-0 md:h-16"
           >
             <label htmlFor="mobile-header-search" className="sr-only">
               Поиск услуг
@@ -158,7 +158,7 @@ export function Header({ session, cities }: HeaderProps) {
         <div
           className={cn(
             "flex h-16 lg:h-[72px] items-center gap-4",
-            isMobileSearchOpen && "hidden xl:flex",
+            isMobileSearchOpen && "hidden lg:flex",
           )}
         >
           <div className="flex items-center justify-between gap-4 w-full">
@@ -179,12 +179,17 @@ export function Header({ session, cities }: HeaderProps) {
                 каталога сделаны ссылками. Hero на главной отправляет ровно
                 такую же форму.
 
-                Поле — только с xl (1280px) и всегда вместе с выбором города.
-                На lg (1024–1279px) рядом с навигацией, «Разместить», сердечком
-                и аватаром полю с городом не хватает места, а поле без города —
-                урезанный поиск. Поэтому до xl вместо формы — лупа,
+                Поле — с lg (1024px) и всегда вместе с выбором города: поле без
+                города — урезанный поиск. До lg вместо формы — лупа,
                 разворачивающая полную строку поиска на всю ширину шапки
                 (см. isMobileSearchOpen выше).
+
+                Эксперимент владельца (2026-09-17): до этого поле показывалось
+                с xl. На 1024px рядом с навигацией, «Разместить», сердечком
+                и аватаром полю остаётся мало места (по оценке — около 200px
+                у вошедшего пользователя, из них до ~150px занимает город).
+                Если при просмотре ввод окажется слишком узким, вернуть xl
+                в классах поля, лупы и панели.
 
                 Sticky-поведение (только на главной): пока в Hero виден его
                 собственный инпут поиска, здесь этого блока нет — появляется
@@ -196,7 +201,7 @@ export function Header({ session, cities }: HeaderProps) {
                 «доезжал» с анимацией вместо мгновенного появления. */}
             <search
               className={cn(
-                "hidden xl:flex flex-1 items-center overflow-hidden",
+                "hidden lg:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
                   ? "opacity-100 max-w-md"
@@ -232,7 +237,7 @@ export function Header({ session, cities }: HeaderProps) {
               </Form>
             </search>
 
-            {/* Лупа до xl подчиняется тому же правилу, что и
+            {/* Лупа до lg подчиняется тому же правилу, что и
                 компактная форма выше: не главная страница, либо Hero-инпут
                 уже скрылся при скролле. Без этого условия на главной, пока
                 Hero-строка поиска ещё видна, лупа в хедере дублировала бы её.
@@ -245,7 +250,7 @@ export function Header({ session, cities }: HeaderProps) {
                 aria-label="Найти услугу"
                 aria-expanded={isMobileSearchOpen}
                 onClick={() => setIsMobileSearchOpen(true)}
-                className="xl:hidden text-foreground hover:text-primary transition-colors"
+                className="lg:hidden text-foreground hover:text-primary transition-colors"
               >
                 <Search className="h-5 w-5" />
               </button>
