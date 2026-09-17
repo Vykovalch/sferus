@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Heart, Search, X } from "lucide-react";
 import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -282,7 +282,23 @@ export function Header({ session, cities }: HeaderProps) {
                   </Button>
 
                   <div className="hidden md:block h-6 w-px bg-border mx-1" />
-                  <UserMenu session={session} />
+
+                  {/* Избранное рядом с аватаром — решение владельца, 2026-09-17.
+                      Отложить исполнителя и вернуться к нему — частое действие
+                      при выборе, поэтому оно в шапке, а не в меню аватара.
+                      Размер и фон при наведении — как у кнопки аватара, чтобы
+                      пара читалась единым блоком; видно на любой ширине. */}
+                  <div className="flex items-center gap-1">
+                    <Link
+                      href="/dashboard/favorites"
+                      aria-label="Избранное"
+                      title="Избранное"
+                      className="flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors"
+                    >
+                      <Heart aria-hidden="true" className="h-5 w-5" />
+                    </Link>
+                    <UserMenu session={session} />
+                  </div>
                 </>
               ) : (
                 <Link
