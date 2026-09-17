@@ -59,7 +59,9 @@ export function CityDropdown({
             className={cn(
               "flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-0",
               variant === "hero" && "px-2",
-              variant === "compact" && "h-8 px-2 rounded-full max-w-[9.5rem]",
+              // 11rem — самое длинное название («Григориополь») с иконкой
+              // и стрелкой около 160px; при 9.5rem оно обрезалось.
+              variant === "compact" && "h-8 px-2 rounded-full max-w-[11rem]",
               variant === "block" &&
                 "h-11 w-full justify-start px-3 rounded-xl border border-input md:h-10 md:w-auto md:max-w-[12rem] md:rounded-full",
             )}
