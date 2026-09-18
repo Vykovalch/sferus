@@ -22,7 +22,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
   if (!token) {
     return (
-      <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
+      <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
             <AlertCircle className="h-8 w-8 text-destructive" />
@@ -85,7 +85,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   }
 
   return (
-    <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
+    <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="text-center mb-6">
         <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Новый пароль</h2>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, RefreshCw, CheckCircle } from "lucide-react";
+import { CheckCircle, Mail, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 
 interface VerifyEmailClientProps {
   email?: string;
@@ -45,7 +45,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
   }
 
   return (
-    <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 py-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
+    <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center">
           <Mail className="h-8 w-8 text-brand" />
