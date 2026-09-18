@@ -62,7 +62,7 @@ export function HowItWorks() {
       <PageContainer>
         {/* Заголовок */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mb-4">
             Как это работает
           </h2>
           <p className="text-lg text-muted-foreground max-w-md mx-auto">

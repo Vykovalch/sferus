@@ -17,7 +17,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               <UserSearch className="h-32 w-32 xl:h-32 xl:w-32" />
             </div>
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-primary">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-primary">
                 Нужна услуга?
               </h3>
               <p className="text-base text-muted-foreground mb-8 max-w-sm leading-relaxed">
@@ -38,7 +38,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               <Briefcase className="h-32 w-32 xl:h-32 xl:w-32" />
             </div>
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-3xl font-semibold mb-4 text-secondary">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-secondary">
                 Принимаете заказы?
               </h3>
               <p className="text-base text-muted-foreground mb-8 max-w-sm leading-relaxed">
