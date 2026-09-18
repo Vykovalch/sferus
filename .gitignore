@@ -44,4 +44,9 @@ yarn-error.log*
 next-env.d.ts
 
 # local Claude Code tooling (dev-preview config, permission cache)
-.claude/
+.claude/*
+!.claude/agents/
+!.claude/skills/
+!.claude/settings.json
+
+
