@@ -16,7 +16,7 @@ interface CreateListingOption {
   title: string;
   description: string;
   icon: LucideIcon;
-  /** Цвет иконки кодирует сторону площадки: бирюза — исполнитель, бренд — заказчик. */
+  /** Цвет иконки кодирует сторону площадки: серый — исполнитель, бренд — заказчик. */
   iconClassName: string;
 }
 
@@ -83,6 +83,11 @@ export function CreateListingOptionLabel({ option }: { option: CreateListingOpti
  * две яркие кнопки спорили бы. При наведении и пока меню открыто
  * (`aria-expanded`) — заливка; иначе вариант `outline` сделал бы открытую
  * кнопку серой.
+ *
+ * Рамка — яркий жёлтый заливки, текст — цвета и размера пунктов меню шапки
+ * (решение владельца, 2026-09-18; было `border-primary text-primary`, 14px):
+ * при наведении меняется только фон, рамка и текст остаются. Рамка на светлой
+ * шапке — 1.6:1; кнопку опознают по тексту (17:1), не по рамке.
  */
 export function CreateListingMenu() {
   return (
@@ -91,7 +96,7 @@ export function CreateListingMenu() {
         <Button
           type="button"
           variant="outline"
-          className="hidden md:inline-flex h-10 gap-2 rounded-full border-primary text-primary px-5 font-semibold hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground aria-expanded:bg-brand-fill aria-expanded:border-brand-fill aria-expanded:text-brand-fill-foreground transition-colors"
+          className="hidden md:inline-flex h-10 gap-2 rounded-full border-brand-fill text-base text-foreground px-5 font-semibold hover:bg-brand-fill hover:text-brand-fill-foreground aria-expanded:bg-brand-fill aria-expanded:text-brand-fill-foreground transition-colors"
         >
           <Plus aria-hidden="true" className="size-4" />
           Разместить
