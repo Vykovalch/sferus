@@ -1,11 +1,12 @@
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { formatListingCount } from "@/lib/format";
 
 interface CategoryCardProps {
   name: string;
   slug: string;
   icon: LucideIcon;
-  /** Число объявлений в категории. Появится на этапе 1 вместе с реальными услугами. */
+  /** Число опубликованных объявлений в категории. Не передано — строки со счётчиком нет. */
   count?: number;
   iconColor?: string;
 }
@@ -40,7 +41,7 @@ export function CategoryCard({
           pt-2 держит минимальный зазор, когда название заняло две строки
           и свободного места под него не осталось. */}
       {count !== undefined && (
-        <p className="text-sm text-muted-foreground mt-auto pt-2">{count} объявлений</p>
+        <p className="text-sm text-muted-foreground mt-auto pt-2">{formatListingCount(count)}</p>
       )}
     </Link>
   );

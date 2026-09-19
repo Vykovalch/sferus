@@ -3,6 +3,20 @@ import { PRICE_UNIT_LABELS, type PRICE_UNITS } from "@/features/services/schemas
 type PriceUnit = (typeof PRICE_UNITS)[number];
 
 /**
+ * Разряды разделены неразрывным пробелом, а четырёхзначные числа не делятся:
+ * «1000», «15 000», «1 500 000» — правило русской типографики, решение
+ * владельца (2026-09-19). Его и задаёт `useGrouping: "min2"`: группы появляются,
+ * только когда в старшей не меньше двух цифр. Неразрывный пробел ставит сам
+ * `Intl` — число не разорвётся переносом строки.
+ */
+const amountFormat = new Intl.NumberFormat("ru", { useGrouping: "min2" });
+
+/** Сумма в рублях без слова «руб.»: «1000», «15 000». Общая для цен, бюджетов и превью форм. */
+export function formatAmount(value: number): string {
+  return amountFormat.format(value);
+}
+
+/**
  * Цена услуги для показа: «от 80 руб. за час» либо «Договорная».
  *
  * В БД «Договорная» — это отсутствие значения в колонке цены плюс флаг,
@@ -16,13 +30,14 @@ export function formatServicePrice(
   if (isNegotiable || price === null) return "Договорная";
 
   const unit = PRICE_UNIT_LABELS[priceUnit as PriceUnit];
-  return unit ? `от ${price} руб. ${unit}` : `от ${price} руб.`;
+  const amount = formatAmount(price);
+  return unit ? `от ${amount} руб. ${unit}` : `от ${amount} руб.`;
 }
 
 /** Бюджет задания: «до 500 руб.» либо «Договорной». */
 export function formatTaskBudget(budget: number | null, isNegotiable: boolean): string {
   if (isNegotiable || budget === null) return "Договорной";
-  return `до ${budget} руб.`;
+  return `до ${formatAmount(budget)} руб.`;
 }
 
 const RELATIVE_UNITS: [limitSeconds: number, divisor: number, unit: Intl.RelativeTimeFormatUnit][] =
@@ -96,6 +111,25 @@ const YEAR_FORMS: Record<Intl.LDMLPluralRule, string> = {
  */
 export function formatYears(value: number): string {
   return `${value} ${YEAR_FORMS[plural.select(value)]}`;
+}
+
+const LISTING_FORMS: Record<Intl.LDMLPluralRule, string> = {
+  one: "объявление",
+  few: "объявления",
+  many: "объявлений",
+  other: "объявлений",
+  zero: "объявлений",
+  two: "объявлений",
+};
+
+/**
+ * «1 объявление», «4 объявления», «11 объявлений» — счётчик в карточке категории.
+ *
+ * Тот же приём, что у `formatYears`: склонение берёт `Intl`. Раньше в карточке
+ * стояло «{count} объявлений» для любого числа — «1 объявлений», «4 объявлений».
+ */
+export function formatListingCount(count: number): string {
+  return `${count} ${LISTING_FORMS[plural.select(count)]}`;
 }
 
 const shortDate = new Intl.DateTimeFormat("ru", {

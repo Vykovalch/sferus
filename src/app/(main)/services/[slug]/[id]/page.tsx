@@ -14,7 +14,7 @@ import {
   getServiceImageUrls,
 } from "@/features/services/queries";
 import { auth } from "@/lib/auth";
-import { formatMonthYear, formatServicePrice, formatYears } from "@/lib/format";
+import { formatAmount, formatMonthYear, formatServicePrice, formatYears } from "@/lib/format";
 import { metaDescription } from "@/lib/site";
 
 /** Разбор идентификатора из адреса. Один и тот же для метаданных и страницы. */
@@ -231,7 +231,7 @@ export default async function ServiceListingPage({
                       <span className="text-sm font-medium text-foreground flex-shrink-0 ml-4">
                         {other.isNegotiable || other.price === null
                           ? "Договорная"
-                          : `от ${other.price} руб.`}
+                          : `от ${formatAmount(other.price)} руб.`}
                       </span>
                     </Link>
                   ))}

@@ -45,6 +45,9 @@ export function Header({ session, cities }: HeaderProps) {
       updateDraft({ query: event.target.value }),
     maxLength: SEARCH_QUERY_MAX_LENGTH,
     placeholder: "Ремонт, уборка, репетитор...",
+    // Клавиша отправки на экранной клавиатуре подписана «Найти» / «Поиск»,
+    // а не «↵»: на телефоне поиск отправляют в основном ею.
+    enterKeyHint: "search",
   } as const;
 
   const executorTypeField = filters.executorType && (
@@ -114,7 +117,15 @@ export function Header({ session, cities }: HeaderProps) {
             около 44px. От 768px ширины хватает, и город встаёт в одну строку
             с полем. Выбор города один на обе раскладки (перенос через
             flex-wrap и order), а не два экземпляра: каждый CityDropdown
-            рендерит скрытое поле `city`, и в адресе появилось бы два `city`. */}
+            рендерит скрытое поле `city`, и в адресе появилось бы два `city`.
+
+            Кнопка «Найти» — рядом с городом (2026-09-19): без неё запрос уходил
+            только по Enter, а выбор города закрывает экранную клавиатуру —
+            отправить было нечем. На телефоне она во второй строке, в зоне
+            большого пальца; от 768px — в общей строке перед крестиком.
+            Автоматического поиска при выборе города нет по-прежнему (решение
+            владельца). Заливка цветом бренда не спорит с «Найти» в Hero: на
+            главной эта панель доступна, только когда Hero ушёл за экран. */}
         {isMobileSearchOpen && (
           <Form
             action="/services"
@@ -135,13 +146,21 @@ export function Header({ session, cities }: HeaderProps) {
                 className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
               />
             </div>
-            <div className="order-last basis-full md:order-none md:basis-auto">
-              <CityDropdown
-                cities={cities}
-                value={draft.city}
-                onValueChange={selectCity}
-                variant="block"
-              />
+            <div className="order-last basis-full flex gap-2 md:order-none md:basis-auto">
+              <div className="flex-1 min-w-0 md:flex-none">
+                <CityDropdown
+                  cities={cities}
+                  value={draft.city}
+                  onValueChange={selectCity}
+                  variant="block"
+                />
+              </div>
+              <button
+                type="submit"
+                className="shrink-0 h-11 md:h-10 px-5 rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 text-sm font-semibold transition-colors"
+              >
+                Найти
+              </button>
             </div>
             <button
               type="button"
@@ -198,8 +217,15 @@ export function Header({ session, cities }: HeaderProps) {
                 страницах Hero нет, поэтому блок виден сразу и без анимации —
                 transition-классы навешиваются только когда isHome, иначе при
                 переходе с главной (где он был скрыт) на другую страницу он бы
-                «доезжал» с анимацией вместо мгновенного появления. */}
+                «доезжал» с анимацией вместо мгновенного появления.
+
+                inert, пока блок скрыт: opacity и max-w-0 прячут его только
+                от глаз, а поле и выбор города оставались в порядке Tab —
+                с клавиатуры фокус уходил в невидимые элементы, и печатать
+                можно было вслепую. inert убирает их и из обхода, и из дерева
+                доступности. */}
             <search
+              inert={!showCompactSearch}
               className={cn(
                 "hidden lg:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",

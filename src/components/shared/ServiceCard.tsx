@@ -13,7 +13,7 @@ export interface ServiceCardProps {
   price: string;
   authorName: string;
   authorType?: "individual" | "company" | null;
-  /** Появится вместе с загрузкой изображений. */
+  /** Первая фотография объявления; нет — заглушка с камерой. */
   imageUrl?: string | null;
   isFavorite?: boolean;
   isAuthenticated?: boolean;

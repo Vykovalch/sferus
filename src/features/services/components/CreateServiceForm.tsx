@@ -12,6 +12,7 @@ import type { CityOption } from "@/features/cities/queries";
 import { createService, updateService } from "@/features/services/actions";
 import { PRICE_UNIT_LABELS, PRICE_UNITS } from "@/features/services/schemas";
 import { type ActionState, idleState } from "@/lib/action-state";
+import { formatAmount } from "@/lib/format";
 import { compressImage, IMAGE_UPLOAD } from "@/lib/images";
 
 export interface ServiceFormValues {
@@ -86,7 +87,7 @@ export function CreateServiceForm({
   const priceDisplay = isNegotiable
     ? "Договорная"
     : price
-      ? `от ${price} руб. ${priceUnitLabel}`
+      ? `от ${formatAmount(Number(price))} руб. ${priceUnitLabel}`
       : "Цена не указана";
 
   const userInitials = userName

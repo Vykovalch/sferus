@@ -10,6 +10,7 @@ import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
 import { createTask, updateTask } from "@/features/tasks/actions";
 import { type ActionState, idleState } from "@/lib/action-state";
+import { formatAmount } from "@/lib/format";
 
 export interface TaskFormValues {
   id: number;
@@ -66,7 +67,11 @@ export function CreateTaskForm({
           .flatMap(([, messages]) => messages ?? [])
       : [];
 
-  const budgetDisplay = isNegotiable ? "Договорная" : budget ? `до ${budget} руб.` : "Не указан";
+  const budgetDisplay = isNegotiable
+    ? "Договорная"
+    : budget
+      ? `до ${formatAmount(Number(budget))} руб.`
+      : "Не указан";
 
   // В форме выбираются идентификаторы, а предпросмотр показывает названия
   const categoryName = categories.find((c) => String(c.id) === category)?.name ?? "";
