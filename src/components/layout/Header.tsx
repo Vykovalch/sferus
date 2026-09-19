@@ -5,6 +5,7 @@ import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { CreateListingMenu } from "@/components/layout/CreateListingMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-context";
@@ -16,6 +17,15 @@ import type { CityOption } from "@/features/cities/queries";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+
+/**
+ * `CloseWatcher` — API браузера для закрытия окон по «Назад» / Escape.
+ * В типах TypeScript 5.9 его ещё нет; описана только используемая часть.
+ */
+type CloseWatcherConstructor = new () => {
+  onclose: (() => void) | null;
+  destroy(): void;
+};
 
 interface HeaderProps {
   session: Session | null; // Сессия из серверного layout (auth.api.getSession)
@@ -61,7 +71,7 @@ export function Header({ session, cities }: HeaderProps) {
     updateDraft({ city });
   }
 
-  // Видимость формы поиска Hero приходит из контекста поиска, за ней следит SearchBar
+  // Видимость секции Hero приходит из контекста поиска, за ней следит SearchBar
   // в Hero (см. search-context.tsx). На остальных страницах Hero нет,
   // поэтому источник неважен — компактный поиск виден всегда.
   const { heroVisible } = useHeroVisibility();
@@ -83,51 +93,70 @@ export function Header({ session, cities }: HeaderProps) {
   }
   const isMobileSearchOpen = mobileSearchUrlKey !== null;
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
-  const mobileSearchPanelRef = useRef<HTMLDivElement>(null);
 
-  // Панель, которую открыл человек, закрывает только человек (2026-09-19):
-  // крестик, Escape, нажатие мимо, прокрутка колёсиком, «Найти», переход
-  // на другую страницу. Раньше она закрывалась и сама — когда форма Hero
-  // снова оказывалась на виду. На телефоне это срабатывало ложно: курсор
-  // в поле возвращает спрятанную адресную строку браузера, видимая область
-  // сдвигается, край формы Hero выглядывает — и панель закрывалась, едва
-  // открывшись. Закрытие по геометрии экрана убрано: WCAG 3.2
-  // («Предсказуемость») — интерфейс не меняется сам, пока человек с ним
-  // работает. Выглянувший край Hero на телефоне остаётся под панелью.
+  // Раскрытая по клику панель не должна пережить условие, при котором её
+  // вообще не должно быть видно: если при скролле вверх секция Hero снова
+  // показалась (showCompactSearch → false), закрываем панель за пользователя
+  // — иначе получилось бы то самое дублирование, ради предотвращения
+  // которого показ лупы и завязан на showCompactSearch.
+  useEffect(() => {
+    if (!showCompactSearch) setMobileSearchUrlKey(null);
+  }, [showCompactSearch]);
+
   useEffect(() => {
     if (!isMobileSearchOpen) return;
-    // preventScroll: сам вызов фокуса не должен прокручивать страницу.
-    mobileSearchInputRef.current?.focus({ preventScroll: true });
+    mobileSearchInputRef.current?.focus();
+
+    // Кнопка и жест «Назад» на Android закрывают поиск, а не уводят со
+    // страницы (решение владельца, 2026-09-19): так ведут себя открытые поверх
+    // экрана окна. `CloseWatcher` — механизм браузера ровно для этого, тот же,
+    // что у `<dialog>`: первое «Назад» достаётся ему, история браузера
+    // не трогается. Есть в Chrome, Edge и Samsung Internet; в Safari и Firefox
+    // его нет — там «Назад» уводит со страницы, как раньше.
+    const BrowserCloseWatcher = (window as Window & { CloseWatcher?: CloseWatcherConstructor })
+      .CloseWatcher;
+    const closeWatcher = BrowserCloseWatcher ? new BrowserCloseWatcher() : null;
+    if (closeWatcher) closeWatcher.onclose = () => setMobileSearchUrlKey(null);
+
+    // Escape — собственным обработчиком всегда, а не только без `CloseWatcher`:
+    // при проверке через автоматизацию браузера Escape до `CloseWatcher`
+    // не доходил, и полагаться на него одного для клавиатуры не стали. Если
+    // сработают оба — закрытие повторится вхолостую. Escape в открытом списке
+    // городов закрывает только список: Radix отменяет событие (`preventDefault`),
+    // и тогда браузер не передаёт запрос и `CloseWatcher`.
     function handleKeyDown(event: KeyboardEvent) {
-      // Escape в открытом списке городов закрывает только список: Radix
-      // обрабатывает его раньше и помечает событие `preventDefault`.
       if (event.defaultPrevented) return;
       if (event.key === "Escape") setMobileSearchUrlKey(null);
     }
-    // «Лёгкое закрытие»: нажатие мимо панели закрывает её, а само нажатие
-    // срабатывает как обычно — ссылка открывается, кнопка нажимается.
-    // Оверлей, который сначала пришлось бы закрыть, намеренно не делали.
-    //
-    // Прокрутка колёсиком или тачпадом — такое же действие человека: без неё
-    // на планшете и ноутбуке можно было докрутить до Hero с открытой панелью
-    // и увидеть два поиска. Прокрутка пальцем начинается с касания мимо
-    // панели и закрывает её через pointerdown.
-    function dismissFromOutside(event: Event) {
-      const panel = mobileSearchPanelRef.current;
-      if (!panel || panel.contains(event.target as Node)) return;
-      // Открыт список городов: он в портале, вне панели. Выбор города
-      // и прокрутка списка не должны закрывать поиск, а первое нажатие мимо
-      // закрывает только список — так ведёт себя меню Radix.
-      if (panel.querySelector('[data-state="open"]')) return;
-      setMobileSearchUrlKey(null);
-    }
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("pointerdown", dismissFromOutside);
-    document.addEventListener("wheel", dismissFromOutside, { passive: true });
+
+    // Режим поиска (решение владельца, 2026-09-19): пока панель открыта,
+    // страница под затемнением неподвижна — блокировка прокрутки через
+    // `overflow: hidden` на корневом элементе. Ширина исчезнувшей полосы
+    // прокрутки возвращается отступом справа, иначе на ноутбуке (768–1279px)
+    // вся страница сдвигалась бы вправо при каждом открытии поиска.
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    const previousPaddingRight = root.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
+    root.style.overflow = "hidden";
+    if (scrollbarWidth > 0) root.style.paddingRight = `${scrollbarWidth}px`;
+
+    // С 1280px панели и затемнения нет (xl:hidden), а блокировка осталась бы
+    // висеть — при расширении окна режим поиска закрывается.
+    const desktop = window.matchMedia("(min-width: 1280px)");
+    function handleDesktop(event: MediaQueryListEvent) {
+      if (event.matches) setMobileSearchUrlKey(null);
+    }
+    desktop.addEventListener("change", handleDesktop);
+
     return () => {
+      // Поиск закрыт любым способом — «Назад» снова уводит со страницы.
+      closeWatcher?.destroy();
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("pointerdown", dismissFromOutside);
-      document.removeEventListener("wheel", dismissFromOutside);
+      desktop.removeEventListener("change", handleDesktop);
+      root.style.overflow = previousOverflow;
+      root.style.paddingRight = previousPaddingRight;
     };
   }, [isMobileSearchOpen]);
 
@@ -149,16 +178,33 @@ export function Header({ session, cities }: HeaderProps) {
           Панель — слой поверх шапки (absolute), а не блок в потоке
           (2026-09-19). На телефоне она в две строки и выше шапки на ~56px:
           в потоке шапка росла и сдвигала всю страницу вниз, поиск Hero
-          снова оказывался на виду, и тогдашнее автозакрытие по видимости
-          Hero (позже убрано — см. эффект выше) закрывало панель: она мелькала
-          и пряталась. Теперь шапка в потоке не меняет высоту (основная строка
-          при открытой панели invisible, а не hidden), а вторая строка панели
-          на время поиска перекрывает верх страницы. */}
+          снова оказывался на виду, и эффект выше тут же закрывал панель —
+          она мелькала и пряталась. Теперь шапка в потоке не меняет высоту
+          (основная строка при открытой панели invisible, а не hidden),
+          а вторая строка панели на время поиска перекрывает верх страницы. */}
+      {/* Затемнение под панелью — режим поиска (решение владельца, 2026-09-19):
+          пока человек ищет, страница под ним неактивна. Нажатие по затемнению
+          закрывает поиск и дальше не проходит — раньше «лёгкое закрытие»
+          срабатывало на pointerdown и пропускало нажатие к странице, но под
+          затемнением это нарушило бы его смысл.
+
+          Через портал в body: у шапки backdrop-filter, а он делает её
+          контейнером для position: fixed — внутри шапки затемнение растянулось
+          бы по ней, а не по экрану. z-40 — ниже шапки (z-50), так что панель
+          поиска, включая её вторую строку на телефоне, остаётся над ним.
+          Пока открыт список городов, меню Radix отключает нажатия по остальной
+          странице: первое нажатие мимо закрывает только список. */}
+      {isMobileSearchOpen &&
+        createPortal(
+          <div
+            aria-hidden="true"
+            onClick={() => setMobileSearchUrlKey(null)}
+            className="xl:hidden fixed inset-0 z-40 bg-foreground/40"
+          />,
+          document.body,
+        )}
       {isMobileSearchOpen && (
-        <div
-          ref={mobileSearchPanelRef}
-          className="xl:hidden absolute inset-x-0 top-0 border-b border-border bg-hero-bg"
-        >
+        <div className="xl:hidden absolute inset-x-0 top-0 border-b border-border bg-hero-bg">
           <PageContainer>
             {/* Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
                 с выбором города. Где полному полю не хватает места — до 1280px —
@@ -266,9 +312,9 @@ export function Header({ session, cities }: HeaderProps) {
                 а не за лупой: поиск — главное действие площадки, и где для поля
                 есть место, прятать его не нужно.
 
-                Sticky-поведение (только на главной): пока в Hero видна его
-                собственная форма поиска, здесь этого блока нет — появляется
-                плавно (opacity + max-width), когда форма Hero скрывается под
+                Sticky-поведение (только на главной): пока на экране видна секция Hero
+                с собственным поиском, здесь этого блока нет — появляется
+                плавно (opacity + max-width), когда секция Hero скрывается под
                 шапкой, и уходит обратно при скролле вверх. На остальных
                 страницах Hero нет, поэтому блок виден сразу и без анимации —
                 transition-классы навешиваются только когда isHome, иначе при
@@ -326,7 +372,7 @@ export function Header({ session, cities }: HeaderProps) {
             </search>
 
             {/* Лупа до xl подчиняется тому же правилу, что и
-                компактная форма выше: не главная страница, либо форма Hero
+                компактная форма выше: не главная страница, либо секция Hero
                 уже скрылась при скролле. Без этого условия на главной, пока
                 Hero-строка поиска ещё видна, лупа в хедере дублировала бы её.
                 По клику не переходит никуда — раскрывает строку поиска прямо

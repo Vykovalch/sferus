@@ -14,8 +14,8 @@ import type { ServiceCatalogFilters } from "@/features/services/schemas";
  * Общее состояние поиска для шапки и Hero на главной.
  *
  * На главной это один поиск в двух положениях: поле в шапке появляется ровно
- * тогда, когда форма поиска Hero уходит под неё. Поэтому здесь живут две вещи:
- * - **видимость формы поиска Hero** — по ней шапка решает, показывать ли компактный
+ * тогда, когда секция Hero уходит под неё. Поэтому здесь живут две вещи:
+ * - **видимость секции Hero** — по ней шапка решает, показывать ли компактный
  *   поиск;
  * - **черновик** — текст и город, одни на оба поля.
  *
@@ -96,7 +96,7 @@ export function useSearchDraft() {
   return { draft, updateDraft, filters, urlKey };
 }
 
-/** Видимость формы поиска Hero на главной и её установка (пишет только `SearchBar` в Hero). */
+/** Видимость секции Hero на главной и её установка (пишет только `SearchBar` в Hero). */
 export function useHeroVisibility() {
   const { heroVisible, setHeroVisible } = useSearchContext();
   return { heroVisible, setHeroVisible };

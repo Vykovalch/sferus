@@ -7,11 +7,7 @@ import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-co
 import { CityDropdown } from "@/components/shared/CityDropdown";
 import type { CityOption } from "@/features/cities/queries";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
-import {
-  HEADER_DESKTOP_MIN_WIDTH_PX,
-  HEADER_HEIGHT_MOBILE_PX,
-  HEADER_HEIGHT_PX,
-} from "@/lib/constants";
+import { HEADER_HEIGHT_PX } from "@/lib/constants";
 
 interface SearchBarProps {
   /** Пробрасывается в CityDropdown — данные приходят из серверного компонента. */
@@ -19,8 +15,8 @@ interface SearchBarProps {
   placeholder?: string;
   /**
    * Только для инстанса в Hero на главной. Включает IntersectionObserver,
-   * который пишет видимость этого инпута в контекст поиска — на неё реагирует
-   * компактный поиск в `Header`. Без пропа инпут не наблюдается и на контекст
+   * который пишет видимость секции Hero в контекст поиска — на неё реагирует
+   * компактный поиск в `Header`. Без пропа ничего не наблюдается и на контекст
    * не влияет.
    *
    * Текст и город формы — общий черновик с полем в шапке
@@ -40,38 +36,23 @@ export function SearchBar({
 
   useEffect(() => {
     if (!trackVisibility) return;
-    // Следим за всей формой, а не только за полем ввода (2026-09-19): на
-    // телефоне форма идёт столбиком — поле, город, «Найти», — и по полю лупа
-    // в шапке появлялась, пока город и «Найти» Hero были ещё на экране. Форма
-    // берётся через `closest`, чтобы не зависеть от поддержки ref у `next/form`.
-    const form = inputRef.current?.closest("form");
-    if (!form) return;
+    // Следим за всей секцией Hero, а не за полем или формой (решение
+    // владельца, 2026-09-19): поиск в шапке появляется, только когда первый
+    // экран главной ушёл целиком, вместе со строкой «Создать задание». Секция
+    // берётся через `closest`, чтобы не заводить ref в HeroSection.
+    const section = inputRef.current?.closest("section");
+    if (!section) return;
 
-    // Высота шапки разная до и после `lg` (64 / 72px), а `rootMargin` у
-    // наблюдателя задаётся раз и навсегда — поэтому при переходе через
-    // брейкпоинт (поворот экрана, изменение окна) наблюдатель пересоздаётся.
-    const desktop = window.matchMedia(`(min-width: ${HEADER_DESKTOP_MIN_WIDTH_PX}px)`);
-    let observer: IntersectionObserver | null = null;
-
-    function observe(target: Element) {
-      observer?.disconnect();
-      const headerHeight = desktop.matches ? HEADER_HEIGHT_PX : HEADER_HEIGHT_MOBILE_PX;
-      observer = new IntersectionObserver(
-        ([entry]) => setHeroVisible(entry.isIntersecting),
-        // Компенсация высоты sticky-шапки: без неё «пересечение» считается по
-        // геометрии вьюпорта, а нужно — по факту, скрылась ли форма под шапкой.
-        { rootMargin: `-${headerHeight}px 0px 0px 0px` },
-      );
-      observer.observe(target);
-    }
-
-    const handleBreakpointChange = () => observe(form);
-    observe(form);
-    desktop.addEventListener("change", handleBreakpointChange);
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroVisible(entry.isIntersecting),
+      // Компенсация высоты sticky-шапки: без неё «пересечение» считается по
+      // геометрии вьюпорта, а нужно — по факту, скрылась ли секция под шапкой.
+      { rootMargin: `-${HEADER_HEIGHT_PX}px 0px 0px 0px` },
+    );
+    observer.observe(section);
 
     return () => {
-      desktop.removeEventListener("change", handleBreakpointChange);
-      observer?.disconnect();
+      observer.disconnect();
       // Возврат к дефолту: провайдер живёт всё время навигации внутри (main),
       // и без сброса после ухода с главной шапка считала бы Hero скрытым.
       setHeroVisible(true);
