@@ -58,7 +58,10 @@ export function CityDropdown({
             aria-label={`Город: ${label}`}
             className={cn(
               "flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus-visible:ring-0",
-              variant === "hero" && "px-2",
+              // tap-target — зона касания 44px на телефоне (globals.css): сама
+              // кнопка в Hero 32px. У block высота и так 44px; compact — поле
+              // шапки на десктопе, внутри overflow-hidden.
+              variant === "hero" && "px-2 relative tap-target",
               // 11rem — самое длинное название («Григориополь») с иконкой
               // и стрелкой около 160px; при 9.5rem оно обрезалось.
               variant === "compact" && "h-8 px-2 rounded-full max-w-[11rem]",

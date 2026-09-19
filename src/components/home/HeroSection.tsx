@@ -45,7 +45,7 @@ export async function HeroSection() {
             </span>
             <Link
               href="/tasks/new"
-              className="inline-flex items-center gap-1.5 text-primary hover:text-primary/90 font-bold hover:underline underline-offset-4 transition-all"
+              className="relative tap-target inline-flex items-center gap-1.5 text-primary hover:text-primary/90 font-bold hover:underline underline-offset-4 transition-all"
             >
               Создать задание
             </Link>

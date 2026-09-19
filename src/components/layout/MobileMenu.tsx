@@ -23,7 +23,7 @@ export function MobileMenu() {
           <button
             type="button"
             aria-label="Открыть меню"
-            className="text-muted-foreground hover:text-foreground transition-colors p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+            className="relative tap-target text-muted-foreground hover:text-foreground transition-colors p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
           >
             <Menu className="h-6 w-6" />
           </button>

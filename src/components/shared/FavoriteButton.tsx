@@ -29,6 +29,10 @@ interface FavoriteButtonProps {
  * значение, пока идёт переход, а по его завершении откатывается к базовому.
  * Базовое — это ответ сервера, если он уже пришёл, иначе проп со страницы.
  * Поэтому при отказе отметка возвращается в исходное состояние сама.
+ *
+ * Сама отметка мелкая (22–32px), зона касания — 44×44 через `tap-target`
+ * (globals.css) во всех местах сразу. `relative` в базовых классах нужен
+ * псевдоэлементу; `absolute` из `className` его перебивает.
  */
 export function FavoriteButton({
   target,
@@ -54,7 +58,7 @@ export function FavoriteButton({
       <Link
         href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}
         aria-label="Войдите, чтобы добавить в избранное"
-        className={cn("transition-colors", className)}
+        className={cn("relative tap-target transition-colors", className)}
       >
         <Heart className="h-3.5 w-3.5 text-muted-foreground" />
       </Link>
@@ -75,7 +79,7 @@ export function FavoriteButton({
         type="submit"
         aria-pressed={optimistic}
         aria-label={optimistic ? "Убрать из избранного" : "Добавить в избранное"}
-        className={cn("transition-colors cursor-pointer", className)}
+        className={cn("relative tap-target transition-colors cursor-pointer", className)}
       >
         <Heart
           className={cn(

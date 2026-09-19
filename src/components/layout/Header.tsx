@@ -244,7 +244,7 @@ export function Header({ session, cities }: HeaderProps) {
                 <button
                   type="button"
                   aria-label="Закрыть поиск"
-                  className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
+                  className="relative tap-target shrink-0 text-foreground hover:text-primary transition-colors p-1"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -263,7 +263,10 @@ export function Header({ session, cities }: HeaderProps) {
                 выезжает с той же стороны (MobileMenu, side="left"). */}
             <div className="flex items-center gap-3">
               <MobileMenu />
-              <Link href="/" className="flex items-center transition-opacity hover:opacity-90">
+              <Link
+                href="/"
+                className="relative tap-target flex items-center transition-opacity hover:opacity-90"
+              >
                 <Logo className="text-2xl" />
               </Link>
             </div>
@@ -361,7 +364,7 @@ export function Header({ session, cities }: HeaderProps) {
                 aria-label="Найти услугу"
                 aria-expanded={isMobileSearchOpen}
                 onClick={() => setMobileSearchUrlKey(urlKey)}
-                className="xl:hidden text-foreground hover:text-primary transition-colors"
+                className="relative tap-target xl:hidden text-foreground hover:text-primary transition-colors"
               >
                 <Search className="h-5 w-5" />
               </button>
@@ -401,7 +404,7 @@ export function Header({ session, cities }: HeaderProps) {
                       href="/dashboard/favorites"
                       aria-label="Избранное"
                       title="Избранное"
-                      className="flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors"
+                      className="relative tap-target flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors"
                     >
                       <Heart aria-hidden="true" className="h-5 w-5" />
                     </Link>
@@ -411,7 +414,7 @@ export function Header({ session, cities }: HeaderProps) {
               ) : (
                 <Link
                   href="/login"
-                  className="text-base font-semibold text-foreground hover:text-primary transition-colors px-2"
+                  className="relative tap-target text-base font-semibold text-foreground hover:text-primary transition-colors px-2"
                 >
                   Войти
                 </Link>
