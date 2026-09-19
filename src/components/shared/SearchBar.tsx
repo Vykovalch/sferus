@@ -7,7 +7,11 @@ import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-co
 import { CityDropdown } from "@/components/shared/CityDropdown";
 import type { CityOption } from "@/features/cities/queries";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
-import { HEADER_HEIGHT_PX } from "@/lib/constants";
+import {
+  HEADER_DESKTOP_MIN_WIDTH_PX,
+  HEADER_HEIGHT_MOBILE_PX,
+  HEADER_HEIGHT_PX,
+} from "@/lib/constants";
 
 interface SearchBarProps {
   /** Пробрасывается в CityDropdown — данные приходят из серверного компонента. */
@@ -43,16 +47,31 @@ export function SearchBar({
     const form = inputRef.current?.closest("form");
     if (!form) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setHeroVisible(entry.isIntersecting),
-      // Компенсация высоты sticky-шапки: без неё «пересечение» считается по
-      // геометрии вьюпорта, а нужно — по факту, скрылся ли инпут под хедером.
-      { rootMargin: `-${HEADER_HEIGHT_PX}px 0px 0px 0px` },
-    );
-    observer.observe(form);
+    // Высота шапки разная до и после `lg` (64 / 72px), а `rootMargin` у
+    // наблюдателя задаётся раз и навсегда — поэтому при переходе через
+    // брейкпоинт (поворот экрана, изменение окна) наблюдатель пересоздаётся.
+    const desktop = window.matchMedia(`(min-width: ${HEADER_DESKTOP_MIN_WIDTH_PX}px)`);
+    let observer: IntersectionObserver | null = null;
+
+    function observe(target: Element) {
+      observer?.disconnect();
+      const headerHeight = desktop.matches ? HEADER_HEIGHT_PX : HEADER_HEIGHT_MOBILE_PX;
+      observer = new IntersectionObserver(
+        ([entry]) => setHeroVisible(entry.isIntersecting),
+        // Компенсация высоты sticky-шапки: без неё «пересечение» считается по
+        // геометрии вьюпорта, а нужно — по факту, скрылась ли форма под шапкой.
+        { rootMargin: `-${headerHeight}px 0px 0px 0px` },
+      );
+      observer.observe(target);
+    }
+
+    const handleBreakpointChange = () => observe(form);
+    observe(form);
+    desktop.addEventListener("change", handleBreakpointChange);
 
     return () => {
-      observer.disconnect();
+      desktop.removeEventListener("change", handleBreakpointChange);
+      observer?.disconnect();
       // Возврат к дефолту: провайдер живёт всё время навигации внутри (main),
       // и без сброса после ухода с главной шапка считала бы Hero скрытым.
       setHeroVisible(true);

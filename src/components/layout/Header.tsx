@@ -85,18 +85,19 @@ export function Header({ session, cities }: HeaderProps) {
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
   const mobileSearchPanelRef = useRef<HTMLDivElement>(null);
 
-  // Раскрытая по клику панель не должна пережить условие, при котором её
-  // вообще не должно быть видно: если при скролле вверх форма Hero снова
-  // показалась (showCompactSearch → false), закрываем панель за пользователя
-  // — иначе получилось бы то самое дублирование, ради предотвращения
-  // которого показ лупы и завязан на showCompactSearch.
-  useEffect(() => {
-    if (!showCompactSearch) setMobileSearchUrlKey(null);
-  }, [showCompactSearch]);
-
+  // Панель, которую открыл человек, закрывает только человек (2026-09-19):
+  // крестик, Escape, нажатие мимо, прокрутка колёсиком, «Найти», переход
+  // на другую страницу. Раньше она закрывалась и сама — когда форма Hero
+  // снова оказывалась на виду. На телефоне это срабатывало ложно: курсор
+  // в поле возвращает спрятанную адресную строку браузера, видимая область
+  // сдвигается, край формы Hero выглядывает — и панель закрывалась, едва
+  // открывшись. Закрытие по геометрии экрана убрано: WCAG 3.2
+  // («Предсказуемость») — интерфейс не меняется сам, пока человек с ним
+  // работает. Выглянувший край Hero на телефоне остаётся под панелью.
   useEffect(() => {
     if (!isMobileSearchOpen) return;
-    mobileSearchInputRef.current?.focus();
+    // preventScroll: сам вызов фокуса не должен прокручивать страницу.
+    mobileSearchInputRef.current?.focus({ preventScroll: true });
     function handleKeyDown(event: KeyboardEvent) {
       // Escape в открытом списке городов закрывает только список: Radix
       // обрабатывает его раньше и помечает событие `preventDefault`.
@@ -106,20 +107,27 @@ export function Header({ session, cities }: HeaderProps) {
     // «Лёгкое закрытие»: нажатие мимо панели закрывает её, а само нажатие
     // срабатывает как обычно — ссылка открывается, кнопка нажимается.
     // Оверлей, который сначала пришлось бы закрыть, намеренно не делали.
-    function handlePointerDown(event: PointerEvent) {
+    //
+    // Прокрутка колёсиком или тачпадом — такое же действие человека: без неё
+    // на планшете и ноутбуке можно было докрутить до Hero с открытой панелью
+    // и увидеть два поиска. Прокрутка пальцем начинается с касания мимо
+    // панели и закрывает её через pointerdown.
+    function dismissFromOutside(event: Event) {
       const panel = mobileSearchPanelRef.current;
       if (!panel || panel.contains(event.target as Node)) return;
-      // Открыт список городов: он в портале, вне панели. Выбор города не
-      // должен закрывать поиск, а первое нажатие мимо закрывает только
-      // список — так ведёт себя меню Radix.
+      // Открыт список городов: он в портале, вне панели. Выбор города
+      // и прокрутка списка не должны закрывать поиск, а первое нажатие мимо
+      // закрывает только список — так ведёт себя меню Radix.
       if (panel.querySelector('[data-state="open"]')) return;
       setMobileSearchUrlKey(null);
     }
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("pointerdown", dismissFromOutside);
+    document.addEventListener("wheel", dismissFromOutside, { passive: true });
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("pointerdown", dismissFromOutside);
+      document.removeEventListener("wheel", dismissFromOutside);
     };
   }, [isMobileSearchOpen]);
 
@@ -141,10 +149,11 @@ export function Header({ session, cities }: HeaderProps) {
           Панель — слой поверх шапки (absolute), а не блок в потоке
           (2026-09-19). На телефоне она в две строки и выше шапки на ~56px:
           в потоке шапка росла и сдвигала всю страницу вниз, поиск Hero
-          снова оказывался на виду, и эффект выше тут же закрывал панель —
-          она мелькала и пряталась. Теперь шапка в потоке не меняет высоту
-          (основная строка при открытой панели invisible, а не hidden),
-          а вторая строка панели на время поиска перекрывает верх страницы. */}
+          снова оказывался на виду, и тогдашнее автозакрытие по видимости
+          Hero (позже убрано — см. эффект выше) закрывало панель: она мелькала
+          и пряталась. Теперь шапка в потоке не меняет высоту (основная строка
+          при открытой панели invisible, а не hidden), а вторая строка панели
+          на время поиска перекрывает верх страницы. */}
       {isMobileSearchOpen && (
         <div
           ref={mobileSearchPanelRef}
