@@ -4,7 +4,7 @@ import { Heart, Search, X } from "lucide-react";
 import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CreateListingMenu } from "@/components/layout/CreateListingMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-context";
@@ -92,6 +92,7 @@ export function Header({ session, cities }: HeaderProps) {
     setMobileSearchUrlKey(null);
   }
   const isMobileSearchOpen = mobileSearchUrlKey !== null;
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
   // Автозакрытия панели по видимости секции Hero нет (решение владельца,
   // 2026-09-19). Оно было нужно, пока человек мог сам докрутить до Hero
@@ -146,8 +147,8 @@ export function Header({ session, cities }: HeaderProps) {
           шторка `Sheet` из UI-кита со стороны top, как бургер-меню и фильтры.
           Она даёт затемнение (общее для сайта), блокировку прокрутки, Escape,
           закрытие нажатием по затемнению (оно дальше не проходит), удержание
-          фокуса внутри и `aria-modal`. Фокус при открытии ставится в поле —
-          первый элемент шторки.
+          фокуса внутри и `aria-modal`. Фокус при открытии ставится в поле
+          своим focus() — см. onOpenAutoFocus.
 
           Почему не своё: первая версия режима держала панель в «липкой» шапке
           и сама блокировала прокрутку `overflow: hidden` на <html>. Меню Radix
@@ -169,6 +170,18 @@ export function Header({ session, cities }: HeaderProps) {
         <SheetContent
           side="top"
           showCloseButton={false}
+          // Курсор в поле — своим focus(), а не автофокусом шторки: Radix
+          // фокусирует с preventScroll. На телефоне курсор в поле возвращает
+          // спрятанную адресную строку браузера, она перекрывает верх шторки,
+          // и с preventScroll браузер не может подвинуть видимую область —
+          // поле оставалось под адресной строкой, видно было только выбор
+          // города (сообщил владелец, 2026-09-19). Обычный focus() разрешает
+          // браузеру показать поле; прокрутку страницы шторка держит своим
+          // замком.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            mobileSearchInputRef.current?.focus();
+          }}
           aria-describedby={undefined}
           className="xl:hidden gap-0 border-border bg-hero-bg text-foreground shadow-none"
         >
@@ -205,6 +218,7 @@ export function Header({ session, cities }: HeaderProps) {
                   className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
                 />
                 <input
+                  ref={mobileSearchInputRef}
                   id="mobile-header-search"
                   {...searchInputProps}
                   className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
