@@ -36,8 +36,12 @@ export function SearchBar({
 
   useEffect(() => {
     if (!trackVisibility) return;
-    const input = inputRef.current;
-    if (!input) return;
+    // Следим за всей формой, а не только за полем ввода (2026-09-19): на
+    // телефоне форма идёт столбиком — поле, город, «Найти», — и по полю лупа
+    // в шапке появлялась, пока город и «Найти» Hero были ещё на экране. Форма
+    // берётся через `closest`, чтобы не зависеть от поддержки ref у `next/form`.
+    const form = inputRef.current?.closest("form");
+    if (!form) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => setHeroVisible(entry.isIntersecting),
@@ -45,7 +49,7 @@ export function SearchBar({
       // геометрии вьюпорта, а нужно — по факту, скрылся ли инпут под хедером.
       { rootMargin: `-${HEADER_HEIGHT_PX}px 0px 0px 0px` },
     );
-    observer.observe(input);
+    observer.observe(form);
 
     return () => {
       observer.disconnect();

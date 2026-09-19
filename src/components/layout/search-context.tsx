@@ -14,8 +14,8 @@ import type { ServiceCatalogFilters } from "@/features/services/schemas";
  * Общее состояние поиска для шапки и Hero на главной.
  *
  * На главной это один поиск в двух положениях: поле в шапке появляется ровно
- * тогда, когда Hero-инпут уходит под неё. Поэтому здесь живут две вещи:
- * - **видимость Hero-инпута** — по ней шапка решает, показывать ли компактный
+ * тогда, когда форма поиска Hero уходит под неё. Поэтому здесь живут две вещи:
+ * - **видимость формы поиска Hero** — по ней шапка решает, показывать ли компактный
  *   поиск;
  * - **черновик** — текст и город, одни на оба поля.
  *
@@ -35,6 +35,12 @@ interface SearchContextValue {
   updateDraft: (patch: Partial<SearchDraft>) => void;
   /** Фильтры каталога из адреса — шапке нужен из них тип исполнителя. */
   filters: ServiceCatalogFilters;
+  /**
+   * Текущий адрес с параметрами. Шапка привязывает к нему раскрытую панель
+   * поиска по лупе: на другом адресе панель закрыта — тем же приёмом, каким
+   * здесь к адресу привязана правка черновика.
+   */
+  urlKey: string;
 }
 
 const SearchContext = createContext<SearchContextValue | null>(null);
@@ -68,7 +74,9 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <SearchContext.Provider value={{ heroVisible, setHeroVisible, draft, updateDraft, filters }}>
+    <SearchContext.Provider
+      value={{ heroVisible, setHeroVisible, draft, updateDraft, filters, urlKey }}
+    >
       {children}
     </SearchContext.Provider>
   );
@@ -82,13 +90,13 @@ function useSearchContext() {
   return context;
 }
 
-/** Черновик поиска, его правка и фильтры каталога из адреса. */
+/** Черновик поиска, его правка, фильтры каталога из адреса и сам адрес. */
 export function useSearchDraft() {
-  const { draft, updateDraft, filters } = useSearchContext();
-  return { draft, updateDraft, filters };
+  const { draft, updateDraft, filters, urlKey } = useSearchContext();
+  return { draft, updateDraft, filters, urlKey };
 }
 
-/** Видимость Hero-инпута на главной и её установка (пишет только `SearchBar` в Hero). */
+/** Видимость формы поиска Hero на главной и её установка (пишет только `SearchBar` в Hero). */
 export function useHeroVisibility() {
   const { heroVisible, setHeroVisible } = useSearchContext();
   return { heroVisible, setHeroVisible };

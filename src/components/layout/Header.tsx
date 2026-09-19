@@ -35,7 +35,7 @@ export function Header({ session, cities }: HeaderProps) {
   // Тип исполнителя в черновике не участвует — его выбирают в сайдбаре
   // результатов, а здесь он уходит скрытым полем, чтобы новый запрос
   // из шапки не сбрасывал фильтр, который человек видит плашкой над выдачей.
-  const { draft, updateDraft, filters } = useSearchDraft();
+  const { draft, updateDraft, filters, urlKey } = useSearchDraft();
 
   const searchInputProps = {
     name: "q",
@@ -44,7 +44,10 @@ export function Header({ session, cities }: HeaderProps) {
     onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
       updateDraft({ query: event.target.value }),
     maxLength: SEARCH_QUERY_MAX_LENGTH,
-    placeholder: "Ремонт, уборка, репетитор...",
+    // Короткое слово вместо примеров (решение владельца, 2026-09-19): примеры
+    // «Ремонт, уборка, репетитор...» в поле шапки обрезались до «…репет».
+    // Примеры остались в поиске Hero, где человек впервые решает, что искать.
+    placeholder: "Поиск...",
     // Клавиша отправки на экранной клавиатуре подписана «Найти» / «Поиск»,
     // а не «↵»: на телефоне поиск отправляют в основном ею.
     enterKeyHint: "search",
@@ -58,25 +61,37 @@ export function Header({ session, cities }: HeaderProps) {
     updateDraft({ city });
   }
 
-  // Видимость Hero-инпута приходит из контекста поиска, за ней следит SearchBar
+  // Видимость формы поиска Hero приходит из контекста поиска, за ней следит SearchBar
   // в Hero (см. search-context.tsx). На остальных страницах Hero нет,
   // поэтому источник неважен — компактный поиск виден всегда.
   const { heroVisible } = useHeroVisibility();
   const showCompactSearch = isHome ? !heroVisible : true;
 
-  // Раскрытие лупы в полноширинную строку поиска ниже lg (см. ниже) —
+  // Раскрытие лупы в полноширинную строку поиска ниже xl (см. ниже) —
   // локальное состояние одного компонента: в отличие от видимости Hero
   // и черновика, об этом не нужно договариваться с другими компонентами.
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  //
+  // Хранится не «открыто: да/нет», а адрес, на котором панель открыли
+  // (2026-09-19). Шапка живёт в layout и переживает переходы, и булев флаг
+  // оставлял панель открытой на новой странице — после клика по карточке
+  // под ней или после «Найти» над выдачей. Смена адреса сбрасывает его во
+  // время рендера, тем же приёмом, что правку черновика в search-context.tsx:
+  // без эффекта и без кадра, где панель ещё висит на новой странице.
+  const [mobileSearchUrlKey, setMobileSearchUrlKey] = useState<string | null>(null);
+  if (mobileSearchUrlKey !== null && mobileSearchUrlKey !== urlKey) {
+    setMobileSearchUrlKey(null);
+  }
+  const isMobileSearchOpen = mobileSearchUrlKey !== null;
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
+  const mobileSearchPanelRef = useRef<HTMLDivElement>(null);
 
   // Раскрытая по клику панель не должна пережить условие, при котором её
-  // вообще не должно быть видно: если при скролле вверх Hero-инпут снова
-  // показался (showCompactSearch → false), закрываем панель за пользователя
+  // вообще не должно быть видно: если при скролле вверх форма Hero снова
+  // показалась (showCompactSearch → false), закрываем панель за пользователя
   // — иначе получилось бы то самое дублирование, ради предотвращения
   // которого показ лупы и завязан на showCompactSearch.
   useEffect(() => {
-    if (!showCompactSearch) setIsMobileSearchOpen(false);
+    if (!showCompactSearch) setMobileSearchUrlKey(null);
   }, [showCompactSearch]);
 
   useEffect(() => {
@@ -86,10 +101,26 @@ export function Header({ session, cities }: HeaderProps) {
       // Escape в открытом списке городов закрывает только список: Radix
       // обрабатывает его раньше и помечает событие `preventDefault`.
       if (event.defaultPrevented) return;
-      if (event.key === "Escape") setIsMobileSearchOpen(false);
+      if (event.key === "Escape") setMobileSearchUrlKey(null);
+    }
+    // «Лёгкое закрытие»: нажатие мимо панели закрывает её, а само нажатие
+    // срабатывает как обычно — ссылка открывается, кнопка нажимается.
+    // Оверлей, который сначала пришлось бы закрыть, намеренно не делали.
+    function handlePointerDown(event: PointerEvent) {
+      const panel = mobileSearchPanelRef.current;
+      if (!panel || panel.contains(event.target as Node)) return;
+      // Открыт список городов: он в портале, вне панели. Выбор города не
+      // должен закрывать поиск, а первое нажатие мимо закрывает только
+      // список — так ведёт себя меню Radix.
+      if (panel.querySelector('[data-state="open"]')) return;
+      setMobileSearchUrlKey(null);
     }
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
   }, [isMobileSearchOpen]);
 
   // Ваши ссылки навигации
@@ -101,83 +132,97 @@ export function Header({ session, cities }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
-      <PageContainer>
-        {/* Раскрытый поиск по лупе (ниже lg). Полностью заменяет собой
-            остальное содержимое хедера на время поиска — логотип, навигация
-            и меню всё равно не нужны в этот момент. При lg+ этой панели
-            никогда не место (lg:hidden) — на случай, если состояние осталось
-            true при ресайзе окна.
+      {/* Раскрытый поиск по лупе (ниже xl). Полностью заменяет собой
+          остальное содержимое хедера на время поиска — логотип, навигация
+          и меню всё равно не нужны в этот момент. При xl+ этой панели
+          никогда не место (xl:hidden) — на случай, если состояние осталось
+          true при ресайзе окна. Высота на md и lg — как у шапки (64 / 72px).
 
-            Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
-            с выбором города. Где полному полю не хватает места — до 1024px —
-            вместо него лупа, и она раскрывает именно полный поиск.
+          Панель — слой поверх шапки (absolute), а не блок в потоке
+          (2026-09-19). На телефоне она в две строки и выше шапки на ~56px:
+          в потоке шапка росла и сдвигала всю страницу вниз, поиск Hero
+          снова оказывался на виду, и эффект выше тут же закрывал панель —
+          она мелькала и пряталась. Теперь шапка в потоке не меняет высоту
+          (основная строка при открытой панели invisible, а не hidden),
+          а вторая строка панели на время поиска перекрывает верх страницы. */}
+      {isMobileSearchOpen && (
+        <div
+          ref={mobileSearchPanelRef}
+          className="xl:hidden absolute inset-x-0 top-0 border-b border-border bg-hero-bg"
+        >
+          <PageContainer>
+            {/* Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
+                с выбором города. Где полному полю не хватает места — до 1280px —
+                вместо него лупа, и она раскрывает именно полный поиск.
 
-            Город на телефоне — второй строкой во всю ширину: на 375px поле
-            сжалось бы примерно до 150px, а кнопке выбора нужна область касания
-            около 44px. От 768px ширины хватает, и город встаёт в одну строку
-            с полем. Выбор города один на обе раскладки (перенос через
-            flex-wrap и order), а не два экземпляра: каждый CityDropdown
-            рендерит скрытое поле `city`, и в адресе появилось бы два `city`.
+                Город на телефоне — второй строкой во всю ширину: на 375px поле
+                сжалось бы примерно до 150px, а кнопке выбора нужна область касания
+                около 44px. От 768px ширины хватает, и город встаёт в одну строку
+                с полем. Выбор города один на обе раскладки (перенос через
+                flex-wrap и order), а не два экземпляра: каждый CityDropdown
+                рендерит скрытое поле `city`, и в адресе появилось бы два `city`.
 
-            Кнопка «Найти» — рядом с городом (2026-09-19): без неё запрос уходил
-            только по Enter, а выбор города закрывает экранную клавиатуру —
-            отправить было нечем. На телефоне она во второй строке, в зоне
-            большого пальца; от 768px — в общей строке перед крестиком.
-            Автоматического поиска при выборе города нет по-прежнему (решение
-            владельца). Заливка цветом бренда не спорит с «Найти» в Hero: на
-            главной эта панель доступна, только когда Hero ушёл за экран. */}
-        {isMobileSearchOpen && (
-          <Form
-            action="/services"
-            className="lg:hidden flex flex-wrap items-center gap-x-2 gap-y-3 py-3 md:py-0 md:h-16"
-          >
-            <label htmlFor="mobile-header-search" className="sr-only">
-              Поиск услуг
-            </label>
-            <div className="relative flex-1 min-w-0">
-              <Search
-                aria-hidden="true"
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
-              />
-              <input
-                ref={mobileSearchInputRef}
-                id="mobile-header-search"
-                {...searchInputProps}
-                className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
-              />
-            </div>
-            <div className="order-last basis-full flex gap-2 md:order-none md:basis-auto">
-              <div className="flex-1 min-w-0 md:flex-none">
-                <CityDropdown
-                  cities={cities}
-                  value={draft.city}
-                  onValueChange={selectCity}
-                  variant="block"
+                Кнопка «Найти» — рядом с городом (2026-09-19): без неё запрос уходил
+                только по Enter, а выбор города закрывает экранную клавиатуру —
+                отправить было нечем. На телефоне она во второй строке, в зоне
+                большого пальца; от 768px — в общей строке перед крестиком.
+                Автоматического поиска при выборе города нет по-прежнему (решение
+                владельца). Заливка цветом бренда не спорит с «Найти» в Hero: на
+                главной эта панель доступна, только когда Hero ушёл за экран. */}
+            <Form
+              action="/services"
+              className="flex flex-wrap items-center gap-x-2 gap-y-3 py-3 md:py-0 md:h-16 lg:h-[72px]"
+            >
+              <label htmlFor="mobile-header-search" className="sr-only">
+                Поиск услуг
+              </label>
+              <div className="relative flex-1 min-w-0">
+                <Search
+                  aria-hidden="true"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
+                />
+                <input
+                  ref={mobileSearchInputRef}
+                  id="mobile-header-search"
+                  {...searchInputProps}
+                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
                 />
               </div>
+              <div className="order-last basis-full flex gap-2 md:order-none md:basis-auto">
+                <div className="flex-1 min-w-0 md:flex-none">
+                  <CityDropdown
+                    cities={cities}
+                    value={draft.city}
+                    onValueChange={selectCity}
+                    variant="block"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="shrink-0 h-11 md:h-10 px-5 rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 text-sm font-semibold transition-colors"
+                >
+                  Найти
+                </button>
+              </div>
               <button
-                type="submit"
-                className="shrink-0 h-11 md:h-10 px-5 rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 text-sm font-semibold transition-colors"
+                type="button"
+                aria-label="Закрыть поиск"
+                onClick={() => setMobileSearchUrlKey(null)}
+                className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
               >
-                Найти
+                <X className="h-5 w-5" />
               </button>
-            </div>
-            <button
-              type="button"
-              aria-label="Закрыть поиск"
-              onClick={() => setIsMobileSearchOpen(false)}
-              className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            {executorTypeField}
-          </Form>
-        )}
+              {executorTypeField}
+            </Form>
+          </PageContainer>
+        </div>
+      )}
 
+      <PageContainer>
         <div
           className={cn(
             "flex h-16 lg:h-[72px] items-center gap-4",
-            isMobileSearchOpen && "hidden lg:flex",
+            isMobileSearchOpen && "invisible xl:visible",
           )}
         >
           <div className="flex items-center justify-between gap-4 w-full">
@@ -198,21 +243,23 @@ export function Header({ session, cities }: HeaderProps) {
                 каталога сделаны ссылками. Hero на главной отправляет ровно
                 такую же форму.
 
-                Поле — с lg (1024px) и всегда вместе с выбором города: поле без
-                города — урезанный поиск. До lg вместо формы — лупа,
-                разворачивающая полную строку поиска на всю ширину шапки
-                (см. isMobileSearchOpen выше).
+                Поле — с xl (1280px) и всегда вместе с выбором города и кнопкой
+                «Найти»: поле без города — урезанный поиск, без кнопки — поиск
+                только по Enter. До xl вместо формы — лупа, разворачивающая ту же
+                строку поиска на всю ширину шапки (см. isMobileSearchOpen выше).
 
-                Эксперимент владельца (2026-09-17): до этого поле показывалось
-                с xl. На 1024px рядом с навигацией, «Разместить», сердечком
-                и аватаром полю остаётся мало места (по оценке — около 200px
-                у вошедшего пользователя, из них до ~150px занимает город).
-                Если при просмотре ввод окажется слишком узким, вернуть xl
-                в классах поля, лупы и панели.
+                История границы: 2026-09-17 владелец экспериментом опустил её
+                с xl до lg (1024px). Замер критики главной (2026-09-19) показал:
+                на 1024px даже у гостя полю оставалось 101px при 139px выбора
+                города — виден только обрывок запроса. Граница возвращена на xl
+                (решение владельца, 2026-09-19); туда же добавлена кнопка «Найти»,
+                как в Hero и в панели по лупе. Поле на главной по-прежнему открыто,
+                а не за лупой: поиск — главное действие площадки, и где для поля
+                есть место, прятать его не нужно.
 
-                Sticky-поведение (только на главной): пока в Hero виден его
-                собственный инпут поиска, здесь этого блока нет — появляется
-                плавно (opacity + max-width), когда Hero-инпут скрывается под
+                Sticky-поведение (только на главной): пока в Hero видна его
+                собственная форма поиска, здесь этого блока нет — появляется
+                плавно (opacity + max-width), когда форма Hero скрывается под
                 шапкой, и уходит обратно при скролле вверх. На остальных
                 страницах Hero нет, поэтому блок виден сразу и без анимации —
                 transition-классы навешиваются только когда isHome, иначе при
@@ -227,7 +274,7 @@ export function Header({ session, cities }: HeaderProps) {
             <search
               inert={!showCompactSearch}
               className={cn(
-                "hidden lg:flex flex-1 items-center overflow-hidden",
+                "hidden xl:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
                   ? "opacity-100 max-w-md"
@@ -258,14 +305,20 @@ export function Header({ session, cities }: HeaderProps) {
                     onValueChange={selectCity}
                     variant="compact"
                   />
+                  <button
+                    type="submit"
+                    className="ml-1 h-8 px-4 rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 text-sm font-semibold transition-colors"
+                  >
+                    Найти
+                  </button>
                 </div>
                 {executorTypeField}
               </Form>
             </search>
 
-            {/* Лупа до lg подчиняется тому же правилу, что и
-                компактная форма выше: не главная страница, либо Hero-инпут
-                уже скрылся при скролле. Без этого условия на главной, пока
+            {/* Лупа до xl подчиняется тому же правилу, что и
+                компактная форма выше: не главная страница, либо форма Hero
+                уже скрылась при скролле. Без этого условия на главной, пока
                 Hero-строка поиска ещё видна, лупа в хедере дублировала бы её.
                 По клику не переходит никуда — раскрывает строку поиска прямо
                 в хедере (см. isMobileSearchOpen выше), раньше вела на
@@ -275,8 +328,8 @@ export function Header({ session, cities }: HeaderProps) {
                 type="button"
                 aria-label="Найти услугу"
                 aria-expanded={isMobileSearchOpen}
-                onClick={() => setIsMobileSearchOpen(true)}
-                className="lg:hidden text-foreground hover:text-primary transition-colors"
+                onClick={() => setMobileSearchUrlKey(urlKey)}
+                className="xl:hidden text-foreground hover:text-primary transition-colors"
               >
                 <Search className="h-5 w-5" />
               </button>
