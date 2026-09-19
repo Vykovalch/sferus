@@ -12,6 +12,7 @@
       "**",
       "!node_modules",
       "!.next",
+      "!.claude",
       "!dist",
       "!build",
       "!drizzle/meta",
