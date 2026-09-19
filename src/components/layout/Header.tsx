@@ -4,8 +4,7 @@ import { Heart, Search, X } from "lucide-react";
 import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
 import { CreateListingMenu } from "@/components/layout/CreateListingMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-context";
@@ -13,6 +12,7 @@ import { UserMenu } from "@/components/layout/UserMenu";
 import { CityDropdown } from "@/components/shared/CityDropdown";
 import { Logo } from "@/components/shared/Logo";
 import { PageContainer } from "@/components/shared/PageContainer";
+import { Sheet, SheetClose, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import type { CityOption } from "@/features/cities/queries";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import type { Session } from "@/lib/auth";
@@ -92,19 +92,20 @@ export function Header({ session, cities }: HeaderProps) {
     setMobileSearchUrlKey(null);
   }
   const isMobileSearchOpen = mobileSearchUrlKey !== null;
-  const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
   // Автозакрытия панели по видимости секции Hero нет (решение владельца,
   // 2026-09-19). Оно было нужно, пока человек мог сам докрутить до Hero
-  // с открытой панелью. С блокировкой прокрутки (ниже) докрутить нельзя,
-  // и Hero оказывается на виду только из-за браузера — вернувшейся адресной
-  // строки или клавиатуры на телефоне; автозакрытие срабатывало бы только
-  // ложно и закрывало поиск, едва открытый. Панель закрывают крестик,
-  // Escape, «Назад», нажатие по затемнению, «Найти» и смена адреса.
-
+  // с открытой панелью. В режиме поиска прокрутка заблокирована, и Hero
+  // оказывается на виду только из-за браузера — вернувшейся адресной строки
+  // или клавиатуры на телефоне; автозакрытие срабатывало бы только ложно.
+  // Панель закрывают крестик, Escape, «Назад», нажатие по затемнению,
+  // «Найти» и смена адреса.
+  //
+  // Затемнение, блокировку прокрутки, Escape, нажатие мимо и удержание фокуса
+  // даёт шторка `Sheet` из UI-кита (Radix Dialog) — см. разметку ниже. Здесь
+  // только то, чего она сама не делает.
   useEffect(() => {
     if (!isMobileSearchOpen) return;
-    mobileSearchInputRef.current?.focus();
 
     // Кнопка и жест «Назад» на Android закрывают поиск, а не уводят со
     // страницы (решение владельца, 2026-09-19): так ведут себя открытые поверх
@@ -117,32 +118,8 @@ export function Header({ session, cities }: HeaderProps) {
     const closeWatcher = BrowserCloseWatcher ? new BrowserCloseWatcher() : null;
     if (closeWatcher) closeWatcher.onclose = () => setMobileSearchUrlKey(null);
 
-    // Escape — собственным обработчиком всегда, а не только без `CloseWatcher`:
-    // при проверке через автоматизацию браузера Escape до `CloseWatcher`
-    // не доходил, и полагаться на него одного для клавиатуры не стали. Если
-    // сработают оба — закрытие повторится вхолостую. Escape в открытом списке
-    // городов закрывает только список: Radix отменяет событие (`preventDefault`),
-    // и тогда браузер не передаёт запрос и `CloseWatcher`.
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.defaultPrevented) return;
-      if (event.key === "Escape") setMobileSearchUrlKey(null);
-    }
-    document.addEventListener("keydown", handleKeyDown);
-
-    // Режим поиска (решение владельца, 2026-09-19): пока панель открыта,
-    // страница под затемнением неподвижна — блокировка прокрутки через
-    // `overflow: hidden` на корневом элементе. Ширина исчезнувшей полосы
-    // прокрутки возвращается отступом справа, иначе на ноутбуке (768–1279px)
-    // вся страница сдвигалась бы вправо при каждом открытии поиска.
-    const root = document.documentElement;
-    const previousOverflow = root.style.overflow;
-    const previousPaddingRight = root.style.paddingRight;
-    const scrollbarWidth = window.innerWidth - root.clientWidth;
-    root.style.overflow = "hidden";
-    if (scrollbarWidth > 0) root.style.paddingRight = `${scrollbarWidth}px`;
-
-    // С 1280px панели и затемнения нет (xl:hidden), а блокировка осталась бы
-    // висеть — при расширении окна режим поиска закрывается.
+    // С 1280px панели нет (xl:hidden), а затемнение и блокировка прокрутки
+    // шторки остались бы — при расширении окна режим поиска закрывается.
     const desktop = window.matchMedia("(min-width: 1280px)");
     function handleDesktop(event: MediaQueryListEvent) {
       if (event.matches) setMobileSearchUrlKey(null);
@@ -152,10 +129,7 @@ export function Header({ session, cities }: HeaderProps) {
     return () => {
       // Поиск закрыт любым способом — «Назад» снова уводит со страницы.
       closeWatcher?.destroy();
-      document.removeEventListener("keydown", handleKeyDown);
       desktop.removeEventListener("change", handleDesktop);
-      root.style.overflow = previousOverflow;
-      root.style.paddingRight = previousPaddingRight;
     };
   }, [isMobileSearchOpen]);
 
@@ -168,45 +142,37 @@ export function Header({ session, cities }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
-      {/* Раскрытый поиск по лупе (ниже xl). Полностью заменяет собой
-          остальное содержимое хедера на время поиска — логотип, навигация
-          и меню всё равно не нужны в этот момент. При xl+ этой панели
-          никогда не место (xl:hidden) — на случай, если состояние осталось
-          true при ресайзе окна. Высота на md и lg — как у шапки (64 / 72px).
+      {/* Режим поиска по лупе (ниже xl, решение владельца, 2026-09-19) —
+          шторка `Sheet` из UI-кита со стороны top, как бургер-меню и фильтры.
+          Она даёт затемнение (общее для сайта), блокировку прокрутки, Escape,
+          закрытие нажатием по затемнению (оно дальше не проходит), удержание
+          фокуса внутри и `aria-modal`. Фокус при открытии ставится в поле —
+          первый элемент шторки.
 
-          Панель — слой поверх шапки (absolute), а не блок в потоке
-          (2026-09-19). На телефоне она в две строки и выше шапки на ~56px:
-          в потоке шапка росла и сдвигала всю страницу вниз, поиск Hero
-          снова оказывался на виду, и тогдашнее автозакрытие по видимости Hero
-          (позже убрано — см. выше) закрывало панель: она мелькала и пряталась.
-          Теперь шапка в потоке не меняет высоту
-          (основная строка при открытой панели invisible, а не hidden),
-          а вторая строка панели на время поиска перекрывает верх страницы. */}
-      {/* Затемнение под панелью — режим поиска (решение владельца, 2026-09-19):
-          пока человек ищет, страница под ним неактивна. Вид — как у шторок
-          и диалогов UI-кита (`components/ui/sheet.tsx`, `dialog.tsx`): одно
-          затемнение на весь сайт, решение владельца. Нажатие по затемнению
-          закрывает поиск и дальше не проходит — раньше «лёгкое закрытие»
-          срабатывало на pointerdown и пропускало нажатие к странице, но под
-          затемнением это нарушило бы его смысл.
+          Почему не своё: первая версия режима держала панель в «липкой» шапке
+          и сама блокировала прокрутку `overflow: hidden` на <html>. Меню Radix
+          (список городов) блокирует прокрутку своим замком на <body>; с двумя
+          замками <body> становился отдельной прокручиваемой областью, и шапка
+          с панелью уезжала за экран — оставалось одно затемнение. Ещё фокус
+          в поле внутри липкой шапки сдвигал страницу под затемнением. Шторка
+          живёт в отдельном слое, её замок — та же библиотека, что у меню
+          (`react-remove-scroll`), и вложенные замки она согласует сама.
 
-          Через портал в body: у шапки backdrop-filter, а он делает её
-          контейнером для position: fixed — внутри шапки затемнение растянулось
-          бы по ней, а не по экрану. z-40 — ниже шапки (z-50), так что панель
-          поиска, включая её вторую строку на телефоне, остаётся над ним.
-          Пока открыт список городов, меню Radix отключает нажатия по остальной
-          странице: первое нажатие мимо закрывает только список. */}
-      {isMobileSearchOpen &&
-        createPortal(
-          <div
-            aria-hidden="true"
-            onClick={() => setMobileSearchUrlKey(null)}
-            className="xl:hidden fixed inset-0 z-40 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs animate-in fade-in-0"
-          />,
-          document.body,
-        )}
-      {isMobileSearchOpen && (
-        <div className="xl:hidden absolute inset-x-0 top-0 border-b border-border bg-hero-bg">
+          Шторка всегда в разметке, а не под условием `showCompactSearch`:
+          иначе исчезновение лупы (Hero выглянул из-за адресной строки
+          браузера) закрывало бы поиск. При xl+ содержимого шторки не видно
+          (xl:hidden), а режим закрывается эффектом выше. */}
+      <Sheet
+        open={isMobileSearchOpen}
+        onOpenChange={(open) => setMobileSearchUrlKey(open ? urlKey : null)}
+      >
+        <SheetContent
+          side="top"
+          showCloseButton={false}
+          aria-describedby={undefined}
+          className="xl:hidden gap-0 border-border bg-hero-bg text-foreground shadow-none"
+        >
+          <SheetTitle className="sr-only">Поиск услуг</SheetTitle>
           <PageContainer>
             {/* Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
                 с выбором города. Где полному полю не хватает места — до 1280px —
@@ -239,7 +205,6 @@ export function Header({ session, cities }: HeaderProps) {
                   className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none"
                 />
                 <input
-                  ref={mobileSearchInputRef}
                   id="mobile-header-search"
                   {...searchInputProps}
                   className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
@@ -261,27 +226,23 @@ export function Header({ session, cities }: HeaderProps) {
                   Найти
                 </button>
               </div>
-              <button
-                type="button"
-                aria-label="Закрыть поиск"
-                onClick={() => setMobileSearchUrlKey(null)}
-                className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <SheetClose asChild>
+                <button
+                  type="button"
+                  aria-label="Закрыть поиск"
+                  className="shrink-0 text-foreground hover:text-primary transition-colors p-1"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </SheetClose>
               {executorTypeField}
             </Form>
           </PageContainer>
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
 
       <PageContainer>
-        <div
-          className={cn(
-            "flex h-16 lg:h-[72px] items-center gap-4",
-            isMobileSearchOpen && "invisible xl:visible",
-          )}
-        >
+        <div className="flex h-16 lg:h-[72px] items-center gap-4">
           <div className="flex items-center justify-between gap-4 w-full">
             {/* Левая часть: бургер (только на узких экранах) и логотип Sferus.
                 Бургер слева от логотипа — решение владельца, 2026-09-17; меню
@@ -377,9 +338,9 @@ export function Header({ session, cities }: HeaderProps) {
                 компактная форма выше: не главная страница, либо секция Hero
                 уже скрылась при скролле. Без этого условия на главной, пока
                 Hero-строка поиска ещё видна, лупа в хедере дублировала бы её.
-                По клику не переходит никуда — раскрывает строку поиска прямо
-                в хедере (см. isMobileSearchOpen выше), раньше вела на
-                /services, где после недавней правки поля поиска больше нет. */}
+                По клику не переходит никуда — открывает режим поиска, шторку
+                с полным поиском (см. Sheet выше); раньше вела на /services,
+                где поля поиска больше нет. */}
             {showCompactSearch && (
               <button
                 type="button"
