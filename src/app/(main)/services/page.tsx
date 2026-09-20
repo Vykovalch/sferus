@@ -25,7 +25,6 @@ import {
   serviceCatalogSearchParams,
 } from "@/features/services/schemas";
 import { auth } from "@/lib/auth";
-import { categoryIcon, categoryStyle } from "@/lib/constants";
 import { formatServicePrice } from "@/lib/format";
 import { buildPageHref, isPageOutOfRange, pageCount, parsePageParam } from "@/lib/pagination";
 
@@ -282,19 +281,14 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       <PageContainer className="py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
-          {categories.map((cat) => {
-            const style = categoryStyle(cat.slug);
-            return (
-              <CategoryCard
-                key={cat.slug}
-                name={cat.name}
-                slug={cat.slug}
-                icon={categoryIcon(cat.icon)}
-                count={counts.get(cat.id) ?? 0}
-                iconColor={style.icon}
-              />
-            );
-          })}
+          {categories.map((cat) => (
+            <CategoryCard
+              key={cat.slug}
+              name={cat.name}
+              slug={cat.slug}
+              count={counts.get(cat.id) ?? 0}
+            />
+          ))}
         </div>
       </PageContainer>
     </div>

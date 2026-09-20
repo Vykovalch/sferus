@@ -3,7 +3,6 @@ import { CategoryCard } from "@/components/shared/CategoryCard";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { getCategories } from "@/features/categories/queries";
 import { getServiceCountsByCategory } from "@/features/services/queries";
-import { categoryIcon, categoryStyle } from "@/lib/constants";
 
 /**
  * Сколько категорий показываем на главной. Совпадает с числом колонок сетки
@@ -49,19 +48,14 @@ export async function PopularCategories() {
           // Сетка совпадает со страницей всех категорий (app/(main)/services/page.tsx):
           // карточки одной ширины и с одинаковыми зазорами в обоих местах
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
-            {popular.map((category) => {
-              const style = categoryStyle(category.slug);
-              return (
-                <CategoryCard
-                  key={category.slug}
-                  name={category.name}
-                  slug={category.slug}
-                  icon={categoryIcon(category.icon)}
-                  count={category.count}
-                  iconColor={style.icon}
-                />
-              );
-            })}
+            {popular.map((category) => (
+              <CategoryCard
+                key={category.slug}
+                name={category.name}
+                slug={category.slug}
+                count={category.count}
+              />
+            ))}
           </div>
         )}
       </PageContainer>
