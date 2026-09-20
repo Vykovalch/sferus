@@ -60,14 +60,14 @@ export function HowItWorks() {
   return (
     <section id="how-it-works" className="py-20 scroll-mt-16 lg:scroll-mt-[72px] bg-background">
       <PageContainer>
-        {/* Заголовок */}
+        {/* Заголовок. Подзаголовок «Выберите свой путь на платформе» убран
+            (решение владельца, 2026-09-20): он пересказывал заголовок и ничего
+            не добавлял. Такой же пустой подзаголовок раньше убрали у «Новых
+            объявлений» — правило в DESIGN.md, раздел 5. */}
         <div className="text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
             Как это работает
           </h2>
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
-            Выберите свой путь на платформе
-          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-16 max-w-5xl mx-auto relative">

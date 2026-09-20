@@ -79,7 +79,10 @@ export function SearchBar({
           maxLength={SEARCH_QUERY_MAX_LENGTH}
           aria-label="Поиск услуг"
           placeholder={placeholder}
-          className="w-full pl-12 pr-4 py-3.5 text-base bg-transparent text-foreground placeholder:text-muted-foreground/70 focus:outline-none font-medium"
+          // Подсказка — `muted-foreground` без разбавления, как во всех
+          // остальных полях сайта. Прежние `/70` осветляли её до 3.5:1 поверх
+          // фотографии первого экрана при норме 4.5; без них — 7.0:1.
+          className="w-full pl-12 pr-4 py-3.5 text-base bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none font-medium"
         />
       </div>
 
