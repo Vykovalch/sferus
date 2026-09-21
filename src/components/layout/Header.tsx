@@ -1,12 +1,13 @@
 "use client";
 
-import { Heart, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import Form from "next/form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CreateListingMenu } from "@/components/layout/CreateListingMenu";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { NotificationsMenu } from "@/components/layout/NotificationsMenu";
 import { useHeroVisibility, useSearchDraft } from "@/components/layout/search-context";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { CityDropdown } from "@/components/shared/CityDropdown";
@@ -394,20 +395,14 @@ export function Header({ session, cities }: HeaderProps) {
                 <>
                   <div className="hidden md:block h-6 w-px bg-border mx-1" />
 
-                  {/* Избранное рядом с аватаром — решение владельца, 2026-09-17.
-                      Отложить исполнителя и вернуться к нему — частое действие
-                      при выборе, поэтому оно в шапке, а не в меню аватара.
-                      Размер и фон при наведении — как у кнопки аватара, чтобы
-                      пара читалась единым блоком; видно на любой ширине. */}
+                  {/* Сердечка «Избранное» здесь больше нет (решение владельца,
+                      2026-09-21): раздел есть в меню под аватаром, и двух
+                      входов в одно место не нужно. С 2026-09-17 по 2026-09-21
+                      сердечко стояло в шапке по обратному решению — «отложить
+                      исполнителя и вернуться к нему» считалось достаточно
+                      частым действием, чтобы держать его на виду. */}
                   <div className="flex items-center gap-1">
-                    <Link
-                      href="/dashboard/favorites"
-                      aria-label="Избранное"
-                      title="Избранное"
-                      className="relative tap-target flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors"
-                    >
-                      <Heart aria-hidden="true" className="h-5 w-5" />
-                    </Link>
+                    <NotificationsMenu />
                     <UserMenu session={session} />
                   </div>
                 </>
