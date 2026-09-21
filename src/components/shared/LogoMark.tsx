@@ -2,12 +2,6 @@ import { cn } from "@/lib/utils";
 
 interface LogoMarkProps {
   className?: string;
-  /**
-   * Обе части знака берут `currentColor` вместо жёлтой и тёмной. Нужно там,
-   * где знак работает фоновой графикой на фирменном жёлтом: двухцветный знак
-   * на жёлтом потерял бы жёлтую половину (2026-09-21).
-   */
-  monochrome?: boolean;
 }
 
 /**
@@ -24,7 +18,7 @@ interface LogoMarkProps {
  *
  * Размер задаёт `className` по высоте, ширина — по пропорциям: `h-12 w-auto`.
  */
-export function LogoMark({ className, monochrome = false }: LogoMarkProps) {
+export function LogoMark({ className }: LogoMarkProps) {
   return (
     <svg
       viewBox="0 0 588 670"
@@ -34,7 +28,7 @@ export function LogoMark({ className, monochrome = false }: LogoMarkProps) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        className={monochrome ? "fill-current" : "fill-brand-fill"}
+        className="fill-brand-fill"
         d="M0 256.684C0 205.684 25 163.684 68 131.684L212 26.6837C268 -14.3163 341 -6.31627 382 38.6837C423 83.6837 419 151.684 372 186.684L243 281.684C226 294.684 216 312.684 216 330.684C216 347.684 225 363.684 240 373.684C255 383.684 263 399.684 261 416.684C259 437.684 242 455.684 220 460.684C175 470.684 121 461.684 83 436.684C32 403.684 0 339.684 0 256.684Z"
       />
       <path
