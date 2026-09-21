@@ -8,6 +8,7 @@ import { CityDropdown } from "@/components/shared/CityDropdown";
 import type { CityOption } from "@/features/cities/queries";
 import { SEARCH_QUERY_MAX_LENGTH } from "@/features/services/schemas";
 import { HEADER_HEIGHT_PX } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
   /** Пробрасывается в CityDropdown — данные приходят из серверного компонента. */
@@ -23,13 +24,22 @@ interface SearchBarProps {
    * (`search-context.tsx`): на главной это один поиск в двух положениях.
    */
   trackVisibility?: boolean;
+  /**
+   * `onBrand` — поиск стоит на жёлтом поле первого экрана: подложка плотно
+   * белая (полупрозрачная набрала бы жёлтый), а кнопка «Найти» тёмная. Жёлтая
+   * кнопка на жёлтом поле дала бы 1.0:1 и перестала бы быть целевым действием
+   * (решение владельца, 2026-09-21). По умолчанию — светлый фон, жёлтая кнопка.
+   */
+  variant?: "default" | "onBrand";
 }
 
 export function SearchBar({
   cities,
   placeholder = "Ремонт, уборка, репетитор...",
   trackVisibility = false,
+  variant = "default",
 }: SearchBarProps) {
+  const onBrand = variant === "onBrand";
   const { draft, updateDraft } = useSearchDraft();
   const { setHeroVisible } = useHeroVisibility();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -66,7 +76,10 @@ export function SearchBar({
   return (
     <Form
       action="/services"
-      className="flex flex-col md:flex-row items-stretch bg-card/80 dark:bg-card/40 backdrop-blur-xl p-2 rounded-3xl md:rounded-full border border-border/80 shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 focus-within:border-brand-heading/60 gap-2 md:gap-0"
+      className={cn(
+        "flex flex-col md:flex-row items-stretch backdrop-blur-xl p-2 rounded-3xl md:rounded-full border shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 focus-within:border-brand-heading/60 gap-2 md:gap-0",
+        onBrand ? "bg-card border-transparent" : "bg-card/80 dark:bg-card/40 border-border/80",
+      )}
     >
       <div className="relative flex-1 flex items-center group/input">
         <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand-heading" />
@@ -98,7 +111,10 @@ export function SearchBar({
 
       <button
         type="submit"
-        className="px-8 py-3.5 bg-brand-fill text-brand-fill-foreground hover:opacity-90 rounded-full transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 font-semibold text-base cursor-pointer"
+        className={cn(
+          "px-8 py-3.5 rounded-full transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 font-semibold text-base cursor-pointer hover:opacity-90",
+          onBrand ? "bg-foreground text-background" : "bg-brand-fill text-brand-fill-foreground",
+        )}
       >
         Найти
       </button>

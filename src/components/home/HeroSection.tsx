@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoMark } from "@/components/shared/LogoMark";
 import { PageContainer } from "@/components/shared/PageContainer";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { getCities } from "@/features/cities/queries";
@@ -7,14 +8,24 @@ export async function HeroSection() {
   const cities = await getCities();
 
   return (
-    <section
-      className="relative py-16 md:py-32 overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(rgba(250, 250, 250, 0.85), rgba(250, 250, 250, 0.85)), url('/hero-bg.png')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
-      }}
-    >
+    // Первый экран — единственное крупное поле фирменного жёлтого на сайте
+    // (решение владельца, 2026-09-21). До этого здесь лежало стоковое фото под
+    // белым слоем 85%: снимок был не местный, под слоем от него оставались
+    // бледные силуэты, и вся страница шла пятью почти белыми секциями подряд.
+    // Правило «заливка брендом на первом экране — только у „Найти“» заменено:
+    // теперь наоборот, поле жёлтое, а целевое действие — тёмное.
+    //
+    // Знак — фоновая графика, одним цветом (`monochrome`): двухцветный знак
+    // потерял бы на жёлтом свою жёлтую половину. 8% тёмного — это фактура,
+    // а не элемент: контраст со знаком 1.2:1, он не спорит с текстом.
+    <section className="relative py-16 md:py-32 overflow-hidden bg-brand-fill">
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-20 -bottom-40 hidden sm:block"
+      >
+        <LogoMark monochrome className="h-[34rem] text-foreground/8" />
+      </span>
+
       <PageContainer className="relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-wide mb-12 leading-[1.15] text-balance">
@@ -27,7 +38,7 @@ export async function HeroSection() {
           </h1>
 
           <div className="mb-10 max-w-3xl mx-auto">
-            <SearchBar cities={cities} trackVisibility />
+            <SearchBar cities={cities} trackVisibility variant="onBrand" />
           </div>
 
           {/* Счётчики «400+ исполнителей / 500+ объявлений / 50+ активных заданий»
@@ -40,34 +51,24 @@ export async function HeroSection() {
               имеет смысл тогда, когда цифра начнёт работать на площадку —
               и уже запросом к БД, а не константой в разметке. */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-base">
-            <span className="text-muted-foreground font-medium">
+            {/* Приглушение — прозрачностью тёмного, а не серым токеном:
+                на цветном поле серый читается как грязь, а `--muted-foreground`
+                (холодный, 294°) спорит с жёлтым. Тёмный на 80% смешивается
+                с фоном в тёплый коричневый, 6.8:1. */}
+            <span className="text-foreground/80 font-medium">
               Нужен исполнитель под конкретную задачу?
             </span>
-            {/* Тёмный текст с золотым подчёркиванием (решение владельца,
-                2026-09-20). Раньше текст был золотой (`--primary`, #8A6A00):
-                этот цвет рассчитан на белый фон, где даёт 5.1:1, а поверх
-                фотографии под осветляющим слоем фон гуляет и контраст падает
-                до 3.46:1 при норме 4.5. Осветлением это не лечится — чтобы
-                золото вытянуло норму на самом тёмном участке, слой пришлось бы
-                довести до 96% и фотография исчезла бы.
+            {/* Тёмный текст с тёмным подчёркиванием. Решение владельца
+                2026-09-20 — золотое подчёркивание на тёмном тексте — принято
+                для фотографии под осветляющим слоем: тогда золото было
+                единственным цветом бренда на первом экране. С жёлтым полем
+                (2026-09-21) поле само стало брендом, и золотая линия на нём
+                мутнеет (3.3:1). Линию держит тёмный: 11:1, ссылку видно.
 
-                Роли разделены: текст держит контраст (11.6:1 на любом снимке,
-                который сюда поставят потом), подчёркивание держит цвет бренда
-                и сообщает, что это ссылка. Линии хватает 3:1 как нелинейному
-                элементу, и золото их даёт (3.46 в худшем месте). Фирменная
-                `--brand-fill` (#FFC825) не годится: по светлоте она почти
-                совпадает с фоном первого экрана — 1.06:1, линию не видно.
-
-                На наведении подчёркивание утолщается, а цвет не меняется:
-                у цветного отклика была бы та же беда с контрастом.
-
-                Плотность 600, а не 700: жирность стояла здесь, пока текст был
-                золотой и ей приходилось вытягивать слабый контраст. Теперь
-                ссылку выдают тёмный цвет и линия, и две ступени разрыва
-                с подписью рядом (500) читались бы как перекос. */}
+                На наведении подчёркивание утолщается, цвет не меняется. */}
             <Link
               href="/tasks/new"
-              className="relative tap-target inline-flex items-center gap-1.5 text-foreground font-semibold underline decoration-brand underline-offset-4 hover:decoration-2 transition-all"
+              className="relative tap-target inline-flex items-center gap-1.5 text-foreground font-semibold underline decoration-foreground/70 underline-offset-4 hover:decoration-2 transition-all"
             >
               Создать задание
             </Link>

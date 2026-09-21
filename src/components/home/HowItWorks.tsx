@@ -53,38 +53,46 @@ const executorSteps: StepItem[] = [
 ];
 
 /**
- * Средняя ступень светлой шкалы (98.26%): белый занят витриной «Свежих
- * объявлений» выше, а два белых раздела подряд слиплись бы в один.
+ * Тёмная полоса в середине страницы (решение владельца, 2026-09-21): первый
+ * экран стал жёлтым, а дальше шли четыре почти белые секции подряд. Раздел без
+ * карточек — единственный, который можно затемнить, не переверстывая карточки,
+ * и это же место, где страница объясняет свой сценарий словами.
+ *
+ * Поверхность — `--footer-bg` (#383E41), та же, что у подвала: нового тёмного
+ * оттенка в палитре не заводим. Стороны площадки на тёмном различаются так же,
+ * как в тёмной теме: клиентская жёлтая (7.0:1), исполнительская белая (10.9:1).
+ * Серый `--secondary` (1.8:1) и золотой `--brand` (2.1:1) здесь не читаются.
+ * Подписи — `neutral-300`, как в подвале (7.3:1).
  */
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 scroll-mt-16 lg:scroll-mt-[72px] bg-background">
+    <section id="how-it-works" className="py-20 scroll-mt-16 lg:scroll-mt-[72px] bg-footer-bg">
       <PageContainer>
         {/* Заголовок. Подзаголовок «Выберите свой путь на платформе» убран
             (решение владельца, 2026-09-20): он пересказывал заголовок и ничего
             не добавлял. Такой же пустой подзаголовок раньше убрали у «Новых
             объявлений» — правило в DESIGN.md, раздел 5. */}
         <div className="text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-white">
             Как это работает
           </h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-16 max-w-5xl mx-auto relative">
           {/* Разделитель */}
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 opacity-50" />
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-white/20 -translate-x-1/2" />
 
           {/* Для клиентов */}
           <div id="how-it-works-clients" className="scroll-mt-24">
-            <h3 className="text-xl font-semibold text-primary flex items-center gap-3 mb-10">
+            <h3 className="text-xl font-semibold text-brand-fill flex items-center gap-3 mb-10">
               <ShoppingCart className="h-7 w-7" />
               Для клиентов
             </h3>
-            <div className="relative pl-8 border-l-2 border-primary/20 space-y-8">
+            <div className="relative pl-8 border-l-2 border-brand-fill/40 space-y-8">
               {clientSteps.map((step) => (
                 <div key={step.n} className="relative">
-                  <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-brand-fill ring-4 ring-background" />
-                  <h4 className="text-base font-semibold text-foreground mb-1">{step.title}</h4>
+                  <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-brand-fill ring-4 ring-footer-bg" />
+                  <h4 className="text-base font-semibold text-white mb-1">{step.title}</h4>
                   {/* min-h-12 ≈ 2 строки text-sm/leading-relaxed — грубая
                       подгонка под сегодняшний текст, чтобы однострочные пункты
                       клиента не расходились с двухстрочными у исполнителей.
@@ -92,9 +100,7 @@ export function HowItWorks() {
                       понадобится настоящая синхронизация по фактической
                       высоте контента, а не по текущей длине строк, тут нужен
                       CSS subgrid, а не min-height. */}
-                  <p className="text-sm text-muted-foreground leading-relaxed min-h-12">
-                    {step.desc}
-                  </p>
+                  <p className="text-sm text-neutral-300 leading-relaxed min-h-12">{step.desc}</p>
                 </div>
               ))}
             </div>
@@ -102,18 +108,16 @@ export function HowItWorks() {
 
           {/* Для исполнителей */}
           <div id="how-it-works-executors" className="scroll-mt-24">
-            <h3 className="text-xl font-semibold text-secondary flex items-center gap-3 mb-10">
+            <h3 className="text-xl font-semibold text-white flex items-center gap-3 mb-10">
               <Wrench className="h-7 w-7" />
               Для исполнителей
             </h3>
-            <div className="relative pl-8 border-l-2 border-secondary/20 space-y-8">
+            <div className="relative pl-8 border-l-2 border-white/30 space-y-8">
               {executorSteps.map((step) => (
                 <div key={step.n} className="relative">
-                  <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-secondary ring-4 ring-background" />
-                  <h4 className="text-base font-semibold text-foreground mb-1">{step.title}</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed min-h-12">
-                    {step.desc}
-                  </p>
+                  <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-white ring-4 ring-footer-bg" />
+                  <h4 className="text-base font-semibold text-white mb-1">{step.title}</h4>
+                  <p className="text-sm text-neutral-300 leading-relaxed min-h-12">{step.desc}</p>
                 </div>
               ))}
             </div>
