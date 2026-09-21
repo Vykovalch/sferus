@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, ShieldCheck, User } from "lucide-react";
+import { ClipboardList, FileText, Heart, LogOut, Settings, ShieldCheck, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +13,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Session } from "@/lib/auth";
 import { signOut } from "@/lib/auth-client";
+
+/**
+ * Разделы личного кабинета. Порядок значимый — в нём они и показываются.
+ *
+ * Список лежит здесь, а не в отдельном модуле: читатель у него один.
+ * Общий модуль был нужен, пока те же пункты рисовал сайдбар кабинета, —
+ * сайдбар удалён 2026-09-21 как вторая навигация, и посредник вместе с ним.
+ */
+const DASHBOARD_NAV_ITEMS = [
+  { href: "/dashboard/profile", label: "Профиль", icon: User },
+  { href: "/dashboard/services", label: "Мои услуги", icon: ClipboardList },
+  { href: "/dashboard/tasks", label: "Мои задания", icon: FileText },
+  { href: "/dashboard/favorites", label: "Избранное", icon: Heart },
+  { href: "/dashboard/settings", label: "Настройки", icon: Settings },
+];
 
 interface UserMenuProps {
   session: Session;
@@ -60,27 +75,46 @@ export function UserMenu({ session }: UserMenuProps) {
 
         <DropdownMenuSeparator />
 
-        {/* Единая точка входа в личный кабинет — детальная навигация уже в сайдбаре дашборда */}
-        <DropdownMenuItem asChild className="text-base font-medium py-2 px-2">
-          <Link href="/dashboard/profile" className="flex items-center gap-2 cursor-pointer">
-            <User className="h-4 w-4 text-muted-foreground" />
-            Личный кабинет
-          </Link>
-        </DropdownMenuItem>
+        {/* Отдельного пункта «Личный кабинет» нет (решение владельца,
+            2026-09-21): он вёл на `/dashboard`, а этот маршрут редиректит
+            на профиль — то есть в то же место, что и «Профиль» строкой ниже.
+            До 2026-09-21 пункт был единственным: детальная навигация жила
+            только в сайдбаре кабинета, и попасть, скажем, в «Избранное»
+            из шапки было нельзя. */}
+        {DASHBOARD_NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          return (
+            <DropdownMenuItem key={item.href} asChild className="text-base font-medium py-2 px-2">
+              <Link href={item.href} className="flex items-center gap-2 cursor-pointer">
+                <Icon className="h-4 w-4 text-muted-foreground" />
+                {item.label}
+              </Link>
+            </DropdownMenuItem>
+          );
+        })}
+
+        {/* Черта после разделов кабинета (решение владельца, 2026-09-21):
+            ниже неё — то, что к кабинету не относится, админка и выход. */}
+        <DropdownMenuSeparator />
 
         {/* Единственный вход в админку: ссылки на неё в интерфейсе не было
             вообще, адрес приходилось набирать руками. Пункт виден только
-            администратору — доступ всё равно проверяет layout админки. */}
-        {user.role === "admin" && (
-          <DropdownMenuItem asChild className="text-base font-medium py-2 px-2">
-            <Link href="/admin/listings" className="flex items-center gap-2 cursor-pointer">
-              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-              Админ-панель
-            </Link>
-          </DropdownMenuItem>
-        )}
+            администратору — доступ всё равно проверяет layout админки.
 
-        <DropdownMenuSeparator />
+            Своя черта идёт вместе с пунктом, а не отдельной строкой ниже:
+            у обычного пользователя пункт скрыт, и две черты подряд слиплись бы
+            в двойную линию. */}
+        {user.role === "admin" && (
+          <>
+            <DropdownMenuItem asChild className="text-base font-medium py-2 px-2">
+              <Link href="/admin/listings" className="flex items-center gap-2 cursor-pointer">
+                <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                Админ-панель
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
 
         <DropdownMenuItem
           onClick={handleSignOut}
