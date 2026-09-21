@@ -221,7 +221,7 @@ export function Header({ session, cities }: HeaderProps) {
                   ref={mobileSearchInputRef}
                   id="mobile-header-search"
                   {...searchInputProps}
-                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-input rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
+                  className="w-full h-10 pl-9 pr-3 text-sm bg-background border border-secondary/40 rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand-heading/60 transition-colors"
                 />
               </div>
               <div className="order-last basis-full flex gap-2 md:order-none md:basis-auto">
@@ -318,7 +318,7 @@ export function Header({ session, cities }: HeaderProps) {
             >
               <Form
                 action="/services"
-                className="flex w-full h-10 items-center relative bg-background border border-input rounded-full transition-colors focus-within:border-brand-heading/60"
+                className="flex w-full h-10 items-center relative bg-background border border-secondary/40 rounded-full transition-colors focus-within:border-brand-heading/60"
               >
                 <label htmlFor="header-search" className="sr-only">
                   Поиск услуг
