@@ -25,7 +25,7 @@ export async function HeroSection() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 aspect-[1440/460] bg-bottom bg-no-repeat bg-[length:100%_auto]"
-        // Адрес — инлайн-стилем, а не классом `bg-[url(...)]`: Turbopack
+        // Адрес — инлайн-стилем, а не классом с `url()` в имени: Turbopack
         // разрешает `url()` внутри CSS как модуль и на сборке падает
         // «Module not found» (2026-09-21). Из стиля он путь не трогает —
         // файл отдаётся из `public/`, как и прежнее фото первого экрана.
