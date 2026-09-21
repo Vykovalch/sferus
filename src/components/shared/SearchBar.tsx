@@ -66,7 +66,13 @@ export function SearchBar({
   return (
     <Form
       action="/services"
-      className="flex flex-col md:flex-row items-stretch bg-card/80 dark:bg-card/40 backdrop-blur-xl p-2 rounded-3xl md:rounded-full border border-border/80 shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 focus-within:border-brand-heading/60 gap-2 md:gap-0"
+      // Рамка в покое — `--secondary` на 40% (решение владельца, 2026-09-21).
+      // Прежняя `--border/80` давала 1.2:1 к белой подложке и 1.14:1 к небу
+      // первого экрана: края поля не было видно совсем, оно держалось на тени.
+      // Теперь 1.8:1 — край читается, а фокус (`--brand-heading/60`, 3.7:1)
+      // по-прежнему заметно сильнее покоя. Нового цвета не заводим: серый
+      // исполнительской стороны из той же холодной семьи, что поверхности.
+      className="flex flex-col md:flex-row items-stretch bg-card/80 dark:bg-card/40 backdrop-blur-xl p-2 rounded-3xl md:rounded-full border border-secondary/40 shadow-[0_20px_50px_rgba(0,0,0,0.03)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 focus-within:border-brand-heading/60 gap-2 md:gap-0"
     >
       <div className="relative flex-1 flex items-center group/input">
         <Search className="absolute left-4 h-5 w-5 text-muted-foreground transition-colors group-focus-within/input:text-brand-heading" />
