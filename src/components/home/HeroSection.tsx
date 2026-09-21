@@ -51,7 +51,10 @@ export async function HeroSection() {
             {" в Приднестровье"}
           </h1>
 
-          <div className="mb-10 max-w-3xl mx-auto">
+          {/* 24px до строки «Нужен исполнитель…» вместо прежних 40px (решение
+              владельца, 2026-09-21): подпись относится к поиску и должна
+              читаться вместе с ним, а не как отдельный блок. */}
+          <div className="mb-6 max-w-3xl mx-auto">
             <SearchBar cities={cities} trackVisibility />
           </div>
 
