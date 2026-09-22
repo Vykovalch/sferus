@@ -58,7 +58,7 @@ src/
 
   components/
     ui/                     # shadcn/radix — не трогаем руками
-    layout/                 # Header, Footer, MobileMenu, UserMenu, DashboardSidebar
+    layout/                 # Header, Footer, MobileMenu, UserMenu, CreateListingMenu, NotificationsMenu
     shared/                 # используется 2+ фичами (SearchBar, Pagination, PageContainer, ...)
     home/                   # секции главной страницы
     auth/                   # формы входа, регистрации, сброса пароля
