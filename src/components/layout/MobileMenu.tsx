@@ -17,7 +17,7 @@ export function MobileMenu() {
   }
 
   return (
-    <div className="md:hidden flex items-center">
+    <div className="xl:hidden flex items-center">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <button

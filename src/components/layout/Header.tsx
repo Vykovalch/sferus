@@ -78,7 +78,7 @@ export function Header({ session, cities }: HeaderProps) {
   const { heroVisible } = useHeroVisibility();
   const showCompactSearch = isHome ? !heroVisible : true;
 
-  // Раскрытие лупы в полноширинную строку поиска ниже xl (см. ниже) —
+  // Раскрытие лупы в полноширинную строку поиска ниже lg (см. ниже) —
   // локальное состояние одного компонента: в отличие от видимости Hero
   // и черновика, об этом не нужно договариваться с другими компонентами.
   //
@@ -120,9 +120,9 @@ export function Header({ session, cities }: HeaderProps) {
     const closeWatcher = BrowserCloseWatcher ? new BrowserCloseWatcher() : null;
     if (closeWatcher) closeWatcher.onclose = () => setMobileSearchUrlKey(null);
 
-    // С 1280px панели нет (xl:hidden), а затемнение и блокировка прокрутки
+    // С 1024px панели нет (lg:hidden), а затемнение и блокировка прокрутки
     // шторки остались бы — при расширении окна режим поиска закрывается.
-    const desktop = window.matchMedia("(min-width: 1280px)");
+    const desktop = window.matchMedia("(min-width: 1024px)");
     function handleDesktop(event: MediaQueryListEvent) {
       if (event.matches) setMobileSearchUrlKey(null);
     }
@@ -144,7 +144,7 @@ export function Header({ session, cities }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
-      {/* Режим поиска по лупе (ниже xl, решение владельца, 2026-09-19) —
+      {/* Режим поиска по лупе (ниже lg, решения владельца 2026-09-19 и 2026-09-22) —
           шторка `Sheet` из UI-кита со стороны top, как бургер-меню и фильтры.
           Она даёт затемнение (общее для сайта), блокировку прокрутки, Escape,
           закрытие нажатием по затемнению (оно дальше не проходит), удержание
@@ -163,7 +163,7 @@ export function Header({ session, cities }: HeaderProps) {
           Шторка всегда в разметке, а не под условием `showCompactSearch`:
           иначе исчезновение лупы (Hero выглянул из-за адресной строки
           браузера) закрывало бы поиск. При xl+ содержимого шторки не видно
-          (xl:hidden), а режим закрывается эффектом выше. */}
+          (lg:hidden), а режим закрывается эффектом выше. */}
       <Sheet
         open={isMobileSearchOpen}
         onOpenChange={(open) => setMobileSearchUrlKey(open ? urlKey : null)}
@@ -184,12 +184,12 @@ export function Header({ session, cities }: HeaderProps) {
             mobileSearchInputRef.current?.focus();
           }}
           aria-describedby={undefined}
-          className="xl:hidden gap-0 border-border bg-hero-bg text-foreground shadow-none"
+          className="lg:hidden gap-0 border-border bg-hero-bg text-foreground shadow-none"
         >
           <SheetTitle className="sr-only">Поиск услуг</SheetTitle>
           <PageContainer>
             {/* Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
-                с выбором города. Где полному полю не хватает места — до 1280px —
+                с выбором города. Где полному полю не хватает места — ниже 1024px —
                 вместо него лупа, и она раскрывает именно полный поиск.
 
                 Город на телефоне — второй строкой во всю ширину: на 375px поле
@@ -259,8 +259,7 @@ export function Header({ session, cities }: HeaderProps) {
       <PageContainer>
         {/* Отступы между зонами шапки растут ступенями (решения владельца,
             2026-09-22): 16px до 768px, где тесно; 24px от 768px, когда
-            появляются разделы и «Разместить»; 32px от 1280px, где добавляется
-            поле поиска. Раньше было 16px везде, то есть **меньше**, чем 32px
+            появляется «Разместить»; 32px от 1024px, где добавляется поле поиска. Раньше было 16px везде, то есть **меньше**, чем 32px
             между пунктами навигации, и три зоны сливались в сплошную строку;
             потом 16px и сразу 32px — при расширении окна зазор удваивался
             скачком.
@@ -271,10 +270,9 @@ export function Header({ session, cities }: HeaderProps) {
             не нужно равнять с межзонными: поле и лупа никогда не видны
             одновременно.
 
-            Поле гибкое и отдаёт добавленные зазоры само: на 1280px его ширина
-            около 412px вместо прежних 444px. */}
+            Поле гибкое и отдаёт добавленные зазоры само. */}
         <div className="flex h-16 lg:h-[72px] items-center">
-          <div className="flex w-full items-center justify-between gap-4 md:gap-6 xl:gap-8">
+          <div className="flex w-full items-center justify-between gap-4 md:gap-6 lg:gap-8">
             {/* Левая часть: бургер (только на узких экранах) и логотип Sferus.
                 Бургер слева от логотипа — решение владельца, 2026-09-17; меню
                 выезжает с той же стороны (MobileMenu, side="left"). */}
@@ -288,8 +286,15 @@ export function Header({ session, cities }: HeaderProps) {
               </Link>
             </div>
 
-            {/* Навигация идёт сразу за логотипом, перед поиском (решение
-                владельца, 2026-09-22): «логотип → разделы → поиск → действия» —
+            {/* Разделы показываются от 1280px (решение владельца, 2026-09-22):
+                ниже они уходят в бургер, а освободившиеся ~317px достаются полю
+                поиска. Порядок уступок при сужении экрана такой: первыми уходят
+                разделы (они продублированы в бургере и в подвале), потом поле
+                сворачивается в лупу (ниже 1024px), последней уходит «Разместить»
+                (ниже 768px). Логотип и аккаунт не уходят никогда.
+
+                Пункты стоят сразу за логотипом, перед поиском: «логотип →
+                разделы → поиск → действия» —
                 порядок Avito, Ozon, Wildberries, eBay и Amazon. Логотип
                 и разделы читаются одним блоком «где я и куда пойти», а поиск
                 встаёт в середину и растягивается до правой группы. До этого
@@ -304,7 +309,7 @@ export function Header({ session, cities }: HeaderProps) {
                 --primary). Цвет бренда только на hover, не как индикатор текущей
                 страницы — Услуги/Задания не должны гореть цветом бренда постоянно
                 после перехода. */}
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden xl:flex items-center gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -323,19 +328,22 @@ export function Header({ session, cities }: HeaderProps) {
                 каталога сделаны ссылками. Hero на главной отправляет ровно
                 такую же форму.
 
-                Поле — с xl (1280px) и всегда вместе с выбором города и кнопкой
-                «Найти»: поле без города — урезанный поиск, без кнопки — поиск
-                только по Enter. До xl вместо формы — лупа, разворачивающая ту же
+                Поле — с lg (1024px) и всегда вместе с выбором города и кнопкой
+                отправки: поле без города — урезанный поиск, без кнопки — поиск
+                только по Enter. Ниже lg вместо формы — лупа, разворачивающая ту же
                 строку поиска на всю ширину шапки (см. isMobileSearchOpen выше).
 
-                История границы: 2026-09-17 владелец экспериментом опустил её
-                с xl до lg (1024px). Замер критики главной (2026-09-19) показал:
-                на 1024px даже у гостя полю оставалось 101px при 139px выбора
-                города — виден только обрывок запроса. Граница возвращена на xl
-                (решение владельца, 2026-09-19); туда же добавлена кнопка «Найти»,
-                как в Hero и в панели по лупе. Поле на главной по-прежнему открыто,
-                а не за лупой: поиск — главное действие площадки, и где для поля
-                есть место, прятать его не нужно.
+                История границы. 2026-09-17 владелец опустил её до lg, и это
+                не сработало: замер 2026-09-19 показал, что на 1024px полю
+                оставалось около 100px при 139px выбора города. Границу вернули
+                на xl. 2026-09-22 её снова опустили до lg — но уже вместе
+                с лестницей видимости: разделы ушли в бургер ниже xl, и те ~317px,
+                что они занимали, достались полю. Замер: на 1024px полю остаётся
+                около 490px, из них на ввод порядка 260px. Ниже lg поле снова
+                не помещается (осталось бы ~250px на всё), поэтому там лупа.
+
+                Поле на главной открыто, а не за лупой: поиск — главное действие
+                площадки, и где для него есть место, прятать его не нужно.
 
                 Sticky-поведение (только на главной): пока на экране видна секция Hero
                 с собственным поиском, здесь этого блока нет — появляется
@@ -354,7 +362,7 @@ export function Header({ session, cities }: HeaderProps) {
             <search
               inert={!showCompactSearch}
               className={cn(
-                "hidden xl:flex flex-1 items-center overflow-hidden",
+                "hidden lg:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
                   ? "opacity-100 max-w-3xl"
@@ -419,7 +427,7 @@ export function Header({ session, cities }: HeaderProps) {
                   и читалась как служебная, наравне с колокольчиком, хотя поиск
                   в иерархии первый. Рамка того же серого, что у поля поиска,
                   поэтому свёрнутый поиск и развёрнутое поле читаются как одно
-                  и то же: с xl кнопка уступает место настоящему полю.
+                  и то же: с lg кнопка уступает место настоящему полю.
                   Жёлтая рамка занята действиями создания и сюда не подходит.
 
                   Сам блок стоит в правой части, рядом с аккаунтом: так её
@@ -440,7 +448,7 @@ export function Header({ session, cities }: HeaderProps) {
                   aria-label="Найти услугу"
                   aria-expanded={isMobileSearchOpen}
                   onClick={() => setMobileSearchUrlKey(urlKey)}
-                  className="relative tap-target xl:hidden flex size-10 items-center justify-center rounded-full border border-secondary/40 text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="relative tap-target lg:hidden flex size-10 items-center justify-center rounded-full border border-secondary/40 text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Search className="h-5 w-5" />
                 </button>
