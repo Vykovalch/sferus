@@ -55,7 +55,8 @@ export function UserMenu({ session }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="relative tap-target flex items-center rounded-full hover:bg-accent p-1 transition-colors outline-none"
+          aria-label="Меню профиля"
+          className="relative tap-target flex items-center rounded-full hover:bg-accent p-1 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.image ?? undefined} alt={user.name} />

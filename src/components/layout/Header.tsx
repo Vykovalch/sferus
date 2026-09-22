@@ -373,7 +373,7 @@ export function Header({ session, cities }: HeaderProps) {
                 и «Разместить», затем черта, затем личный блок (колокольчик
                 и аватар или «Войти» у гостя). Порядок внутри отвечает
                 постоянной иерархии из PRODUCT.md: поиск, размещение, аккаунт. */}
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-3">
               {/* Поиск до xl — кнопка с рамкой, а не голая иконка (решение
                   владельца, 2026-09-22): в ряду одинаковых иконок лупа терялась
                   и читалась как служебная, наравне с колокольчиком, хотя поиск
@@ -400,7 +400,7 @@ export function Header({ session, cities }: HeaderProps) {
                   aria-label="Найти услугу"
                   aria-expanded={isMobileSearchOpen}
                   onClick={() => setMobileSearchUrlKey(urlKey)}
-                  className="relative tap-target xl:hidden flex size-10 items-center justify-center rounded-full border border-secondary/40 text-foreground hover:bg-accent transition-colors"
+                  className="relative tap-target xl:hidden flex size-10 items-center justify-center rounded-full border border-secondary/40 text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Search className="h-5 w-5" />
                 </button>
@@ -428,7 +428,7 @@ export function Header({ session, cities }: HeaderProps) {
               ) : (
                 <Link
                   href="/login"
-                  className="relative tap-target text-base font-semibold text-foreground hover:text-primary transition-colors px-2"
+                  className="relative tap-target flex h-10 items-center rounded-full px-3 text-base font-semibold text-foreground hover:bg-accent hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Войти
                 </Link>

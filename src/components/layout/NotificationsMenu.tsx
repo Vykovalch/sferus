@@ -31,7 +31,7 @@ export function NotificationsMenu() {
           type="button"
           aria-label="Уведомления"
           title="Уведомления"
-          className="relative tap-target flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors outline-none cursor-pointer"
+          className="relative tap-target flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Bell aria-hidden="true" className="h-5 w-5" />
         </button>
