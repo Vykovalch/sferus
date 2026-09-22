@@ -347,14 +347,15 @@ export function Header({ session, cities }: HeaderProps) {
                 <label htmlFor="header-search" className="sr-only">
                   Поиск услуг
                 </label>
-                <Search
-                  aria-hidden="true"
-                  className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none"
-                />
+                {/* Декоративной лупы слева нет (решение владельца, 2026-09-22):
+                    отправка стала иконкой-лупой справа, и две одинаковые иконки
+                    в одном поле путали бы — одна ничего не делает, вторая
+                    отправляет. Так же устроены поля Amazon и Ozon. Освободившиеся
+                    20px отступа достались тексту запроса. */}
                 <input
                   id="header-search"
                   {...searchInputProps}
-                  className="min-w-0 flex-1 h-full pl-9 pr-3 text-sm bg-transparent rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
+                  className="min-w-0 flex-1 h-full pl-4 pr-3 text-sm bg-transparent rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
                 />
                 <div className="flex items-center shrink-0 pr-1">
                   <div aria-hidden="true" className="h-5 w-px bg-border mr-1" />
@@ -364,11 +365,22 @@ export function Header({ session, cities }: HeaderProps) {
                     onValueChange={selectCity}
                     variant="compact"
                   />
+                  {/* Отправка — иконка, а не слово «Найти» (решение владельца,
+                      2026-09-22): в компактном поле шапки кнопка с текстом
+                      занимала около 72px, иконка — 32px, и эти 40px вместе
+                      с отступом слева ушли в ширину запроса. В поиске первого
+                      экрана и в шторке по лупе надпись остаётся: там есть место,
+                      а слово понятнее иконки для тех, кто пришёл впервые.
+                      Заливка бренда сохранена — это по-прежнему целевое действие
+                      поля. `aria-label` и `title`: у кнопки без текста должно
+                      быть имя и подсказка. */}
                   <button
                     type="submit"
-                    className="ml-1 h-8 px-4 rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 text-sm font-semibold transition-colors"
+                    aria-label="Найти"
+                    title="Найти"
+                    className="ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    Найти
+                    <Search aria-hidden="true" className="h-4 w-4" />
                   </button>
                 </div>
                 {executorTypeField}
