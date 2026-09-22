@@ -272,6 +272,29 @@ export function Header({ session, cities }: HeaderProps) {
               </Link>
             </div>
 
+            {/* Навигация идёт сразу за логотипом, перед поиском (решение
+                владельца, 2026-09-22): «логотип → разделы → поиск → действия» —
+                порядок Avito, Ozon, Wildberries, eBay и Amazon. Логотип
+                и разделы читаются одним блоком «где я и куда пойти», а поиск
+                встаёт в середину и растягивается до правой группы. До этого
+                поиск стоял между логотипом и разделами и был ограничен 448px.
+
+                Навигация (Inter, 14px, ховер перекрашивает в цвет бренда
+                --primary). Цвет бренда только на hover, не как индикатор текущей
+                страницы — Услуги/Задания не должны гореть цветом бренда постоянно
+                после перехода. */}
+            <nav className="hidden md:flex items-center space-x-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-base font-semibold tracking-[0.01em] text-foreground hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
             {/* Поиск.
                 `next/form`: GET-форма, которая отправляется и без JS, а с JS
                 переходит без перезагрузки страницы. Отправленный поиск живёт
@@ -313,7 +336,7 @@ export function Header({ session, cities }: HeaderProps) {
                 "hidden xl:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
-                  ? "opacity-100 max-w-md"
+                  ? "opacity-100 max-w-3xl"
                   : "opacity-0 max-w-0 pointer-events-none",
               )}
             >
@@ -351,22 +374,6 @@ export function Header({ session, cities }: HeaderProps) {
                 {executorTypeField}
               </Form>
             </search>
-
-            {/* Центр: Навигация (Inter, 14px, ховер перекрашивает в цвет бренда
-                --primary). Цвет бренда только на hover, не как индикатор текущей
-                страницы — Услуги/Задания не должны гореть цветом бренда постоянно
-                после перехода. */}
-            <nav className="hidden md:flex items-center space-x-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-base font-semibold tracking-[0.01em] text-foreground hover:text-primary transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
 
             {/* Правая часть сгруппирована по типу (решения владельца,
                 2026-09-22): сначала два элемента управления — поиск
