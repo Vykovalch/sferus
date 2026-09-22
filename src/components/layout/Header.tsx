@@ -295,6 +295,11 @@ export function Header({ session, cities }: HeaderProps) {
                 встаёт в середину и растягивается до правой группы. До этого
                 поиск стоял между логотипом и разделами и был ограничен 448px.
 
+                Пункты не переносятся (`whitespace-nowrap`, решение владельца,
+                2026-09-22): на 768px «Как это работает» разбивалось на две строки,
+                и это читалось как поломка. Теперь нехватка места видна честно —
+                строка выходит за контейнер, а не притворяется двухэтажной.
+
                 Навигация (Inter, 14px, ховер перекрашивает в цвет бренда
                 --primary). Цвет бренда только на hover, не как индикатор текущей
                 страницы — Услуги/Задания не должны гореть цветом бренда постоянно
@@ -304,7 +309,7 @@ export function Header({ session, cities }: HeaderProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-base font-semibold tracking-[0.01em] text-foreground hover:text-primary transition-colors"
+                  className="whitespace-nowrap text-base font-semibold tracking-[0.01em] text-foreground hover:text-primary transition-colors"
                 >
                   {link.label}
                 </Link>
