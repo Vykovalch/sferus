@@ -257,8 +257,15 @@ export function Header({ session, cities }: HeaderProps) {
       </Sheet>
 
       <PageContainer>
-        <div className="flex h-16 lg:h-[72px] items-center gap-4">
-          <div className="flex items-center justify-between gap-4 w-full">
+        {/* Между зонами шапки — 16px, а от 1280px, где появляется поле поиска,
+            32px (решение владельца, 2026-09-22): раньше зазоры между логотипом,
+            разделами и полем были 16px, то есть **меньше**, чем расстояние между
+            самими пунктами навигации, и три зоны сливались в сплошную строку.
+            Правило: внутри группы отступ меньше, чем между группами. Поле —
+            гибкое, поэтому добавленные зазоры оно отдаёт само: на 1280px его
+            ширина падает с 444px до примерно 412px. */}
+        <div className="flex h-16 lg:h-[72px] items-center">
+          <div className="flex w-full items-center justify-between gap-4 xl:gap-8">
             {/* Левая часть: бургер (только на узких экранах) и логотип Sferus.
                 Бургер слева от логотипа — решение владельца, 2026-09-17; меню
                 выезжает с той же стороны (MobileMenu, side="left"). */}
@@ -283,7 +290,7 @@ export function Header({ session, cities }: HeaderProps) {
                 --primary). Цвет бренда только на hover, не как индикатор текущей
                 страницы — Услуги/Задания не должны гореть цветом бренда постоянно
                 после перехода. */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
