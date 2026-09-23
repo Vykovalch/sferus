@@ -58,8 +58,14 @@ export function MobileMenu() {
 
             {/* «Разместить» — те же пункты, что в выпадающем меню шапки
                 (CreateListingMenu). Видны и гостю: страницы создания сами
-                отправят на вход с возвратом в форму. */}
-            <div className="border-t border-border mt-2 pt-4 flex flex-col gap-1">
+                отправят на вход с возвратом в форму.
+
+                Скрыты от 1024px (решение владельца, 2026-09-23): там кнопка
+                «Разместить» уже стоит в шапке, и повторять её пункты в меню
+                незачем. Бургер — переполнение строки: в нём лежит ровно то,
+                что в шапку не поместилось. Ниже 1024px кнопки в шапке нет,
+                и эта секция — единственный вход в размещение. */}
+            <div className="lg:hidden border-t border-border mt-2 pt-4 flex flex-col gap-1">
               <p className="px-2 pb-1 text-xs font-medium text-muted-foreground">Разместить</p>
               {CREATE_LISTING_OPTIONS.map((option) => (
                 <Link
