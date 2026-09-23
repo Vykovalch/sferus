@@ -78,7 +78,7 @@ export function Header({ session, cities }: HeaderProps) {
   const { heroVisible } = useHeroVisibility();
   const showCompactSearch = isHome ? !heroVisible : true;
 
-  // Раскрытие лупы в полноширинную строку поиска ниже lg (см. ниже) —
+  // Раскрытие лупы в полноширинную строку поиска ниже md (см. ниже) —
   // локальное состояние одного компонента: в отличие от видимости Hero
   // и черновика, об этом не нужно договариваться с другими компонентами.
   //
@@ -120,9 +120,9 @@ export function Header({ session, cities }: HeaderProps) {
     const closeWatcher = BrowserCloseWatcher ? new BrowserCloseWatcher() : null;
     if (closeWatcher) closeWatcher.onclose = () => setMobileSearchUrlKey(null);
 
-    // С 1024px панели нет (lg:hidden), а затемнение и блокировка прокрутки
+    // С 768px панели нет (md:hidden), а затемнение и блокировка прокрутки
     // шторки остались бы — при расширении окна режим поиска закрывается.
-    const desktop = window.matchMedia("(min-width: 1024px)");
+    const desktop = window.matchMedia("(min-width: 768px)");
     function handleDesktop(event: MediaQueryListEvent) {
       if (event.matches) setMobileSearchUrlKey(null);
     }
@@ -144,7 +144,7 @@ export function Header({ session, cities }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-hero-bg/95 backdrop-blur-md">
-      {/* Режим поиска по лупе (ниже lg, решения владельца 2026-09-19 и 2026-09-22) —
+      {/* Режим поиска по лупе (ниже md, решения владельца 2026-09-19, 2026-09-22 и 2026-09-23) —
           шторка `Sheet` из UI-кита со стороны top, как бургер-меню и фильтры.
           Она даёт затемнение (общее для сайта), блокировку прокрутки, Escape,
           закрытие нажатием по затемнению (оно дальше не проходит), удержание
@@ -163,7 +163,7 @@ export function Header({ session, cities }: HeaderProps) {
           Шторка всегда в разметке, а не под условием `showCompactSearch`:
           иначе исчезновение лупы (Hero выглянул из-за адресной строки
           браузера) закрывало бы поиск. При xl+ содержимого шторки не видно
-          (lg:hidden), а режим закрывается эффектом выше. */}
+          (md:hidden), а режим закрывается эффектом выше. */}
       <Sheet
         open={isMobileSearchOpen}
         onOpenChange={(open) => setMobileSearchUrlKey(open ? urlKey : null)}
@@ -184,12 +184,12 @@ export function Header({ session, cities }: HeaderProps) {
             mobileSearchInputRef.current?.focus();
           }}
           aria-describedby={undefined}
-          className="lg:hidden gap-0 border-border bg-hero-bg text-foreground shadow-none"
+          className="md:hidden gap-0 border-border bg-hero-bg text-foreground shadow-none"
         >
           <SheetTitle className="sr-only">Поиск услуг</SheetTitle>
           <PageContainer>
             {/* Правило (решение владельца, 2026-09-17): поле поиска в шапке всегда
-                с выбором города. Где полному полю не хватает места — ниже 1024px —
+                с выбором города. Где полному полю не хватает места — ниже 768px —
                 вместо него лупа, и она раскрывает именно полный поиск.
 
                 Город на телефоне — второй строкой во всю ширину: на 375px поле
@@ -259,7 +259,7 @@ export function Header({ session, cities }: HeaderProps) {
       <PageContainer>
         {/* Отступы между зонами шапки растут ступенями (решения владельца,
             2026-09-22): 16px до 768px, где тесно; 24px от 768px, когда
-            появляется «Разместить»; 32px от 1024px, где добавляется поле поиска. Раньше было 16px везде, то есть **меньше**, чем 32px
+            появляется поле поиска. Раньше было 16px везде, то есть **меньше**, чем 32px
             между пунктами навигации, и три зоны сливались в сплошную строку;
             потом 16px и сразу 32px — при расширении окна зазор удваивался
             скачком.
@@ -272,7 +272,7 @@ export function Header({ session, cities }: HeaderProps) {
 
             Поле гибкое и отдаёт добавленные зазоры само. */}
         <div className="flex h-16 lg:h-[72px] items-center">
-          <div className="flex w-full items-center justify-between gap-4 md:gap-6 lg:gap-8">
+          <div className="flex w-full items-center justify-between gap-4 md:gap-8">
             {/* Левая часть: бургер (только на узких экранах) и логотип Sferus.
                 Бургер слева от логотипа — решение владельца, 2026-09-17; меню
                 выезжает с той же стороны (MobileMenu, side="left"). */}
@@ -362,7 +362,7 @@ export function Header({ session, cities }: HeaderProps) {
             <search
               inert={!showCompactSearch}
               className={cn(
-                "hidden lg:flex flex-1 items-center overflow-hidden",
+                "hidden md:flex flex-1 items-center overflow-hidden",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
                   ? "opacity-100 max-w-3xl"
@@ -427,7 +427,7 @@ export function Header({ session, cities }: HeaderProps) {
                   и читалась как служебная, наравне с колокольчиком, хотя поиск
                   в иерархии первый. Рамка того же серого, что у поля поиска,
                   поэтому свёрнутый поиск и развёрнутое поле читаются как одно
-                  и то же: с lg кнопка уступает место настоящему полю.
+                  и то же: с md кнопка уступает место настоящему полю.
                   Жёлтая рамка занята действиями создания и сюда не подходит.
 
                   Сам блок стоит в правой части, рядом с аккаунтом: так её
@@ -448,7 +448,7 @@ export function Header({ session, cities }: HeaderProps) {
                   aria-label="Найти услугу"
                   aria-expanded={isMobileSearchOpen}
                   onClick={() => setMobileSearchUrlKey(urlKey)}
-                  className="relative tap-target lg:hidden flex size-10 items-center justify-center rounded-full border border-secondary/40 text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="relative tap-target md:hidden flex size-10 items-center justify-center rounded-full border border-secondary/40 text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Search className="h-5 w-5" />
                 </button>
@@ -457,10 +457,13 @@ export function Header({ session, cities }: HeaderProps) {
               <CreateListingMenu />
 
               {/* Черта отделяет элементы управления от личного блока и стоит
-                  в обоих состояниях (решение владельца, 2026-09-22): раньше
-                  она была только у вошедшего, и при входе правая часть
-                  перестраивалась не только составом, но и разметкой. */}
-              <div aria-hidden="true" className="hidden md:block h-6 w-px bg-border" />
+                  в обоих состояниях — и у гостя тоже (решение владельца,
+                  2026-09-22): раньше она была только у вошедшего, и при входе
+                  правая часть перестраивалась не только составом.
+
+                  Появляется вместе с «Разместить» (от 1024px): ниже кнопки нет,
+                  и отделять было бы нечего — черта повисла бы перед аккаунтом. */}
+              <div aria-hidden="true" className="hidden lg:block h-6 w-px bg-border" />
 
               {/* Сердечка «Избранное» здесь больше нет (решение владельца,
                   2026-09-21): раздел есть в меню под аватаром, и двух входов

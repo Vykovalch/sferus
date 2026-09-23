@@ -71,8 +71,12 @@ export function CreateListingOptionLabel({ option }: { option: CreateListingOpti
 }
 
 /**
- * Кнопка «Разместить» в шапке — от 768px, для гостя и вошедшего. Ниже те же
+ * Кнопка «Разместить» в шапке — от 1024px, для гостя и вошедшего. Ниже те же
  * пункты живут в бургер-меню отдельной секцией.
+ *
+ * Порог выбран владельцем (2026-09-23) как размен в пользу поиска: на 768–1023px
+ * место достаётся полю поиска, а не кнопке. Без кнопки полю там остаётся ~420px
+ * (на ввод ~190px); с кнопкой поле не поместилось бы и свернулось в лупу.
  *
  * 2026-09-23 порог на день поднимали до 1024px под доводом «поиск важнее
  * размещения, значит кнопка уступает первой». Довод оказался ошибочным:
@@ -104,7 +108,7 @@ export function CreateListingMenu() {
         <Button
           type="button"
           variant="outline"
-          className="hidden md:inline-flex h-10 gap-2 rounded-full border-brand-fill text-base text-foreground px-5 font-semibold hover:bg-brand-fill hover:text-brand-fill-foreground aria-expanded:bg-brand-fill aria-expanded:text-brand-fill-foreground transition-colors"
+          className="hidden lg:inline-flex h-10 gap-2 rounded-full border-brand-fill text-base text-foreground px-5 font-semibold hover:bg-brand-fill hover:text-brand-fill-foreground aria-expanded:bg-brand-fill aria-expanded:text-brand-fill-foreground transition-colors"
         >
           <Plus aria-hidden="true" className="size-4" />
           Разместить
