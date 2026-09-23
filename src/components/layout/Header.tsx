@@ -310,6 +310,12 @@ export function Header({ session, cities }: HeaderProps) {
                 встаёт в середину и растягивается до правой группы. До этого
                 поиск стоял между логотипом и разделами и был ограничен 448px.
 
+                Логотип отделён от разделов сильнее, чем разделы друг от друга:
+                48px против 24px (решение владельца, 2026-09-23). При прежних
+                32px против 24px логотип читался как первый пункт меню. По той же
+                причине разделы набраны `font-medium`, а не `font-semibold`:
+                бренд тяжелее навигации, навигация тяжелее обычного текста.
+
                 Пункты не переносятся (`whitespace-nowrap`, решение владельца,
                 2026-09-22): на 768px «Как это работает» разбивалось на две строки,
                 и это читалось как поломка. Теперь нехватка места видна честно —
@@ -319,12 +325,12 @@ export function Header({ session, cities }: HeaderProps) {
                 --primary). Цвет бренда только на hover, не как индикатор текущей
                 страницы — Услуги/Задания не должны гореть цветом бренда постоянно
                 после перехода. */}
-            <nav className="hidden xl:flex items-center gap-6">
+            <nav className="hidden xl:flex items-center gap-6 ml-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="whitespace-nowrap text-base font-semibold tracking-[0.01em] text-foreground hover:text-primary transition-colors"
+                  className="whitespace-nowrap text-base font-medium tracking-[0.01em] text-foreground hover:text-primary transition-colors"
                 >
                   {link.label}
                 </Link>
