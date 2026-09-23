@@ -234,11 +234,20 @@ export function Header({ session, cities }: HeaderProps) {
                     variant="block"
                   />
                 </div>
+                {/* Отправка — жёлтая иконка-лупа, как в поле поиска на широких
+                    экранах (решение владельца, 2026-09-23). Цвет разводит роли:
+                    серая лупа в шапке открывает поиск, жёлтая — отправляет
+                    запрос. На телефоне город и кнопка стоят в одной строке,
+                    и замена слова значком отдаёт городу около 50px.
+                    44px — зона касания. В Hero надпись «Найти» остаётся:
+                    там первый экран и место есть. */}
                 <button
                   type="submit"
-                  className="shrink-0 h-11 md:h-10 px-5 rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 text-sm font-semibold transition-colors"
+                  aria-label="Найти"
+                  title="Найти"
+                  className="shrink-0 flex size-11 md:size-10 items-center justify-center rounded-full bg-brand-fill text-brand-fill-foreground hover:bg-brand-fill/90 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  Найти
+                  <Search aria-hidden="true" className="h-5 w-5" />
                 </button>
               </div>
               <SheetClose asChild>
