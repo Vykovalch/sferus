@@ -422,13 +422,22 @@ export function Header({ session, cities }: HeaderProps) {
                 и аватар или «Войти» у гостя). Порядок внутри отвечает
                 постоянной иерархии из PRODUCT.md: поиск, размещение, аккаунт. */}
             <div className="flex items-center gap-3">
-              {/* Поиск до xl — кнопка с рамкой, а не голая иконка (решение
-                  владельца, 2026-09-22): в ряду одинаковых иконок лупа терялась
-                  и читалась как служебная, наравне с колокольчиком, хотя поиск
-                  в иерархии первый. Рамка того же серого, что у поля поиска,
-                  поэтому свёрнутый поиск и развёрнутое поле читаются как одно
-                  и то же: с md кнопка уступает место настоящему полю.
-                  Жёлтая рамка занята действиями создания и сюда не подходит.
+              {/* Лупа — обычная иконка, без рамки (решение владельца, 2026-09-23).
+                  Рамку добавляли 2026-09-22, когда лупа стояла в ряду
+                  «лупа — Разместить — колокольчик — аватар» и терялась среди
+                  служебных иконок. Ниже 768px состав другой — лупа, колокольчик,
+                  аватар, — и рамка делала её белой вороной. Выделяет поиск
+                  порядок: он первый в ряду.
+
+                  Жёлтой иконку не делаем: #FFC825 на фоне шапки даёт 1.6:1
+                  при минимуме 3:1 для значимой графики, а жёлтая заливка
+                  закреплена за целевым действием (отправка поиска, «Найти»).
+
+                  По практике 2026 года поиск на телефоне — вообще не иконка,
+                  а поле во всю ширину отдельной строкой (Avito, Ozon, Etsy).
+                  В строку шапки на 390px оно не влезает: после бургера,
+                  логотипа и аккаунта остаётся ~100px при нужных ~150px.
+                  Отдельная строка — отложенный шаг, он меняет высоту шапки.
 
                   Сам блок стоит в правой части, рядом с аккаунтом: так её
                   ставят крупные маркетплейсы, и на телефоне она попадает
@@ -448,7 +457,7 @@ export function Header({ session, cities }: HeaderProps) {
                   aria-label="Найти услугу"
                   aria-expanded={isMobileSearchOpen}
                   onClick={() => setMobileSearchUrlKey(urlKey)}
-                  className="relative tap-target md:hidden flex size-10 items-center justify-center rounded-full border border-secondary/40 text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="relative tap-target md:hidden flex size-10 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <Search className="h-5 w-5" />
                 </button>
