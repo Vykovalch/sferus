@@ -378,7 +378,12 @@ export function Header({ session, cities }: HeaderProps) {
             <search
               inert={!showCompactSearch}
               className={cn(
-                "hidden md:flex flex-1 items-center overflow-hidden",
+                // -10px справа — оптическая компенсация (замер владельца
+                // на 900px, 2026-09-23): у кнопок-иконок справа около 11px
+                // собственного воздуха вокруг значка, поэтому при равных 32px
+                // зазор слева читался как 33px, а справа как 43px. Компенсация
+                // выравнивает их по значку, а не по невидимой границе кнопки.
+                "hidden md:flex flex-1 items-center overflow-hidden md:-mr-2.5",
                 isHome && "transition-[opacity,max-width] duration-300 ease-out",
                 showCompactSearch
                   ? "opacity-100 max-w-3xl"
