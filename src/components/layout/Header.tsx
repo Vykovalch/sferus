@@ -251,10 +251,15 @@ export function Header({ session, cities }: HeaderProps) {
                 </button>
               </div>
               <SheetClose asChild>
+                {/* Крестик того же размера, что кнопка отправки во второй
+                    строке (решение владельца, 2026-09-23): иначе поле ввода
+                    и выбор города заканчивались на разных линиях — замер
+                    владельца показал разницу в 36px. Заодно 44px — зона
+                    касания, и вспомогательный класс больше не нужен. */}
                 <button
                   type="button"
                   aria-label="Закрыть поиск"
-                  className="relative tap-target shrink-0 text-foreground hover:text-primary transition-colors p-1"
+                  className="shrink-0 flex size-11 items-center justify-center rounded-full text-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <X className="h-5 w-5" />
                 </button>
