@@ -216,7 +216,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-6 md:gap-x-6">
                     {results.map((service) => (
                       <ServiceCard
                         key={service.id}
@@ -280,7 +280,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
       <PageContainer className="py-6">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 md:gap-x-6">
           {categories.map((cat) => (
             <CategoryCard
               key={cat.slug}

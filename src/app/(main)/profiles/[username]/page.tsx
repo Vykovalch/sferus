@@ -158,7 +158,7 @@ export default async function PublicProfilePage({
                 <h2 className="text-sm font-medium text-foreground mb-3">
                   Объявления ({services.length})
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-6 md:gap-x-6">
                   {services.map((service) => (
                     <ServiceCard
                       key={service.id}
