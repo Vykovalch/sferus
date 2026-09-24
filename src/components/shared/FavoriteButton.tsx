@@ -15,6 +15,13 @@ interface FavoriteButtonProps {
   isFavorite: boolean;
   isAuthenticated: boolean;
   className?: string;
+  /**
+   * Размер самого сердечка. По умолчанию 14px — он подходит спискам и строкам.
+   * Карточка услуги передаёт 16px: там отметка лежит на фотографии в белом
+   * кружке 32px, и 14px в нём выглядели крапинкой (решение владельца,
+   * 2026-09-24).
+   */
+  iconClassName?: string;
 }
 
 /**
@@ -39,6 +46,7 @@ export function FavoriteButton({
   isFavorite,
   isAuthenticated,
   className,
+  iconClassName = "h-3.5 w-3.5",
 }: FavoriteButtonProps) {
   const [state, formAction] = useActionState<ActionState<{ isFavorite: boolean }>, FormData>(
     toggleFavorite,
@@ -60,7 +68,7 @@ export function FavoriteButton({
         aria-label="Войдите, чтобы добавить в избранное"
         className={cn("relative tap-target transition-colors", className)}
       >
-        <Heart className="h-3.5 w-3.5 text-muted-foreground" />
+        <Heart className={cn(iconClassName, "text-muted-foreground")} />
       </Link>
     );
   }
@@ -83,7 +91,8 @@ export function FavoriteButton({
       >
         <Heart
           className={cn(
-            "h-3.5 w-3.5 transition-colors",
+            iconClassName,
+            "transition-colors",
             optimistic ? "fill-brand text-brand" : "text-muted-foreground",
           )}
         />
