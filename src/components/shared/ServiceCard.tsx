@@ -42,17 +42,18 @@ export function ServiceCard({
   const isCompany = authorType === "company";
 
   return (
-    // Контейнера у карточки нет (решение владельца, 2026-09-24): ни заливки,
-    // ни рамки, ни тени. Форму задаёт сама фотография, карточки разделяет воздух —
-    // так устроены витрины Avito, Ozon, Etsy и Airbnb. Прежняя рамка повторяла
-    // линию фотографии второй раз, а на белой секции «Новые объявления» была
-    // единственным, что отделяло белую карточку от белого фона.
+    // Белая плитка без рамки (решения владельца, 2026-09-24). Рамку убрали
+    // первой: она повторяла линию фотографии, а на белой секции «Новые
+    // объявления» была единственным, что отделяло белую карточку от белого
+    // фона. Затем вернули заливку — без неё карточки на сером фоне каталога
+    // выглядели плавающими.
     //
-    // Рамки остаются у карточек без фотографии — задание, категория: там
-    // контейнер и есть форма.
-    <article className="group relative">
-      {/* Фото: скругление и обрезка теперь здесь, а не на карточке */}
-      <div className="aspect-[1.5] relative overflow-hidden rounded-2xl bg-muted">
+    // Итог: на сером фоне карточка читается плиткой, на белой секции —
+    // фотографией с подписью, потому что белое на белом не видно. Линии,
+    // повторяющей фотографию, нет ни там, ни там.
+    <article className="group relative bg-card rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+      {/* Фото. Скругление даёт плитка (`overflow-hidden`), своего у фото нет. */}
+      <div className="aspect-[1.5] relative overflow-hidden bg-muted">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -74,13 +75,9 @@ export function ServiceCard({
         />
       </div>
 
-      {/* Контент: боковых отступов нет — текст выравнивается по краям
-          фотографии, а не по внутреннему полю исчезнувшей коробки. */}
-      <div className="pt-3">
-        {/* Отклик на наведение — подчёркивание названия и приближение
-            фотографии выше. Тень и подъём убраны вместе с контейнером:
-            они рисовали бы прямоугольник, которого больше нет. */}
-        <h3 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-2 group-hover:underline underline-offset-2 decoration-foreground/40">
+      {/* Контент */}
+      <div className="p-3">
+        <h3 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-2">
           <Link href={`/services/${categorySlug}/${id}`} className="after:absolute after:inset-0">
             {title}
           </Link>
