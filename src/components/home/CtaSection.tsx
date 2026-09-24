@@ -7,36 +7,36 @@ interface CtaSectionProps {
 }
 
 /**
- * Блок призыва в конце главной: две карточки с диагональной заливкой и белым
- * текстом (образец владельца, 2026-09-24, второй за день).
+ * Блок призыва в конце главной: две карточки с диагональной заливкой.
+ * Композиция, направление градиента, размер и положение водяных знаков — с
+ * образца владельца (2026-09-24).
  *
- * История одного дня. Сначала здесь были белые карточки с рамками 2px
- * и контурными кнопками: три почти белых тона подряд, цвет только в линиях,
- * а последний призыв страницы оформлен слабее, чем «Найти» на первом экране.
- * Потом пробовали сплошную полосу из жёлтой и тёмной половин. Потом —
- * разбавленную жёлтую заливку 10%. Теперь заливки плотные и с градиентом;
- * цвета и направление сняты пипеткой с образца владельца.
+ * История одного дня. Белые карточки с рамками → сплошная полоса из жёлтой
+ * и тёмной половин → разбавленная жёлтая заливка 10% → плотные градиенты
+ * с образца → правка цветов (желтее и серее) → серый текст на жёлтой →
+ * этот проход. Такой длины путь стоит помнить: следующий, кто захочет
+ * «просто поменять цвет», меняет его шестой раз.
  *
- * Стороны площадки по-прежнему различаются (DESIGN.md, «Деление клиент /
- * исполнитель»): у клиентов тёплая жёлто-золотая, у исполнителей спокойная
- * серая. Поверхности заданы токенами `--cta-*` в globals.css; цвета сняты
- * с образца и подправлены владельцем 2026-09-24 — первая желтее, вторая серее.
+ * **Чем этот проход отличается.** Серый текст на жёлтой заливке давал
+ * 2.3-3.3:1 и читался как отключённая надпись. Заменён на чернила из того же
+ * тона, что и заливка (`--cta-client-ink`, 71°): 5.1:1 на тёмном краю
+ * и 7.0:1 на светлом. Правило общее и не только про цифры — на цветной
+ * поверхности текст тонируется из её же тона; серый на цвете всегда выглядит
+ * грязным, потому что не принадлежит ни поверхности, ни тексту.
  *
- * Текст белый на обеих карточках. Кнопки разные, так на образце: у клиентов
- * прозрачная `bg-white/20` с рамкой `border-white/45`, у исполнителей сплошная
- * белая с тёмным текстом. Стрелок внутри нет — правило DESIGN.md, кнопка
- * заявляет о себе заливкой и формой.
+ * Стороны площадки различаются (DESIGN.md, «Деление клиент / исполнитель»):
+ * у клиентов тёплая жёлто-золотая заливка, у исполнителей спокойная серая.
+ * Поверхности заданы токенами `--cta-*` в globals.css.
  *
- * **Белый текст на жёлтой карточке нормы контраста не набирает** — 2.0:1
- * в светлом углу и 2.9:1 в тёмном при норме 4.5:1. Разработчик предлагал
- * тёмный текст (5.9:1 … 8.4:1) и показал вид рядом с образцом; владелец
- * посмотрел и подтвердил свой макет — «сделай точно так, как на картинке»
- * (2026-09-24). Это его решение, принятое с числами на руках, а не недосмотр.
- * Записано в PROGRESS.md, «Известные проблемы», пункт 37, вместе со способами
- * закрыть, если владелец передумает.
+ * Кнопки — сплошные, каждая максимально контрастна своей заливке: на жёлтой
+ * из чернил с тёплой белой подписью (край 6.5:1), на серой белая с тёмной
+ * (край 4.9:1). Прозрачная кнопка с образца убрана: белая подпись на ней
+ * давала 2.0:1, а серая — 3.4:1, и в обоих случаях главное действие страницы
+ * выглядело слабее ссылки. Стрелок внутри нет — правило DESIGN.md.
  *
- * На серой карточке белый в порядке: 4.2:1 в светлом углу — заголовок там
- * крупный, норма 3:1, а подписи стоят ниже по градиенту, где 5.4:1.
+ * Тень у карточек тонирована каждая своим тоном, со смещением и размытием.
+ * Обводка кнопки при фокусе и выделение текста тоже заданы — на цветной
+ * заливке браузерные умолчания выпадают из палитры.
  */
 export function CtaSection({ isAuthenticated }: CtaSectionProps) {
   return (
@@ -49,23 +49,24 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Клиентам: тёплая сторона */}
-          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12">
+          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12 shadow-[0_18px_40px_-20px_rgba(74,44,0,0.55)] selection:bg-cta-client-ink selection:text-cta-client-paper">
             {/* Водяной знак: без отклика на наведение. Увеличение по ховеру
                 обещало бы нажатие там, где его нет — нажимается кнопка внутри,
-                а не карточка. Угол верхний правый и размер 80px — с образца. */}
-            <div className="pointer-events-none absolute right-6 top-6 hidden text-white/10 sm:block md:right-10 md:top-10">
+                а не карточка. Тонирован чернилами, а не белым: белый на жёлтом
+                давал мутную дымку вместо рисунка. */}
+            <div className="pointer-events-none absolute right-6 top-6 hidden text-cta-client-ink/10 sm:block md:right-10 md:top-10">
               <Search aria-hidden="true" className="size-20" strokeWidth={1.5} />
             </div>
             <div className="relative">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-white">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-cta-client-ink">
                 Нужна услуга?
               </h3>
-              <p className="text-base text-white mb-8 max-w-sm leading-relaxed">
+              <p className="text-base text-cta-client-ink mb-8 max-w-sm leading-relaxed">
                 Изучите каталог категорий и найдите специалиста под любую задачу.
               </p>
               <Link
                 href="/services"
-                className="inline-block rounded-full border border-white/45 bg-white/20 px-6 py-3 sm:px-8 sm:py-4 font-semibold text-white transition-colors hover:bg-white/30 active:scale-95"
+                className="inline-block rounded-full bg-cta-client-ink px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-paper shadow-[0_8px_18px_-10px_rgba(40,24,0,0.9)] transition-[background-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_14px_26px_-12px_rgba(40,24,0,0.95)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
               >
                 Смотреть все категории
               </Link>
@@ -73,12 +74,12 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
           </div>
 
           {/* Исполнителям: холодная сторона */}
-          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-performer-from to-cta-performer-to p-6 sm:p-8 md:p-12">
+          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-performer-from to-cta-performer-to p-6 sm:p-8 md:p-12 shadow-[0_18px_40px_-20px_rgba(30,40,46,0.5)] selection:bg-white selection:text-foreground">
             <div className="pointer-events-none absolute right-6 top-6 hidden text-white/10 sm:block md:right-10 md:top-10">
               <Briefcase aria-hidden="true" className="size-20" strokeWidth={1.5} />
             </div>
             <div className="relative">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-white">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-white">
                 Принимаете заказы?
               </h3>
               <p className="text-base text-white mb-8 max-w-sm leading-relaxed">
@@ -86,7 +87,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href={isAuthenticated ? "/services/new" : "/register"}
-                className="inline-block rounded-full bg-white px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground transition-colors hover:bg-white/90 active:scale-95"
+                className="inline-block rounded-full bg-white px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground shadow-[0_8px_18px_-10px_rgba(20,28,33,0.9)] transition-[background-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_14px_26px_-12px_rgba(20,28,33,0.95)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               >
                 Создать услугу
               </Link>

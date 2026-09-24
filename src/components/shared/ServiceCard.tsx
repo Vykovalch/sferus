@@ -103,9 +103,16 @@ export function ServiceCard({
           </Link>
         </h3>
 
-        {/* Автор и город — один блок мелких фактов: между ними 4px, а перед
-            ценой 12px (решение владельца, 2026-09-24). Раньше все три строки
-            стояли через 8–12px и читались как список, а не как группы.
+        {/* Три блока: название, плотная пара фактов, цена. Отступы 8 / 4 / 8 —
+            блоки разделены одинаково, внутри пары тесно.
+
+            Сначала перед ценой стояло 12px как третья ступень шкалы 4 / 8 / 12
+            (решение владельца, 2026-09-24). Замер по скриншоту в масштабе 1:1
+            показал, что на экране это самый большой промежуток карточки —
+            19px от букв до букв против 17px после фотографии, — и цена
+            отваливалась вниз, тем более что под ней ещё 24px до следующего
+            ряда сетки. Уменьшено до 8px тем же днём.
+
             Иконки 12px, под размер текста рядом: при 14px значок был крупнее
             подписи, которую сопровождает. */}
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1 min-w-0">
@@ -117,13 +124,20 @@ export function ServiceCard({
           <span className="truncate">{authorName}</span>
         </div>
 
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
           <MapPin className="h-3 w-3 flex-shrink-0" />
           <span>{city}</span>
         </div>
 
-        <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
-          <Wallet className="h-4 w-4 flex-shrink-0" />
+        {/* Цена — 14px medium, а не semibold: полужирная она была ровно того же
+            размера и веса, что название, и на карточке получалось два
+            одинаково громких заголовка. Размер оставлен 14px — на 12px цена
+            встала бы в один ряд с городом и потерялась среди серых фактов.
+            Владелец держит ту же линию с 2026-09-24: «цена в услугах
+            примерная, увеличивать шрифт для неё не нужно». Иконка 14px под
+            размер текста, как у автора и города. */}
+        <div className="flex items-center gap-1 text-sm font-medium text-foreground">
+          <Wallet className="h-3.5 w-3.5 flex-shrink-0" />
           <span className="truncate">{price}</span>
         </div>
       </div>
