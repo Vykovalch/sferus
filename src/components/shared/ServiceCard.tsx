@@ -90,17 +90,22 @@ export function ServiceCard({
           </Link>
         </h3>
 
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2 min-w-0">
+        {/* Автор и город — один блок мелких фактов: между ними 4px, а перед
+            ценой 12px (решение владельца, 2026-09-24). Раньше все три строки
+            стояли через 8–12px и читались как список, а не как группы.
+            Иконки 12px, под размер текста рядом: при 14px значок был крупнее
+            подписи, которую сопровождает. */}
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1 min-w-0">
           {isCompany ? (
-            <Building2 className="h-3.5 w-3.5 flex-shrink-0" />
+            <Building2 className="h-3 w-3 flex-shrink-0" />
           ) : (
-            <User className="h-3.5 w-3.5 flex-shrink-0" />
+            <User className="h-3 w-3 flex-shrink-0" />
           )}
           <span className="truncate">{authorName}</span>
         </div>
 
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
-          <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+          <MapPin className="h-3 w-3 flex-shrink-0" />
           <span>{city}</span>
         </div>
 
