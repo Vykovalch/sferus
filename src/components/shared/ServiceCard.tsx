@@ -70,24 +70,18 @@ export function ServiceCard({
             <Camera className="h-10 w-10 text-muted-foreground/40" />
           </div>
         )}
-        {/* Отметка лежит на фотографии, поэтому у неё белый кружок: под
-            снимком цвет непредсказуем, и без подложки иконка то видна, то нет
-            (норма для значимой графики — 3:1). Так же делают Etsy, Booking,
-            Avito; без подложки обходится Airbnb, но там сердечко с тенью
-            и контуром.
-
-            32px и сердечко 16px (решение владельца, 2026-09-24): прежние
-            26px и 14px на фотографии читались крапинкой. Размер один на всех
-            экранах — на телефоне карточка вдвое уже, и кружок там занимает
-            пятую часть ширины фотографии, как у Avito. Белизна 85%, а не 70%:
-            на тёмных снимках подложка была полупрозрачной и иконка тонула.
-            Зона касания 44px приходит из `tap-target` внутри кнопки. */}
+        {/* Отметка в кружке 32px с полупрозрачной заливкой и обводкой в цвет
+            сердечка (решение владельца, 2026-09-24). Всё оформление кружка
+            живёт в `FavoriteButton`, у константы `OVERLAY_CHIP`: цвет обводки
+            зависит от состояния, а состояние знает только сам компонент.
+            Здесь остаётся одно положение. Зона касания 44px приходит
+            из `tap-target` внутри кнопки. */}
         <FavoriteButton
           target={{ kind: "service", id }}
           isFavorite={isFavorite}
           isAuthenticated={isAuthenticated}
-          iconClassName="h-4 w-4"
-          className="absolute top-2 right-2 z-10 flex size-8 items-center justify-center rounded-full bg-white/85 backdrop-blur-sm hover:bg-white"
+          variant="overlay"
+          className="absolute top-2 right-2 z-10"
         />
       </div>
 

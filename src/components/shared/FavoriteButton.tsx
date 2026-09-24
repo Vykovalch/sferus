@@ -17,12 +17,45 @@ interface FavoriteButtonProps {
   className?: string;
   /**
    * Размер самого сердечка. По умолчанию 14px — он подходит спискам и строкам.
-   * Карточка услуги передаёт 16px: там отметка лежит на фотографии в белом
-   * кружке 32px, и 14px в нём выглядели крапинкой (решение владельца,
-   * 2026-09-24).
+   * Вариант `overlay` задаёт 24px сам.
    */
   iconClassName?: string;
+  /**
+   * `plain` — контурное сердечко на светлой поверхности: списки, строки,
+   * шапка объявления. `overlay` — поверх фотографии, где цвет под отметкой
+   * непредсказуем.
+   */
+  variant?: "plain" | "overlay";
 }
+
+/**
+ * Как отметка выглядит поверх фотографии (решение владельца, 2026-09-24).
+ *
+ * Кружок 32px, заливка белая на 70% с размытием подложки, обводка 1.5px —
+ * **в цвет сердечка**, не белая. Сердечко 16px.
+ *
+ * Обводка здесь не украшение, а то, что позволило сделать заливку прозрачнее.
+ * Раньше кружок был белым на 85% и без обводки, и всю границу держала одна
+ * заливка. Владелец попросил её облегчить; просто убавить непрозрачность
+ * было нельзя — сохранённое золотое сердечко на 85% стояло на 3.6:1 при норме
+ * 3:1 для значимой графики. Обводка в цвет сердечка даёт вторую границу,
+ * независимую от заливки, и запас появился.
+ *
+ * Замеры при 70%, норма 3:1:
+ * - несохранённое `--muted-foreground`: к своей заливке 3.6:1 на чёрном
+ *   снимке и 7.5:1 на белом;
+ * - сохранённое `--brand`: к своей заливке 2.4:1 на чёрном снимке, но обводка
+ *   того же цвета к самой фотографии — 4.1:1. На тёмном снимке отметку держит
+ *   обводка, на светлом — сердечко.
+ *
+ * Самое слабое место — снимок средней светлоты: там обводка к фотографии
+ * 1.9:1 и 1.3:1, и работает только сердечко внутри (5.3:1 и 3.6:1).
+ * Поднять заливку до 80% — один символ, если на живых фотографиях
+ * не понравится.
+ */
+const OVERLAY_CHIP =
+  "flex size-8 items-center justify-center rounded-full border-[1.5px] bg-white/70 backdrop-blur-sm transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2";
+const OVERLAY_ICON = "size-4";
 
 /**
  * Отметка «в избранном».
@@ -47,7 +80,11 @@ export function FavoriteButton({
   isAuthenticated,
   className,
   iconClassName = "h-3.5 w-3.5",
+  variant = "plain",
 }: FavoriteButtonProps) {
+  const overlay = variant === "overlay";
+  const iconBase = overlay ? OVERLAY_ICON : iconClassName;
+  const buttonBase = overlay ? OVERLAY_CHIP : "transition-colors";
   const [state, formAction] = useActionState<ActionState<{ isFavorite: boolean }>, FormData>(
     toggleFavorite,
     idleState,
@@ -61,14 +98,21 @@ export function FavoriteButton({
   // фильтры каталога — цена приемлемая, страница та же.
   const pathname = usePathname();
 
+  // Цвет обводки и сердечка — один и тот же, поэтому он задан на кружке,
+  // а сердечко берёт его через `currentColor`.
+  const overlayTone = (saved: boolean) =>
+    saved
+      ? "border-brand text-brand focus-visible:outline-brand"
+      : "border-muted-foreground text-muted-foreground focus-visible:outline-muted-foreground";
+
   if (!isAuthenticated) {
     return (
       <Link
         href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}
         aria-label="Войдите, чтобы добавить в избранное"
-        className={cn("relative tap-target transition-colors", className)}
+        className={cn("relative tap-target", buttonBase, overlay && overlayTone(false), className)}
       >
-        <Heart className={cn(iconClassName, "text-muted-foreground")} />
+        <Heart className={cn(iconBase, !overlay && "text-muted-foreground")} />
       </Link>
     );
   }
@@ -87,13 +131,22 @@ export function FavoriteButton({
         type="submit"
         aria-pressed={optimistic}
         aria-label={optimistic ? "Убрать из избранного" : "Добавить в избранное"}
-        className={cn("relative tap-target transition-colors cursor-pointer", className)}
+        className={cn(
+          "relative tap-target cursor-pointer",
+          buttonBase,
+          overlay && overlayTone(optimistic),
+          className,
+        )}
       >
         <Heart
           className={cn(
-            iconClassName,
+            iconBase,
             "transition-colors",
-            optimistic ? "fill-brand text-brand" : "text-muted-foreground",
+            overlay
+              ? optimistic && "fill-current"
+              : optimistic
+                ? "fill-brand text-brand"
+                : "text-muted-foreground",
           )}
         />
       </button>
