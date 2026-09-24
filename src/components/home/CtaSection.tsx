@@ -6,59 +6,80 @@ interface CtaSectionProps {
   isAuthenticated: boolean;
 }
 
+/**
+ * Блок призыва в конце главной.
+ *
+ * **Полоса из двух половин, а не две карточки** (решение владельца, 2026-09-24).
+ * До этого здесь стояли две белые карточки с рамками 2px и контурными кнопками
+ * на светло-сером фоне: три почти белых тона подряд, цвет только в тонких
+ * линиях, а последний призыв страницы был оформлен слабее, чем «Найти»
+ * на первом экране.
+ *
+ * Половины окрашены в цвета знака: жёлтая — сторона клиентов, тёмная —
+ * исполнителей. Это не украшение, а тот же код сторон площадки, что в меню
+ * «Разместить» и в «Как это работает» (DESIGN.md, «Деление клиент / исполнитель»).
+ * Кнопка каждой половины набрана цветом соседней — половины перекликаются,
+ * как две части знака.
+ *
+ * **Скруглённый блок внутри светлой секции, а не полоса во всю ширину:**
+ * иначе тёмная половина упиралась бы в тёмный подвал и они слились бы.
+ *
+ * Контраст: тёмный текст на жёлтом 11.0:1, приглушённый 6.8:1, белый на тёмном
+ * 10.9:1, светло-серый 7.3:1; кнопки 17.0:1 и 11.0:1.
+ */
 export function CtaSection({ isAuthenticated }: CtaSectionProps) {
   return (
     <section className="py-20 bg-muted">
       <PageContainer>
         {/* Заголовок секции есть только для скринридера: визуально его роль
-            играют два заголовка карточек, но без него структура страницы
+            играют два заголовка половин, но без него структура страницы
             прыгала с h2 предыдущей секции сразу на h3. */}
         <h2 className="sr-only">С чего начать</h2>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Для клиентов */}
-          {/* p-6 до 640px: при 48px со всех сторон на 375px содержимому
-              оставалось 247px, и подпись кнопки переносилась на две строки
-              внутри пилюли. Фон — токен `bg-card`, а не литерал `bg-white`:
-              литерал остался бы белым в тёмной теме. */}
-          <div className="p-6 sm:p-8 md:p-12 rounded-2xl bg-card border-2 border-primary relative overflow-hidden">
+        <div className="grid md:grid-cols-2 rounded-2xl overflow-hidden">
+          {/* Клиентам: жёлтое поле, тёмная кнопка */}
+          <div className="relative overflow-hidden bg-brand-fill p-6 sm:p-8 md:p-12">
             {/* Водяной знак: без отклика на наведение. Увеличение по ховеру
-                карточки обещало нажатие там, где его нет — нажимается кнопка
-                внутри, а не карточка. */}
-            <div className="absolute top-8 right-8 opacity-5 text-primary hidden sm:block md:hidden xl:block">
-              <UserSearch className="h-32 w-32" />
+                обещало бы нажатие там, где его нет — нажимается кнопка внутри,
+                а не половина. 12% вместо прежних 5%: на 5% рисунка не было
+                видно вовсе. */}
+            <div className="absolute -right-6 -bottom-8 text-foreground/12 hidden sm:block">
+              <UserSearch className="h-40 w-40" />
             </div>
             <div className="relative z-10">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-primary">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-foreground">
                 Нужна услуга?
               </h3>
-              <p className="text-base text-muted-foreground mb-8 max-w-sm leading-relaxed">
+              {/* Приглушение — прозрачностью тёмного, а не серым токеном:
+                  на цветном поле холодный серый спорит с жёлтым. */}
+              <p className="text-base text-foreground/80 mb-8 max-w-sm leading-relaxed">
                 Изучите каталог категорий и найдите специалиста под любую задачу.
               </p>
               <Link
                 href="/services"
-                className="inline-block border-2 border-primary text-primary px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold hover:bg-brand-fill hover:border-brand-fill hover:text-brand-fill-foreground transition-all active:scale-95"
+                className="inline-block rounded-full bg-foreground px-6 py-3 sm:px-8 sm:py-4 font-semibold text-background transition-all hover:bg-foreground/90 active:scale-95"
               >
                 Смотреть все категории
               </Link>
             </div>
           </div>
 
-          {/* Для исполнителей */}
-          <div className="p-6 sm:p-8 md:p-12 rounded-2xl bg-card border-2 border-secondary relative overflow-hidden">
-            <div className="absolute top-8 right-8 opacity-5 text-secondary hidden sm:block md:hidden xl:block">
-              <Briefcase className="h-32 w-32" />
+          {/* Исполнителям: тёмное поле, жёлтая кнопка. Поверхность — та же,
+              что у подвала (`--footer-bg`), нового тёмного оттенка не заводим. */}
+          <div className="relative overflow-hidden bg-footer-bg p-6 sm:p-8 md:p-12">
+            <div className="absolute -right-6 -bottom-8 text-white/12 hidden sm:block">
+              <Briefcase className="h-40 w-40" />
             </div>
             <div className="relative z-10">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-secondary">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-white">
                 Принимаете заказы?
               </h3>
-              <p className="text-base text-muted-foreground mb-8 max-w-sm leading-relaxed">
+              <p className="text-base text-neutral-300 mb-8 max-w-sm leading-relaxed">
                 Разместите услугу бесплатно — без комиссий и предоплаты. Получайте заказы напрямую.
               </p>
               <Link
                 href={isAuthenticated ? "/services/new" : "/register"}
-                className="inline-block border-2 border-secondary text-secondary px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold hover:bg-secondary hover:text-white transition-all active:scale-95"
+                className="inline-block rounded-full bg-brand-fill px-6 py-3 sm:px-8 sm:py-4 font-semibold text-brand-fill-foreground transition-all hover:bg-brand-fill/90 active:scale-95"
               >
                 Создать услугу
               </Link>
