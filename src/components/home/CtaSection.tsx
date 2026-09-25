@@ -41,8 +41,14 @@ interface CtaSectionProps {
  * **Кнопки контурные, заливаются под курсором** (решение владельца,
  * 2026-09-25). В покое заливки нет вовсе — сквозь кнопку виден градиент
  * карточки, поэтому она совпадает с фоном в любой точке, чего сплошной цвет
- * не дал бы. При наведении появляется заливка: у клиентов фирменный жёлтый
- * `--brand-fill`, у исполнителей светлый серый `--cta-performer-paper`.
+ * не дал бы. При наведении появляется заливка — **тот же тон карточки,
+ * только светлее**: `--cta-client-hover` у клиентов,
+ * `--cta-performer-paper` у исполнителей.
+ *
+ * У клиентов там стоял фирменный `--brand-fill` `#FFC825` и читался как
+ * другой цвет, а не как осветление: тон 87° против 81° под кнопкой,
+ * насыщенность 0.168 против 0.143. Вдобавок он почти не отличался
+ * от карточки — 1.06 против нынешних 1.29.
  *
  * **Рамка — в цвет текста своей карточки**: чернила на жёлтой, белая на серой.
  * Тем же цветом набрана подпись кнопки в покое. Цвет приходит изнутри пары,
@@ -105,27 +111,17 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
                 при первой знак переставал доставать до краёв по вертикали,
                 при втором вид получался разный на разных ширинах.
 
-                **Знак осветляет карточку, а не затемняет** — на обеих
-                сторонах одинаково (решение владельца, 2026-09-25). Сила при
-                этом разная: на серой белый 10%, здесь бумага 45%. Это не
-                непоследовательность, а компенсация — у светлой поверхности
-                запас вверх вчетверо меньше, чем у тёмной, и одинаковая альфа
-                дала бы вчетверо более слабый знак (1.06 против 1.24 у серой).
-                Подобрано по равенству заметности: 1.22 против 1.24.
-
-                Бумага, а не чистый белый: на цветной поверхности тон берётся
-                из её же тона — тот же закон, по которому здесь запрещён серый
-                текст. Белый на золоте отдаёт холодом.
-
-                Осветление добавляет контраста подписи, которая идёт поверх
-                знака: чернила на нём 10.5:1 против 8.6:1 на чистой карточке.
-                Прежний затемняющий знак, наоборот, ронял их до 7.2:1.
+                **Здесь знак затемняет, на серой карточке осветляет.** Общее
+                правило — знак уходит в ту сторону, где у поверхности есть
+                запас: жёлтая светлая, серая тёмная. Осветляющий знак пробовали
+                2026-09-25 и откатили тем же днём по решению владельца, хотя
+                по числам он выигрывал (подробности в PROGRESS.md).
 
                 Отклика на наведение нет — нажимается кнопка внутри,
                 а не карточка. */}
             <LogoMark
               decorative
-              className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-cta-client-paper/45"
+              className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-cta-client-ink/10"
             />
             <div className="relative">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-cta-client-ink">
@@ -136,7 +132,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href="/services"
-                className="inline-block rounded-full border border-cta-client-ink bg-transparent px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-ink transition-[background-color,transform] duration-200 ease-out hover:bg-brand-fill active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
+                className="inline-block rounded-full border border-cta-client-ink bg-transparent px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-ink transition-[background-color,transform] duration-200 ease-out hover:bg-cta-client-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
               >
                 Смотреть все категории
               </Link>
