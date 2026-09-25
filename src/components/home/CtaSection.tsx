@@ -38,9 +38,10 @@ interface CtaSectionProps {
  * высоту, которой нет: нажимается кнопка внутри, а не карточка. У кнопок тень
  * ушла вместе с подъёмом при наведении — без тени подъём ничем не объяснён.
  *
- * Вместо тени у кнопок рамка 1px **в цвет собственной подписи**. Наведение
- * выворачивает кнопку наизнанку — заливка и подпись меняются местами, рамка
- * уходит в цвет прежней заливки.
+ * Вместо тени у кнопок белая рамка 1px, одна и та же в обоих состояниях
+ * (решение владельца, 2026-09-25; до этого рамка была в цвет подписи и
+ * выворачивалась вместе с кнопкой). Наведение по-прежнему меняет заливку
+ * и подпись местами.
  *
  * **Белого в кнопках нет** (решение владельца, 2026-09-25): каждая кнопка
  * набрана двумя цветами своей карточки. У клиентов это фирменный жёлтый
@@ -48,10 +49,16 @@ interface CtaSectionProps {
  * `--cta-performer-paper` и `--foreground`. Белая заливка на цветной
  * поверхности всегда приходит со стороны.
  *
- * Рамка — не украшение, а вторая граница: у жёлтой кнопки заливка к карточке
- * даёт 1.6:1, и норму 3:1 держит рамка (6.1:1); при наведении они меняются
- * ролями. У серой кнопки норму берут обе — 3.8:1 и 3.2:1. Подписи 9.5:1
- * и 12.1:1.
+ * **У жёлтой кнопки в покое нет границы, берущей норму 3:1:** заливка к своей
+ * карточке даёт 1.6:1 (жёлтое на жёлтом), белая рамка — 2.4:1. Пока рамка была
+ * чернильной, границу держала она (6.1:1). Это осознанный размен владельца
+ * на светлую рамку; подпись на кнопке при этом 9.5:1, читаемость текста
+ * не пострадала — ниже нормы только очертание самого элемента управления.
+ * Вернуть в покое чернильную рамку — одно слово.
+ *
+ * Остальные три состояния в порядке: жёлтая при наведении 6.1:1 по заливке,
+ * серая 3.8:1 в покое и 3.2:1 при наведении по заливке, плюс белая рамка
+ * к серой карточке 5.3:1.
  *
  * Обводка кнопки при фокусе и выделение текста заданы явно — на цветной
  * заливке браузерные умолчания выпадают из палитры.
@@ -84,7 +91,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href="/services"
-                className="inline-block rounded-full border border-cta-client-ink bg-brand-fill px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-ink transition-[background-color,border-color,color,transform] duration-200 ease-out hover:border-brand-fill hover:bg-cta-client-ink hover:text-brand-fill active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
+                className="inline-block rounded-full border border-white bg-brand-fill px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-ink transition-[background-color,border-color,color,transform] duration-200 ease-out hover:bg-cta-client-ink hover:text-brand-fill active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
               >
                 Смотреть все категории
               </Link>
@@ -105,7 +112,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href={isAuthenticated ? "/services/new" : "/register"}
-                className="inline-block rounded-full border border-foreground bg-cta-performer-paper px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground transition-[background-color,border-color,color,transform] duration-200 ease-out hover:border-cta-performer-paper hover:bg-foreground hover:text-cta-performer-paper active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-performer-paper"
+                className="inline-block rounded-full border border-white bg-cta-performer-paper px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground transition-[background-color,border-color,color,transform] duration-200 ease-out hover:bg-foreground hover:text-cta-performer-paper active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-performer-paper"
               >
                 Создать услугу
               </Link>
