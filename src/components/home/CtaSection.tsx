@@ -34,8 +34,26 @@ interface CtaSectionProps {
  * давала 2.0:1, а серая — 3.4:1, и в обоих случаях главное действие страницы
  * выглядело слабее ссылки. Стрелок внутри нет — правило DESIGN.md.
  *
- * Тень у карточек тонирована каждая своим тоном, со смещением и размытием.
- * Обводка кнопки при фокусе и выделение текста тоже заданы — на цветной
+ * Теней нет нигде (решения владельца, 2026-09-25). У карточек они добавляли
+ * высоту, которой нет: нажимается кнопка внутри, а не карточка. У кнопок тень
+ * ушла вместе с подъёмом при наведении — без тени подъём ничем не объяснён.
+ *
+ * Вместо тени у кнопок рамка 1px **в цвет собственной подписи**. Наведение
+ * выворачивает кнопку наизнанку — заливка и подпись меняются местами, рамка
+ * уходит в цвет прежней заливки.
+ *
+ * **Белого в кнопках нет** (решение владельца, 2026-09-25): каждая кнопка
+ * набрана двумя цветами своей карточки. У клиентов это фирменный жёлтый
+ * `--brand-fill` и чернила, у исполнителей — светлый серый
+ * `--cta-performer-paper` и `--foreground`. Белая заливка на цветной
+ * поверхности всегда приходит со стороны.
+ *
+ * Рамка — не украшение, а вторая граница: у жёлтой кнопки заливка к карточке
+ * даёт 1.6:1, и норму 3:1 держит рамка (6.1:1); при наведении они меняются
+ * ролями. У серой кнопки норму берут обе — 3.8:1 и 3.2:1. Подписи 9.5:1
+ * и 12.1:1.
+ *
+ * Обводка кнопки при фокусе и выделение текста заданы явно — на цветной
  * заливке браузерные умолчания выпадают из палитры.
  */
 export function CtaSection({ isAuthenticated }: CtaSectionProps) {
@@ -49,7 +67,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Клиентам: тёплая сторона */}
-          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12 shadow-[0_18px_40px_-20px_rgba(74,44,0,0.55)] selection:bg-cta-client-ink selection:text-cta-client-paper">
+          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12 selection:bg-cta-client-ink selection:text-cta-client-paper">
             {/* Водяной знак: без отклика на наведение. Увеличение по ховеру
                 обещало бы нажатие там, где его нет — нажимается кнопка внутри,
                 а не карточка. Тонирован чернилами, а не белым: белый на жёлтом
@@ -66,7 +84,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href="/services"
-                className="inline-block rounded-full bg-cta-client-ink px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-paper shadow-[0_8px_18px_-10px_rgba(40,24,0,0.9)] transition-[background-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_14px_26px_-12px_rgba(40,24,0,0.95)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
+                className="inline-block rounded-full border border-cta-client-ink bg-brand-fill px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-ink transition-[background-color,border-color,color,transform] duration-200 ease-out hover:border-brand-fill hover:bg-cta-client-ink hover:text-brand-fill active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
               >
                 Смотреть все категории
               </Link>
@@ -74,7 +92,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
           </div>
 
           {/* Исполнителям: холодная сторона */}
-          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-performer-from to-cta-performer-to p-6 sm:p-8 md:p-12 shadow-[0_18px_40px_-20px_rgba(30,40,46,0.5)] selection:bg-white selection:text-foreground">
+          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-performer-from to-cta-performer-to p-6 sm:p-8 md:p-12 selection:bg-white selection:text-foreground">
             <div className="pointer-events-none absolute right-6 top-6 hidden text-white/10 sm:block md:right-10 md:top-10">
               <Briefcase aria-hidden="true" className="size-20" strokeWidth={1.5} />
             </div>
@@ -87,7 +105,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href={isAuthenticated ? "/services/new" : "/register"}
-                className="inline-block rounded-full bg-white px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground shadow-[0_8px_18px_-10px_rgba(20,28,33,0.9)] transition-[background-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_14px_26px_-12px_rgba(20,28,33,0.95)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                className="inline-block rounded-full border border-foreground bg-cta-performer-paper px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground transition-[background-color,border-color,color,transform] duration-200 ease-out hover:border-cta-performer-paper hover:bg-foreground hover:text-cta-performer-paper active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-performer-paper"
               >
                 Создать услугу
               </Link>
