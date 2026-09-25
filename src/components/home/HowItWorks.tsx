@@ -1,4 +1,4 @@
-import { ShoppingCart, Wrench } from "lucide-react";
+import { Briefcase, UserSearch } from "lucide-react";
 import { PageContainer } from "@/components/shared/PageContainer";
 
 type StepItem = {
@@ -77,7 +77,15 @@ export function HowItWorks() {
           {/* Для клиентов */}
           <div id="how-it-works-clients" className="scroll-mt-24">
             <h3 className="text-xl font-semibold text-primary flex items-center gap-3 mb-10">
-              <ShoppingCart className="h-7 w-7" />
+              {/* Человек с лупой, а не корзина (решение владельца,
+                  2026-09-25). Корзина обещает покупку, а на площадке ничего
+                  не покупают: она доводит стороны до контакта и в сделку
+                  не вмешивается (PRODUCT.md). Клиент здесь ищет исполнителя,
+                  а не кладёт товар в корзину.
+
+                  `UserSearch`, а не `UserRoundSearch`: в карточке услуги
+                  автор обозначен `User` — той же квадратной головой. */}
+              <UserSearch className="h-7 w-7" />
               Для клиентов
             </h3>
             <div className="relative pl-8 border-l-2 border-primary/20 space-y-8">
@@ -103,7 +111,14 @@ export function HowItWorks() {
           {/* Для исполнителей */}
           <div id="how-it-works-executors" className="scroll-mt-24">
             <h3 className="text-xl font-semibold text-secondary flex items-center gap-3 mb-10">
-              <Wrench className="h-7 w-7" />
+              {/* Портфель, а не гаечный ключ (решение владельца,
+                  2026-09-25). Ключ сужает исполнителей до ручного труда,
+                  а в каталоге есть «IT и Digital», дизайн, репетиторство.
+                  Портфель нейтрален к ремеслу.
+
+                  `Briefcase`, а не `BriefcaseBusiness`: у второго лишняя
+                  поперечная линия, на 28px она превращается в шум. */}
+              <Briefcase className="h-7 w-7" />
               Для исполнителей
             </h3>
             <div className="relative pl-8 border-l-2 border-secondary/20 space-y-8">
