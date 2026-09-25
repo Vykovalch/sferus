@@ -1,5 +1,5 @@
-import { Briefcase, Search } from "lucide-react";
 import Link from "next/link";
+import { LogoMark } from "@/components/shared/LogoMark";
 import { PageContainer } from "@/components/shared/PageContainer";
 
 interface CtaSectionProps {
@@ -8,8 +8,8 @@ interface CtaSectionProps {
 
 /**
  * Блок призыва в конце главной: две карточки с диагональной заливкой.
- * Композиция, направление градиента, размер и положение водяных знаков — с
- * образца владельца (2026-09-24).
+ * Композиция и направление градиента — с образца владельца (2026-09-24);
+ * водяные знаки заменены на фирменный знак S 2026-09-25.
  *
  * История одного дня. Белые карточки с рамками → сплошная полоса из жёлтой
  * и тёмной половин → разбавленная жёлтая заливка 10% → плотные градиенты
@@ -72,13 +72,25 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Клиентам: тёплая сторона */}
           <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12 selection:bg-cta-client-ink selection:text-cta-client-paper">
-            {/* Водяной знак: без отклика на наведение. Увеличение по ховеру
-                обещало бы нажатие там, где его нет — нажимается кнопка внутри,
-                а не карточка. Тонирован чернилами, а не белым: белый на жёлтом
-                давал мутную дымку вместо рисунка. */}
-            <div className="pointer-events-none absolute right-6 top-6 hidden text-cta-client-ink/10 sm:block md:right-10 md:top-10">
-              <Search aria-hidden="true" className="size-20" strokeWidth={1.5} />
-            </div>
+            {/* Водяной знак — фирменный знак S (решение владельца, 2026-09-25;
+                до этого здесь были лупа и портфель с его же образца).
+
+                Высота 130% от карточки, сдвиг за правый край: знак срезается
+                границей карточки и читается как графика, а не как потерявшаяся
+                иконка. Прежние 80px тонким контуром при 10% выглядели именно
+                так — оттого владелец и попросил «повыразительнее».
+
+                Одноцветный: на цветной заливке жёлтая часть знака либо
+                исчезает, либо спорит с фоном. Геометрия не меняется — это
+                закреплённое обязательство бренда (PRODUCT.md).
+
+                Ниже 640px знак скрыт: там карточка узкая, и он лез бы
+                под текст. Отклика на наведение нет — нажимается кнопка
+                внутри, а не карточка. */}
+            <LogoMark
+              decorative
+              className="pointer-events-none absolute -right-12 top-1/2 hidden h-[130%] -translate-y-1/2 text-cta-client-ink/10 sm:block"
+            />
             <div className="relative">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-cta-client-ink">
                 Нужна услуга?
@@ -97,9 +109,10 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
 
           {/* Исполнителям: холодная сторона */}
           <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-performer-from to-cta-performer-to p-6 sm:p-8 md:p-12 selection:bg-white selection:text-foreground">
-            <div className="pointer-events-none absolute right-6 top-6 hidden text-white/10 sm:block md:right-10 md:top-10">
-              <Briefcase aria-hidden="true" className="size-20" strokeWidth={1.5} />
-            </div>
+            <LogoMark
+              decorative
+              className="pointer-events-none absolute -right-12 top-1/2 hidden h-[130%] -translate-y-1/2 text-white/10 sm:block"
+            />
             <div className="relative">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-white">
                 Принимаете заказы?

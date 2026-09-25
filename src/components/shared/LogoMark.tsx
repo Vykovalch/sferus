@@ -2,6 +2,14 @@ import { cn } from "@/lib/utils";
 
 interface LogoMarkProps {
   className?: string;
+  /**
+   * Декоративное применение: обе части знака берут `currentColor`, знак
+   * скрыт от скринридеров. Нужен там, где S — подложка, а не название:
+   * водяные знаки блока призыва. На цветной поверхности жёлтая часть
+   * либо исчезает, либо спорит с заливкой, поэтому знак становится
+   * одноцветным целиком — геометрия при этом не меняется.
+   */
+  decorative?: boolean;
 }
 
 /**
@@ -17,18 +25,27 @@ interface LogoMarkProps {
  * достаточно задать белый текст — иначе она исчезла бы на тёмной поверхности.
  *
  * Размер задаёт `className` по высоте, ширина — по пропорциям: `h-12 w-auto`.
+ *
+ * С `decorative` знак становится одноцветным и скрывается от скринридеров —
+ * см. описание пропа.
  */
-export function LogoMark({ className }: LogoMarkProps) {
+export function LogoMark({ className, decorative = false }: LogoMarkProps) {
   return (
     <svg
       viewBox="0 0 588 670"
       role="img"
       aria-label="Sferus"
+      // `aria-hidden` перекрывает роль и подпись: в декоративном применении
+      // ветка целиком уходит из дерева доступности. Роль и подпись при этом
+      // оставлены статическими — иначе правило Biome `noSvgWithoutTitle`
+      // не видит их за условием и считает знак безымянным.
+      aria-hidden={decorative || undefined}
       className={cn("w-auto", className)}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        className="fill-brand-fill"
+        fill={decorative ? "currentColor" : undefined}
+        className={decorative ? undefined : "fill-brand-fill"}
         d="M0 256.684C0 205.684 25 163.684 68 131.684L212 26.6837C268 -14.3163 341 -6.31627 382 38.6837C423 83.6837 419 151.684 372 186.684L243 281.684C226 294.684 216 312.684 216 330.684C216 347.684 225 363.684 240 373.684C255 383.684 263 399.684 261 416.684C259 437.684 242 455.684 220 460.684C175 470.684 121 461.684 83 436.684C32 403.684 0 339.684 0 256.684Z"
       />
       <path
