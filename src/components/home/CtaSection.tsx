@@ -74,22 +74,42 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
           <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12 selection:bg-cta-client-ink selection:text-cta-client-paper">
             {/* Водяной знак — фирменный знак S (решение владельца, 2026-09-25;
                 до этого здесь были лупа и портфель с его же образца).
-
-                Высота 130% от карточки, сдвиг за правый край: знак срезается
-                границей карточки и читается как графика, а не как потерявшаяся
-                иконка. Прежние 80px тонким контуром при 10% выглядели именно
-                так — оттого владелец и попросил «повыразительнее».
-
                 Одноцветный: на цветной заливке жёлтая часть знака либо
                 исчезает, либо спорит с фоном. Геометрия не меняется — это
                 закреплённое обязательство бренда (PRODUCT.md).
 
-                Ниже 640px знак скрыт: там карточка узкая, и он лез бы
-                под текст. Отклика на наведение нет — нажимается кнопка
-                внутри, а не карточка. */}
+                **Композиция одна на все ширины:** знак по правому краю,
+                вертикально по центру, срезан тремя краями карточки — верхним,
+                нижним и правым.
+
+                Обе величины заданы **от самого знака**, а не от карточки:
+                высота 130% от высоты карточки, выход вправо 15% от ширины
+                знака (`translate-x` считает проценты от собственного размера
+                элемента, в отличие от `right`). Поэтому на любой ширине видна
+                одна и та же часть буквы и она одинаково срезана. Это те же
+                числа, что давал исходный вид на широком экране: знак 327px
+                и выход 48px при карточке 596px.
+
+                **Так не получится задать долю ширины карточки** — и это
+                осознанно. Пропорции карточки от ширины экрана сильно плывут:
+                на 1440px она 596×287, на 768px — 348×313, почти квадрат.
+                Знак с постоянными пропорциями не может одновременно занимать
+                постоянную долю ширины и постоянную долю высоты. Владелец
+                выбрал высоту: знак должен уходить за верхний и нижний край
+                везде (2026-09-25). Следствие — на узких карточках видимая
+                часть шире: 47% ширины карточки на 1440px, 62% на телефоне,
+                87% на 768px, где карточка почти квадратная.
+
+                Привязка к ширине (56% и 8%) и перенос знака в верхний угол
+                на узких экранах пробовались в тот же день и забракованы:
+                при первой знак переставал доставать до краёв по вертикали,
+                при втором вид получался разный на разных ширинах.
+
+                Отклика на наведение нет — нажимается кнопка внутри,
+                а не карточка. */}
             <LogoMark
               decorative
-              className="pointer-events-none absolute -right-12 top-1/2 hidden h-[130%] -translate-y-1/2 text-cta-client-ink/10 sm:block"
+              className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-cta-client-ink/10"
             />
             <div className="relative">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-cta-client-ink">
@@ -111,7 +131,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
           <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-performer-from to-cta-performer-to p-6 sm:p-8 md:p-12 selection:bg-white selection:text-foreground">
             <LogoMark
               decorative
-              className="pointer-events-none absolute -right-12 top-1/2 hidden h-[130%] -translate-y-1/2 text-white/10 sm:block"
+              className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-white/10"
             />
             <div className="relative">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-white">
