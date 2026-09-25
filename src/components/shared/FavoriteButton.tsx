@@ -60,9 +60,20 @@ interface FavoriteButtonProps {
  * Норма держится на всей шкале — впервые с тех пор, как кружок убрали. Без
  * заливки провал приходился ровно на середину: 1.5:1 и 1.3:1 на сером фоне,
  * то есть на самом обычном снимке.
+ *
+ * **Кружок возвращается только под курсором** (решение владельца, 2026-09-25):
+ * при наведении проступает белая окружность 1px. Это `ring`, а не `border`:
+ * рамка добавила бы элементу ширину и сдвинула сердечко на полпикселя в момент
+ * наведения, а кольцо рисуется тенью и на размер не влияет.
+ *
+ * Требования 3:1 к этому кольцу нет: наведение — отклик на уже найденный
+ * элемент, а не то, чем элемент опознают. Поэтому белый годится, хотя
+ * на очень светлых снимках он будет едва заметен; саму отметку там всё равно
+ * держит контур сердечка (5.5:1 и 6.1:1). На телефоне наведения нет вовсе,
+ * и кнопка остаётся такой же, как в покое.
  */
 const OVERLAY_CHIP =
-  "flex size-9 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary";
+  "flex size-9 items-center justify-center rounded-full ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out hover:ring-white/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary";
 const OVERLAY_ICON = "size-5";
 
 /**
