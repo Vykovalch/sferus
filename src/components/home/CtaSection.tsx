@@ -44,11 +44,16 @@ interface CtaSectionProps {
  * и водяной знак — буква S проступала внутри главного действия. Кнопка
  * закрашена.
  *
- * Цвет не вписан третьим значением, а **выведен из самой заливки**:
- * `color-mix` берёт 40% пути между двумя концами градиента — примерно там
- * кнопка и стоит по диагонали. Если цвета карточки поменяют, кнопка поедет
- * за ними сама. Браузерам без `color-mix` Tailwind подставляет светлый конец
- * градиента.
+ * Цвет — точка на 40% пути по диагонали градиента, примерно там кнопка
+ * и стоит: `--cta-client-button` и `--cta-performer-button`.
+ *
+ * Сначала он вычислялся прямо в разметке через `color-mix` из концов
+ * градиента и следовал бы за правкой карточки сам. Пришлось отказаться:
+ * у владельца кнопка исполнителей отрисовалась лиловой, хотя арифметика
+ * даёт серый `#677074`. Причину по коду воспроизвести не удалось, поэтому
+ * вычисление из цепочки убрано. Обратная сторона — при правке цветов карточки
+ * эти два токена надо пересчитать руками; как именно, написано над ними
+ * в globals.css.
  *
  * Сплошной цвет на градиенте даёт шов по краям кнопки, но крошечный:
  * 1.06 на жёлтой карточке и 1.09 на серой в самых дальних точках — при том,
@@ -144,7 +149,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href="/services"
-                className="inline-block rounded-full border border-foreground bg-[color-mix(in_oklch,var(--cta-client-from),var(--cta-client-to)_40%)] px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground transition-[background-color,transform] duration-200 ease-out hover:bg-cta-client-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+                className="inline-block rounded-full border border-foreground bg-cta-client-button px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground transition-[background-color,transform] duration-200 ease-out hover:bg-cta-client-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
               >
                 Смотреть все категории
               </Link>
@@ -166,7 +171,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               </p>
               <Link
                 href={isAuthenticated ? "/services/new" : "/register"}
-                className="inline-block rounded-full border border-white bg-[color-mix(in_oklch,var(--cta-performer-from),var(--cta-performer-to)_40%)] px-6 py-3 sm:px-8 sm:py-4 font-semibold text-white transition-[background-color,color,transform] duration-200 ease-out hover:bg-cta-performer-paper hover:text-foreground active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                className="inline-block rounded-full border border-white bg-cta-performer-button px-6 py-3 sm:px-8 sm:py-4 font-semibold text-white transition-[background-color,color,transform] duration-200 ease-out hover:bg-cta-performer-paper hover:text-foreground active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               >
                 Создать услугу
               </Link>
