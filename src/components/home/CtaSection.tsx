@@ -19,7 +19,7 @@ interface CtaSectionProps {
  *
  * **Чем этот проход отличается.** Серый текст на жёлтой заливке давал
  * 2.3-3.3:1 и читался как отключённая надпись. Заменён на чернила из того же
- * тона, что и заливка (`--cta-client-ink`, 71°): 5.1:1 на тёмном краю
+ * тона, что и заливка (`--foreground`, 71°): 5.1:1 на тёмном краю
  * и 7.0:1 на светлом. Правило общее и не только про цифры — на цветной
  * поверхности текст тонируется из её же тона; серый на цвете всегда выглядит
  * грязным, потому что не принадлежит ни поверхности, ни тексту.
@@ -77,7 +77,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Клиентам: тёплая сторона */}
-          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12 selection:bg-cta-client-ink selection:text-cta-client-paper">
+          <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-cta-client-from to-cta-client-to p-6 sm:p-8 md:p-12 selection:bg-foreground selection:text-cta-client-paper">
             {/* Водяной знак — фирменный знак S (решение владельца, 2026-09-25;
                 до этого здесь были лупа и портфель с его же образца).
                 Одноцветный: на цветной заливке жёлтая часть знака либо
@@ -121,18 +121,18 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
                 а не карточка. */}
             <LogoMark
               decorative
-              className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-cta-client-ink/10"
+              className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-foreground/10"
             />
             <div className="relative">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-cta-client-ink">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-foreground">
                 Нужна услуга?
               </h3>
-              <p className="text-base text-cta-client-ink mb-8 max-w-sm leading-relaxed">
+              <p className="text-base text-foreground mb-8 max-w-sm leading-relaxed">
                 Изучите каталог категорий и найдите специалиста под любую задачу.
               </p>
               <Link
                 href="/services"
-                className="inline-block rounded-full border border-cta-client-ink bg-transparent px-6 py-3 sm:px-8 sm:py-4 font-semibold text-cta-client-ink transition-[background-color,transform] duration-200 ease-out hover:bg-cta-client-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cta-client-ink"
+                className="inline-block rounded-full border border-foreground bg-transparent px-6 py-3 sm:px-8 sm:py-4 font-semibold text-foreground transition-[background-color,transform] duration-200 ease-out hover:bg-cta-client-hover active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
               >
                 Смотреть все категории
               </Link>
