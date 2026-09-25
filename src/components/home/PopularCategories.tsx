@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { CategoryCard } from "@/components/shared/CategoryCard";
 import { PageContainer } from "@/components/shared/PageContainer";
@@ -34,11 +35,28 @@ export async function PopularCategories() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
             Популярные категории
           </h2>
+          {/* Шеврон, а не текстовый символ «>»: у знака своя базовая линия
+              и своя насечка, он не центруется по строке и озвучивается
+              скринридером как «больше». Иконки в проекте — из lucide.
+
+              Связка для ссылки «смотреть все»: шеврон стоит всегда,
+              подчёркивание появляется только при наведении и фокусе.
+              Подчёркивание в покое — идиома ссылки внутри текста, где её надо
+              отличить от соседних слов; рядом с заголовком секции отличать
+              не от чего, и линия остаётся просто линией.
+
+              Правило DESIGN.md «у кнопок стрелок нет» сюда не относится:
+              оно про кнопки, у которых есть заливка и рамка. У текстовой
+              ссылки шеврон — единственный признак перехода помимо цвета. */}
           <Link
             href="/services"
-            className="inline-flex items-center gap-1.5 text-base font-medium text-primary hover:underline underline-offset-4 transition-colors"
+            className="group inline-flex items-center gap-1.5 text-base font-medium text-primary hover:underline underline-offset-4 transition-colors"
           >
             Все категории
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+            />
           </Link>
         </div>
 
