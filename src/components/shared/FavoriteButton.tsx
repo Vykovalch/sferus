@@ -32,11 +32,19 @@ interface FavoriteButtonProps {
  * Как отметка выглядит поверх фотографии (спецификация владельца, 2026-09-25).
  *
  * **В покое кружка не видно вовсе:** ни заливки, ни обводки, ни тени,
- * ни размытия. От него остаётся коробка 36px — она держит положение в 8px
+ * ни размытия. От него остаётся коробка 32px — она держит положение в 8px
  * от верхнего и правого края снимка и центрирует иконку; зона касания 44px
- * приходит из `tap-target`. Сердечко: 20px, штрих 1.75, контур `--secondary`
- * и заливка белая на 50% в покое, заливка `--brand` и белый контур
- * в сохранённом.
+ * приходит из `tap-target` и от визуального размера не зависит. Сердечко:
+ * 20px, штрих 1.75, контур `--secondary` и заливка белая на 50% в покое,
+ * заливка `--brand` и белый контур в сохранённом.
+ *
+ * **32, а не 36** (решение владельца, 2026-09-25). Замеры живых витрин
+ * 2026-09-25: Booking — кнопка 36px с иконкой 16px, Airbnb — 32px с иконкой
+ * 24px, Ozon — 24px с иконкой 16px. Единого размера у отрасли нет, есть два
+ * подхода: мелкий кружок с мелкой иконкой или крупная иконка почти без полей.
+ * Решает не размер коробки, а воздух вокруг иконки: у Airbnb и Ozon это 4px,
+ * у нас при 36px было 8px — отсюда и ощущение простора под курсором.
+ * При 32px остаётся 6px.
  *
  * **Читаемость держит само сердечко, а не подложка** (решение владельца,
  * 2026-09-25). Белое есть в обоих состояниях, но в разных местах: в покое это
@@ -86,7 +94,7 @@ interface FavoriteButtonProps {
  * и кнопка там всегда выглядит как в покое.
  */
 const OVERLAY_CHIP =
-  "flex size-9 items-center justify-center rounded-full ring-1 ring-transparent transition-[box-shadow,background-color] duration-150 ease-out hover:bg-white/80 hover:ring-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current";
+  "flex size-8 items-center justify-center rounded-full ring-1 ring-transparent transition-[box-shadow,background-color] duration-150 ease-out hover:bg-white/80 hover:ring-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current";
 const OVERLAY_ICON = "size-5";
 
 /**
