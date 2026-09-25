@@ -29,33 +29,35 @@ interface FavoriteButtonProps {
 }
 
 /**
- * Как отметка выглядит поверх фотографии (решение владельца, 2026-09-24).
+ * Как отметка выглядит поверх фотографии (спецификация владельца, 2026-09-25).
  *
- * Кружок 32px, заливка белая на 70% с размытием подложки, обводка 1.5px —
- * **в цвет сердечка**, не белая. Сердечко 16px.
+ * Кружок 36px в 8px от верхнего и правого края снимка. Заливка белая на 90%
+ * с лёгким размытием подложки (2px — именно лёгким, не матовым стеклом),
+ * почти незаметная белая обводка 1px и очень мягкая тень. Сердечко 20px,
+ * контурное, толщина штриха 1.75, нейтральный тёмно-серый.
  *
- * Обводка здесь не украшение, а то, что позволило сделать заливку прозрачнее.
- * Раньше кружок был белым на 85% и без обводки, и всю границу держала одна
- * заливка. Владелец попросил её облегчить; просто убавить непрозрачность
- * было нельзя — сохранённое золотое сердечко на 85% стояло на 3.6:1 при норме
- * 3:1 для значимой графики. Обводка в цвет сердечка даёт вторую границу,
- * независимую от заливки, и запас появился.
+ * Задача сформулирована так: кнопка должна быть лёгкой и не выглядеть тяжелее
+ * самого товара. Поэтому здесь нет ни жирной обводки, ни заметной тени,
+ * ни крупного красного сердца — отметка читается, но карточку не перебивает.
  *
- * Замеры при 70%, норма 3:1:
- * - несохранённое `--muted-foreground`: к своей заливке 3.6:1 на чёрном
- *   снимке и 7.5:1 на белом;
- * - сохранённое `--brand`: к своей заливке 2.4:1 на чёрном снимке, но обводка
- *   того же цвета к самой фотографии — 4.1:1. На тёмном снимке отметку держит
- *   обводка, на светлом — сердечко.
+ * **Сохранённое состояние отличается формой, а не только цветом:** сердечко
+ * становится залитым и меняет цвет на `--brand`. Размер, фон и обводка
+ * остаются теми же — меняется только сама иконка.
  *
- * Самое слабое место — снимок средней светлоты: там обводка к фотографии
- * 1.9:1 и 1.3:1, и работает только сердечко внутри (5.3:1 и 3.6:1).
- * Поднять заливку до 80% — один символ, если на живых фотографиях
- * не понравится.
+ * Замеры при 90%, норма для значимой графики 3:1. Худший случай — чёрный
+ * снимок, лучший — белый:
+ * - несохранённое `--secondary` `#5B6468`: 4.8:1 … 6.1:1;
+ * - сохранённое `--brand` `#8A6A00`: 4.0:1 … 5.1:1.
+ *
+ * Норма держится на любой фотографии, и это заслуга именно 90%: на 70%,
+ * которые здесь стояли часом раньше, сохранённое сердечко падало до 2.4:1
+ * на тёмных снимках, и границу приходилось вытягивать обводкой в цвет
+ * сердечка. Плотная заливка сняла эту нужду, и обводка стала тем, чем должна
+ * быть, — почти невидимым краем.
  */
 const OVERLAY_CHIP =
-  "flex size-8 items-center justify-center rounded-full border-[1.5px] bg-white/70 backdrop-blur-sm transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2";
-const OVERLAY_ICON = "size-4";
+  "flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/90 backdrop-blur-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary";
+const OVERLAY_ICON = "size-5";
 
 /**
  * Отметка «в избранном».
@@ -98,21 +100,29 @@ export function FavoriteButton({
   // фильтры каталога — цена приемлемая, страница та же.
   const pathname = usePathname();
 
-  // Цвет обводки и сердечка — один и тот же, поэтому он задан на кружке,
-  // а сердечко берёт его через `currentColor`.
-  const overlayTone = (saved: boolean) =>
-    saved
-      ? "border-brand text-brand focus-visible:outline-brand"
-      : "border-muted-foreground text-muted-foreground focus-visible:outline-muted-foreground";
+  // Кружок и его обводка одни и те же в обоих состояниях; меняется только
+  // сердечко — цветом и заливкой. `--secondary` вместо `--muted-foreground`:
+  // нужен нейтральный серый, а у второго есть чернильный оттенок 294°.
+  const heartTone = (saved: boolean) =>
+    overlay
+      ? saved
+        ? "fill-brand text-brand"
+        : "text-secondary"
+      : saved
+        ? "fill-brand text-brand"
+        : "text-muted-foreground";
+  // Штрих 1.75 вместо стандартных 2: на 20px контур тоньше и аккуратнее,
+  // но не теряется на пёстрых снимках.
+  const strokeWidth = overlay ? 1.75 : undefined;
 
   if (!isAuthenticated) {
     return (
       <Link
         href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}
         aria-label="Войдите, чтобы добавить в избранное"
-        className={cn("relative tap-target", buttonBase, overlay && overlayTone(false), className)}
+        className={cn("relative tap-target", buttonBase, className)}
       >
-        <Heart className={cn(iconBase, !overlay && "text-muted-foreground")} />
+        <Heart className={cn(iconBase, heartTone(false))} strokeWidth={strokeWidth} />
       </Link>
     );
   }
@@ -131,23 +141,11 @@ export function FavoriteButton({
         type="submit"
         aria-pressed={optimistic}
         aria-label={optimistic ? "Убрать из избранного" : "Добавить в избранное"}
-        className={cn(
-          "relative tap-target cursor-pointer",
-          buttonBase,
-          overlay && overlayTone(optimistic),
-          className,
-        )}
+        className={cn("relative tap-target cursor-pointer", buttonBase, className)}
       >
         <Heart
-          className={cn(
-            iconBase,
-            "transition-colors",
-            overlay
-              ? optimistic && "fill-current"
-              : optimistic
-                ? "fill-brand text-brand"
-                : "text-muted-foreground",
-          )}
+          className={cn(iconBase, "transition-colors", heartTone(optimistic))}
+          strokeWidth={strokeWidth}
         />
       </button>
     </form>
