@@ -61,19 +61,23 @@ interface FavoriteButtonProps {
  * заливки провал приходился ровно на середину: 1.5:1 и 1.3:1 на сером фоне,
  * то есть на самом обычном снимке.
  *
- * **Кружок возвращается только под курсором** (решение владельца, 2026-09-25):
- * при наведении проступает белая окружность 1px. Это `ring`, а не `border`:
- * рамка добавила бы элементу ширину и сдвинула сердечко на полпикселя в момент
- * наведения, а кольцо рисуется тенью и на размер не влияет.
+ * **Кружок возвращается только под курсором** (решения владельца,
+ * 2026-09-25): при наведении проступает окружность 1px **в цвет обводки
+ * сердечка** — серая в покое, белая у сохранённого. Это `ring`, а не
+ * `border`: рамка добавила бы элементу ширину и сдвинула сердечко
+ * на полпикселя в момент наведения, а кольцо рисуется тенью и на размер
+ * не влияет.
  *
- * Требования 3:1 к этому кольцу нет: наведение — отклик на уже найденный
- * элемент, а не то, чем элемент опознают. Поэтому белый годится, хотя
- * на очень светлых снимках он будет едва заметен; саму отметку там всё равно
- * держит контур сердечка (5.5:1 и 6.1:1). На телефоне наведения нет вовсе,
- * и кнопка остаётся такой же, как в покое.
+ * Цвет задан один раз на кнопке; сердечко, кольцо и обводка фокуса берут его
+ * через `currentColor`. Разойтись они не могут.
+ *
+ * Требования 3:1 к кольцу нет: наведение — отклик на уже найденный элемент,
+ * а не то, чем элемент опознают. Серое кольцо на тёмном снимке и белое
+ * на светлом будут малозаметны, но отметку там держит само сердечко.
+ * На телефоне наведения нет вовсе, и кнопка остаётся такой же, как в покое.
  */
 const OVERLAY_CHIP =
-  "flex size-9 items-center justify-center rounded-full ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out hover:ring-white/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary";
+  "flex size-9 items-center justify-center rounded-full ring-1 ring-transparent transition-[box-shadow] duration-150 ease-out hover:ring-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current";
 const OVERLAY_ICON = "size-5";
 
 /**
@@ -117,14 +121,20 @@ export function FavoriteButton({
   // фильтры каталога — цена приемлемая, страница та же.
   const pathname = usePathname();
 
-  // Кружок и его обводка одни и те же в обоих состояниях; меняется только
-  // сердечко — цветом и заливкой. `--secondary` вместо `--muted-foreground`:
-  // нужен нейтральный серый, а у второго есть чернильный оттенок 294°.
+  // Цвет обводки сердечка задан на кнопке, а не на иконке: сердечко берёт его
+  // через `currentColor`, и тем же цветом рисуется кольцо при наведении
+  // (`hover:ring-current`) и обводка при фокусе. Так они не могут разойтись —
+  // цвет один на три места.
+  //
+  // `--secondary` вместо `--muted-foreground`: нужен нейтральный серый,
+  // а у второго есть чернильный оттенок 294°.
+  const chipTone = (saved: boolean) => (saved ? "text-white" : "text-secondary");
+  // Заливка — единственное, что задаётся на самой иконке.
   const heartTone = (saved: boolean) =>
     overlay
       ? saved
-        ? "fill-brand text-white"
-        : "fill-white/50 text-secondary"
+        ? "fill-brand"
+        : "fill-white/50"
       : saved
         ? "fill-brand text-brand"
         : "text-muted-foreground";
@@ -137,7 +147,7 @@ export function FavoriteButton({
       <Link
         href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}
         aria-label="Войдите, чтобы добавить в избранное"
-        className={cn("relative tap-target", buttonBase, className)}
+        className={cn("relative tap-target", buttonBase, overlay && chipTone(false), className)}
       >
         <Heart className={cn(iconBase, heartTone(false))} strokeWidth={strokeWidth} />
       </Link>
@@ -158,7 +168,12 @@ export function FavoriteButton({
         type="submit"
         aria-pressed={optimistic}
         aria-label={optimistic ? "Убрать из избранного" : "Добавить в избранное"}
-        className={cn("relative tap-target cursor-pointer", buttonBase, className)}
+        className={cn(
+          "relative tap-target cursor-pointer",
+          buttonBase,
+          overlay && chipTone(optimistic),
+          className,
+        )}
       >
         <Heart
           className={cn(iconBase, "transition-colors", heartTone(optimistic))}
