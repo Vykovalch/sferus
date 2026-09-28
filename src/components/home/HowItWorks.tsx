@@ -58,25 +58,32 @@ const executorSteps: StepItem[] = [
  */
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 scroll-mt-16 lg:scroll-mt-[72px] bg-background">
+    <section
+      id="how-it-works"
+      className="py-8 sm:py-10 lg:py-12 scroll-mt-16 lg:scroll-mt-[72px] bg-background"
+    >
       <PageContainer>
         {/* Заголовок. Подзаголовок «Выберите свой путь на платформе» убран
             (решение владельца, 2026-09-20): он пересказывал заголовок и ничего
             не добавлял. Такой же пустой подзаголовок раньше убрали у «Новых
             объявлений» — правило в DESIGN.md, раздел 5. */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
             Как это работает
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-16 max-w-5xl mx-auto relative">
+        {/* На телефоне это вертикальный разрыв между «Для клиентов»
+            и «Для исполнителей» — 40px по шкале секций. С 768px колонки
+            встают рядом, и 64px работают уже по горизонтали, где воздух
+            дешевле. */}
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 max-w-5xl mx-auto relative">
           {/* Разделитель */}
           <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 opacity-50" />
 
           {/* Для клиентов */}
           <div id="how-it-works-clients" className="scroll-mt-24">
-            <h3 className="text-xl font-semibold text-primary flex items-center gap-3 mb-10">
+            <h3 className="text-xl font-semibold text-primary flex items-center gap-3 mb-6 lg:mb-8">
               {/* Человек с лупой, а не корзина (решение владельца,
                   2026-09-25). Корзина обещает покупку, а на площадке ничего
                   не покупают: она доводит стороны до контакта и в сделку
@@ -110,7 +117,7 @@ export function HowItWorks() {
 
           {/* Для исполнителей */}
           <div id="how-it-works-executors" className="scroll-mt-24">
-            <h3 className="text-xl font-semibold text-secondary flex items-center gap-3 mb-10">
+            <h3 className="text-xl font-semibold text-secondary flex items-center gap-3 mb-6 lg:mb-8">
               {/* Портфель, а не гаечный ключ (решение владельца,
                   2026-09-25). Ключ сужает исполнителей до ручного труда,
                   а в каталоге есть «IT и Digital», дизайн, репетиторство.

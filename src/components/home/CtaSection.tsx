@@ -85,7 +85,7 @@ interface CtaSectionProps {
  */
 export function CtaSection({ isAuthenticated }: CtaSectionProps) {
   return (
-    <section className="py-20 bg-muted">
+    <section className="py-8 sm:py-10 lg:py-12 bg-muted">
       <PageContainer>
         {/* Заголовок секции есть только для скринридера: визуально его роль
             играют два заголовка карточек, но без него структура страницы

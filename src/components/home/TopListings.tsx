@@ -20,9 +20,9 @@ export async function TopListings() {
   ]);
 
   return (
-    <section className="py-16 bg-card">
+    <section className="py-8 sm:py-10 lg:py-12 bg-card">
       <PageContainer>
-        <div className="mb-10">
+        <div className="mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
             Новые объявления
           </h2>
