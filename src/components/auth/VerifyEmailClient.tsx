@@ -53,8 +53,8 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
       </div>
 
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-medium tracking-tight mb-2">Проверьте почту</h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Проверьте почту</h2>
+        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Мы отправили письмо с ссылкой для подтверждения на{" "}
           {email ? <span className="font-medium text-foreground">{email}</span> : "ваш email"}
         </p>
@@ -87,7 +87,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
             variant="outline"
             onClick={handleResend}
             disabled={!email || resendStatus === "loading" || cooldown > 0}
-            className="w-full border-input text-muted-foreground hover:text-foreground font-medium cursor-pointer"
+            className="w-full border-input text-muted-foreground hover:text-foreground text-base font-medium cursor-pointer"
           >
             {resendStatus === "loading" ? (
               <>
@@ -103,12 +103,12 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
         )}
 
         {resendStatus === "error" && (
-          <p className="text-xs text-destructive text-center">
+          <p className="text-sm text-destructive text-center">
             Не удалось отправить письмо. Попробуйте позже.
           </p>
         )}
 
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-sm text-muted-foreground text-center">
           Не тот email?{" "}
           <Link href="/register" className="text-brand hover:underline font-medium">
             Зарегистрироваться заново

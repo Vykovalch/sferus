@@ -29,16 +29,16 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           </div>
         </div>
 
-        <h2 className="text-2xl font-medium tracking-tight mb-2 text-center">
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2 text-center">
           Ссылка недействительна
         </h2>
-        <p className="text-sm text-muted-foreground text-center mb-8 leading-relaxed">
+        <p className="text-sm md:text-base text-muted-foreground text-center mb-8 leading-relaxed">
           Ссылка для сброса пароля устарела или уже была использована. Запросите новую.
         </p>
 
         <Button
           asChild
-          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full font-medium cursor-pointer"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full text-base font-medium cursor-pointer"
         >
           <Link href="/forgot-password">Запросить новую ссылку</Link>
         </Button>
@@ -157,7 +157,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-base font-medium transition-colors"
         >
           {loading ? "Сохраняем..." : "Сохранить пароль"}
         </Button>

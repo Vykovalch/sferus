@@ -42,12 +42,12 @@ export function ForgotPasswordForm() {
           </div>
         </div>
 
-        <h2 className="text-2xl font-medium tracking-tight mb-2">Письмо отправлено</h2>
-        <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
+        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Письмо отправлено</h2>
+        <p className="text-sm md:text-base text-muted-foreground mb-2 leading-relaxed">
           Если аккаунт с адресом <span className="font-medium text-foreground">{email}</span>{" "}
           существует — вы получите письмо со ссылкой для сброса пароля.
         </p>
-        <p className="text-xs text-muted-foreground mb-8">
+        <p className="text-sm text-muted-foreground mb-8">
           Не получили письмо? Проверьте папку «Спам».
         </p>
 
@@ -98,7 +98,7 @@ export function ForgotPasswordForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-base font-medium transition-colors"
         >
           {loading ? "Отправляем..." : "Отправить ссылку"}
         </Button>

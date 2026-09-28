@@ -94,7 +94,7 @@ export function RegisterForm() {
         variant="outline"
         onClick={handleGoogleSignIn}
         disabled={googleLoading || loading}
-        className="w-full border-input text-foreground hover:bg-muted h-10 rounded-full cursor-pointer transition-colors text-sm font-medium mb-4"
+        className="w-full border-input text-foreground hover:bg-muted h-10 rounded-full cursor-pointer transition-colors text-base font-medium mb-4"
       >
         {googleLoading ? (
           <span className="flex items-center gap-2">
@@ -239,7 +239,7 @@ export function RegisterForm() {
         <Button
           type="submit"
           disabled={loading || googleLoading}
-          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-sm font-medium transition-colors"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-base font-medium transition-colors"
         >
           {loading ? "Регистрация..." : "Зарегистрироваться"}
         </Button>
