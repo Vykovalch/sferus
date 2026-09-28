@@ -216,7 +216,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-6 md:gap-x-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-6 md:gap-5">
                     {results.map((service) => (
                       <ServiceCard
                         key={service.id}
@@ -282,7 +282,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
         {/* Зазоры симметричные — сетка карточек с рамкой (DESIGN.md, раздел 3).
             Та же сетка, что у «Популярных категорий» на главной. */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
           {categories.map((cat) => (
             <CategoryCard
               key={cat.slug}

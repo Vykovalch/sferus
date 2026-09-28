@@ -109,7 +109,7 @@ export async function PopularCategories() {
           // за больший вертикальный зазор относится только к карточкам
           // без контейнера, где под фотографией идёт подпись; здесь рамка
           // разделяет сама. Подробности в DESIGN.md, раздел 3.
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
             {popular.map((category) => (
               <CategoryCard
                 key={category.slug}

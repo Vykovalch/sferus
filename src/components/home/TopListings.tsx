@@ -29,7 +29,7 @@ export async function TopListings() {
         {listings.length === 0 ? (
           <p className="text-muted-foreground">Объявлений пока нет</p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 md:gap-x-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 md:gap-5">
             {listings.map((listing) => (
               <ServiceCard
                 key={listing.id}
