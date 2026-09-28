@@ -68,9 +68,7 @@ export function HowItWorks() {
             не добавлял. Такой же пустой подзаголовок раньше убрали у «Новых
             объявлений» — правило в DESIGN.md, раздел 5. */}
         <div className="text-center mb-6 sm:mb-8 lg:mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
-            Как это работает
-          </h2>
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Как это работает</h2>
         </div>
 
         {/* На телефоне это вертикальный разрыв между «Для клиентов»

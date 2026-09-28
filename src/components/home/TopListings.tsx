@@ -23,9 +23,7 @@ export async function TopListings() {
     <section className="py-10 sm:py-12 lg:py-16 bg-card">
       <PageContainer>
         <div className="mb-6 sm:mb-8 lg:mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
-            Новые объявления
-          </h2>
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Новые объявления</h2>
         </div>
 
         {listings.length === 0 ? (

@@ -141,7 +141,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-foreground/10"
             />
             <div className="relative">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-foreground">
+              <h3 className="text-xl md:text-2xl font-semibold tracking-tight mb-4 text-foreground">
                 Нужна услуга?
               </h3>
               <p className="text-base text-foreground mb-8 max-w-sm leading-relaxed">
@@ -163,7 +163,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
               className="pointer-events-none absolute top-1/2 right-0 h-[130%] w-auto translate-x-[15%] -translate-y-1/2 text-white/10"
             />
             <div className="relative">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-white">
+              <h3 className="text-xl md:text-2xl font-semibold tracking-tight mb-4 text-white">
                 Принимаете заказы?
               </h3>
               <p className="text-base text-white mb-8 max-w-sm leading-relaxed">
