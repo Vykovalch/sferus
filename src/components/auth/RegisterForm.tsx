@@ -152,15 +152,19 @@ export function RegisterForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="name">Имя и фамилия</Label>
+          <Label htmlFor="name">Имя</Label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="name"
               name="name"
               type="text"
-              placeholder="Александр Иванов"
-              autoComplete="name"
+              placeholder="Александр"
+              // `given-name`, а не `name` (2026-09-28): поле спрашивает только имя,
+              // и токен обязан совпадать с тем, что просят. С `name` браузер
+              // подставил бы сюда имя с фамилией. Токены автозаполнения —
+              // это ещё и WCAG 1.3.5.
+              autoComplete="given-name"
               required
               className="pl-10 h-10 rounded-full"
             />
