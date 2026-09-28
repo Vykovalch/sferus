@@ -60,24 +60,25 @@ export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="py-8 sm:py-10 lg:py-12 scroll-mt-16 lg:scroll-mt-[72px] bg-background"
+      className="py-10 sm:py-12 lg:py-16 scroll-mt-16 lg:scroll-mt-[72px] bg-background"
     >
       <PageContainer>
         {/* Заголовок. Подзаголовок «Выберите свой путь на платформе» убран
             (решение владельца, 2026-09-20): он пересказывал заголовок и ничего
             не добавлял. Такой же пустой подзаголовок раньше убрали у «Новых
             объявлений» — правило в DESIGN.md, раздел 5. */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center mb-6 sm:mb-8 lg:mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
             Как это работает
           </h2>
         </div>
 
         {/* На телефоне это вертикальный разрыв между «Для клиентов»
-            и «Для исполнителей» — 40px по шкале секций. С 768px колонки
-            встают рядом, и 64px работают уже по горизонтали, где воздух
-            дешевле. */}
-        <div className="grid md:grid-cols-2 gap-10 md:gap-16 max-w-5xl mx-auto relative">
+            и «Для исполнителей»: 32 на телефоне, 40 от 640px — на ступень
+            меньше паддинга секции, потому что это разделение внутри неё.
+            С 768px колонки встают рядом, и 64px работают уже по горизонтали,
+            где воздух дешевле. */}
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-10 md:gap-16 max-w-5xl mx-auto relative">
           {/* Разделитель */}
           <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 opacity-50" />
 

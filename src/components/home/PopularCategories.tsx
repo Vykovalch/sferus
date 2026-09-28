@@ -29,7 +29,7 @@ export async function PopularCategories() {
     .slice(0, POPULAR_COUNT);
 
   return (
-    <section className="py-8 sm:py-10 lg:py-12 bg-background">
+    <section className="py-10 sm:py-12 lg:py-16 bg-background">
       <PageContainer>
         {/* Заголовок и ссылка переносятся целой строкой, а не сжимаются
             (решение владельца, 2026-09-25). Без `flex-wrap` на телефоне
@@ -60,7 +60,7 @@ export async function PopularCategories() {
             без слов: помещается с запасом, но для площадки, к которой никто
             ещё не привык, это слабая подсказка. **Уменьшать кегль
             заголовка**: он общий для всех секций главной. */}
-        <div className="flex flex-wrap items-end justify-between gap-y-2 mb-6 sm:mb-8">
+        <div className="flex flex-wrap items-end justify-between gap-y-2 mb-6 sm:mb-8 lg:mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
             Популярные категории
           </h2>
