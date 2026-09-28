@@ -79,7 +79,7 @@ export function ProfileSettingsForm({
       )}
 
       <div className="space-y-1.5">
-        <Label htmlFor="name">Имя и фамилия</Label>
+        <Label htmlFor="name">Имя</Label>
         <Input
           id="name"
           name="name"
@@ -88,7 +88,11 @@ export function ProfileSettingsForm({
           required
           minLength={2}
           maxLength={100}
-          autoComplete="name"
+          // `given-name`, а не `name`: поле спрашивает одно имя, и токен обязан
+          // совпадать с тем, что просят, — иначе браузер подставит имя
+          // с фамилией. Та же подпись и тот же токен стоят на регистрации:
+          // значение в БД одно (`user.name`), и просить его надо одинаково.
+          autoComplete="given-name"
           aria-invalid={Boolean(fieldError("name"))}
         />
         {fieldError("name") ? (
