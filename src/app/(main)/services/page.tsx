@@ -266,7 +266,12 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const counts = await getServiceCountsByCategory();
 
   return (
-    <div className="bg-card min-h-screen">
+    // Серый холст, как у секции «Популярные категории» на главной (решение
+    // владельца, 2026-09-29): содержимое страницы — плитки категорий, белые
+    // и с рамкой. Им нужна ступень поверхности, иначе край держится на одной
+    // рамке. Результаты поиска на этом же адресе идут по белому холсту —
+    // там карточки услуг без контейнера. DESIGN.md, «Холст страниц со списками».
+    <div className="bg-background min-h-screen">
       <PageContainer className="py-6 lg:py-8">
         {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
             (2026-09-29). Раньше они лежали в отдельной обёртке с собственным
