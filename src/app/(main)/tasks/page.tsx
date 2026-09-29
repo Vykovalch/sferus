@@ -136,7 +136,9 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                   <SheetHeader className="mb-4">
                     <SheetTitle>Фильтры</SheetTitle>
                   </SheetHeader>
-                  <div className="overflow-y-auto">
+                  {/* Боковые отступы шторки: у SheetContent их нет, а FilterLinkGroup
+                        перестал давать свои (2026-09-29). */}
+                  <div className="overflow-y-auto px-4 pb-4">
                     <TasksSidebar cities={cities} categories={categories} {...filters} />
                   </div>
                 </SheetContent>

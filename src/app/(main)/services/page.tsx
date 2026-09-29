@@ -198,7 +198,9 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                     <SheetHeader className="mb-4">
                       <SheetTitle>Фильтры</SheetTitle>
                     </SheetHeader>
-                    <div className="overflow-y-auto">
+                    {/* Боковые отступы шторки: у SheetContent их нет, а FilterLinkGroup
+                        перестал давать свои (2026-09-29). */}
+                    <div className="overflow-y-auto px-4 pb-4">
                       <CategorySidebar cities={cities} basePath="/services" {...filters} />
                     </div>
                   </SheetContent>

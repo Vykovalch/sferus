@@ -38,7 +38,9 @@ export function TasksSidebar({ cities, categories, categorySlug, cityName }: Tas
   ];
 
   return (
-    <div className="bg-card rounded-xl overflow-hidden divide-y divide-border">
+    // Без панели — то же решение, что у сайдбара услуг (2026-09-29),
+    // см. комментарий в FilterLinkGroup.
+    <div className="space-y-6">
       <FilterLinkGroup
         title="Категория"
         options={categoryOptions.map((option) => ({
