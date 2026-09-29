@@ -61,7 +61,10 @@ export function CategorySidebar({
   ];
 
   return (
-    <div className="bg-card rounded-xl overflow-hidden divide-y divide-border">
+    // Рамка, а не одна поверхность (2026-09-29): сайдбар белый, и на белом
+    // холсте каталога услуг его край исчезал бы совсем. На сером фоне рамка
+    // безвредна — там край держали обе приметы сразу.
+    <div className="bg-card border border-border rounded-xl overflow-hidden divide-y divide-border">
       <FilterLinkGroup
         title="Исполнитель"
         options={executorOptions.map((option) => ({

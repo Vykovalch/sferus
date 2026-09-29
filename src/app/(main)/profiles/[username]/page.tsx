@@ -83,7 +83,7 @@ export default async function PublicProfilePage({
     .slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-card text-foreground">
       <PageContainer className="pt-6 pb-24 lg:pt-8 lg:pb-8">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}

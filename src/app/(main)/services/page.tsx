@@ -116,7 +116,13 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     }
 
     return (
-      <div className="bg-background min-h-screen">
+      // Белый холст, а не серый (решение владельца, 2026-09-29): содержимое
+      // страницы — карточки услуг, а у них нет контейнера, форму задаёт сама
+      // фотография. Такие карточки кладут на белое — так устроены Ozon, Avito,
+      // Airbnb, Etsy, и так же уже сделана секция «Новые объявления» на главной
+      // (`bg-card`). Серый холст остаётся там, где карточка белая и с рамкой:
+      // каталог категорий, доска заданий, профиль.
+      <div className="bg-card min-h-screen">
         <PageContainer className="py-6 lg:py-8">
           {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
             (2026-09-29). Раньше они лежали в отдельной обёртке с собственным
@@ -260,7 +266,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const counts = await getServiceCountsByCategory();
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-card min-h-screen">
       <PageContainer className="py-6 lg:py-8">
         {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
             (2026-09-29). Раньше они лежали в отдельной обёртке с собственным
