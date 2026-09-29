@@ -4,11 +4,20 @@ import { Logo } from "@/components/shared/Logo";
 import { PageContainer } from "@/components/shared/PageContainer";
 
 export function Footer() {
+  // Отступы по шкале секций главной — 40 / 48 / 64 (2026-09-29). Раньше стояли
+  // неадаптивные 64px: на широком экране они совпадали с ритмом страницы,
+  // а на телефоне подвал получал в полтора раза больше воздуха, чем любая
+  // секция над ним, и стык с блоком призыва выбивался из ритма
+  // (40 + 64 = 104 вместо 80). DESIGN.md, «Ритм отступов на главной».
   return (
-    <footer className="bg-footer-bg py-16">
+    <footer className="bg-footer-bg py-10 sm:py-12 lg:py-16">
       <PageContainer>
-        {/* Основная сетка */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-4">
+        {/* Основная сетка. Промежуток между колонками на ступень меньше
+            паддинга подвала: на телефоне колонки встают друг под друга,
+            и 40px делили бы группы ссылок шире, чем отступ под заголовком
+            секции на той же ширине. С 768px колонки идут в ряд, и 40px
+            работают по горизонтали, где воздух дешевле. */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-10 mb-4">
           {/* Логотип и описание */}
           <div className="space-y-4">
             <Logo className="text-2xl" variant="inverse" />
