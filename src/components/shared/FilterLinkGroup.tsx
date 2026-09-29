@@ -45,7 +45,10 @@ export function FilterLinkGroup({ title, options }: FilterLinkGroupProps) {
           жирным текстом страницы — тяжелее `h1`, который идёт 600. Разрядку
           ставят при прописных; на строчных «Исполнитель» и «Город» она
           читается как дефект набора. */}
-      <h3 className="text-sm font-semibold text-foreground mb-2">{title}</h3>
+      {/* 16px, а не 14 (решение владельца, 2026-09-29): без панели заголовок
+          группы шёл тем же кеглем, что пункты под ним, и группы читались одним
+          сплошным списком. Теперь ступень видна: 16 заголовок, 14 варианты. */}
+      <h3 className="text-base font-semibold text-foreground mb-2">{title}</h3>
       <div>
         {options.map((option) => (
           <Link
