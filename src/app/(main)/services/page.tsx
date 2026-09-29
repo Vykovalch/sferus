@@ -94,7 +94,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
     const totalPages = pageCount(total);
     const pageParams = serviceCatalogSearchParams(filters);
-    const hasActiveFilters = Boolean(filters.cityName || filters.executorType);
 
     // Фильтры поиска устроены так же, как на странице категории: сайдбар,
     // шторка на мобильном и плашки над сеткой. Без них город, пришедший
@@ -201,25 +200,20 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
               {results.length === 0 ? (
                 <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
-                  {/* 16 и 14, а не 14 и 12 (аудит 2026-09-29): когда поиск
-                      ничего не нашёл, эта плашка — всё содержимое экрана,
-                      и текст в ней был самым мелким на странице. Шкала та же,
-                      что в формах: 16 — то, ради чего экран, 14 — пояснение. */}
-                  <p className="text-base font-medium text-foreground mb-1">
+                  {/* Только сообщение: подсказка «попробуйте другие слова»
+                      и кнопка «Все категории» убраны (решение владельца,
+                      2026-09-29), как в пустых состояниях доски заданий
+                      и каталога категории.
+
+                      16px, а не 14: когда поиск ничего не нашёл, эта строка —
+                      всё содержимое экрана (аудит 2026-09-29).
+
+                      Выход отсюда остаётся в двух местах: хлебные крошки
+                      вверху страницы и само поле поиска. Когда включены
+                      фильтры, над плашкой стоят их метки со «Сбросить всё». */}
+                  <p className="text-base font-medium text-foreground">
                     По запросу «{filters.query}» ничего не нашлось
                   </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {hasActiveFilters
-                      ? "Попробуйте снять фильтры, изменить запрос или выбрать категорию"
-                      : "Попробуйте другие слова или выберите категорию"}
-                  </p>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
-                  >
-                    <Link href="/services">Все категории</Link>
-                  </Button>
                 </div>
               ) : (
                 <>

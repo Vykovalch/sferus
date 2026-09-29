@@ -176,7 +176,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     владельца, 2026-09-29). */}
                 <p className="text-sm font-medium text-foreground">
                   {hasActiveFilters
-                    ? "По заданным фильтрам ничего не нашлось"
+                    ? "По выбранным фильтрам ничего не нашлось"
                     : "В этой категории пока нет объявлений"}
                 </p>
               </div>

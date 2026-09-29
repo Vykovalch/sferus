@@ -147,11 +147,16 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             {tasks.length === 0 ? (
               <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
                 {/* Только сообщение, без призыва и кнопки создания (решение
-                    владельца, 2026-09-29). */}
+                    владельца, 2026-09-29).
+
+                    «Заданий пока нет», а не «с таким статусом» (2026-09-29):
+                    доска всегда показывает только задания со статусом open,
+                    фильтра по статусу в интерфейсе нет. Прежняя надпись
+                    ссылалась на условие, которого человек не выбирал. */}
                 <p className="text-sm font-medium text-foreground">
                   {hasActiveFilters
-                    ? "По заданным фильтрам ничего не нашлось"
-                    : "Заданий с таким статусом пока нет"}
+                    ? "По выбранным фильтрам ничего не нашлось"
+                    : "Заданий пока нет"}
                 </p>
               </div>
             ) : (
