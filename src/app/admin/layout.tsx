@@ -30,7 +30,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </PageContainer>
       </div>
 
-      <PageContainer className="py-8">
+      <PageContainer className="py-6 lg:py-8">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           <aside className="w-full lg:w-56 flex-shrink-0 lg:sticky lg:top-6">
             <AdminSidebar />

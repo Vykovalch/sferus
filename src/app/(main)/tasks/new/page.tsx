@@ -22,7 +22,7 @@ export default async function CreateTaskPage() {
   return (
     // Изменено: Установлены системные цвета фона и текста
     <div className="min-h-screen bg-background text-foreground">
-      <PageContainer className="py-6 max-w-4xl">
+      <PageContainer className="py-6 lg:py-8 max-w-4xl">
         {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
             (2026-09-29). Раньше они лежали в отдельной обёртке с собственным
             `py-3`, и её нижний отступ складывался с верхним отступом

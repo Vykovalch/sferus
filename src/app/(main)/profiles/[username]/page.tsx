@@ -84,7 +84,7 @@ export default async function PublicProfilePage({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <PageContainer className="py-6 pb-24 lg:pb-6">
+      <PageContainer className="pt-6 pb-24 lg:pt-8 lg:pb-8">
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4">

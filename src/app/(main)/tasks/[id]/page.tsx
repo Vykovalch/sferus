@@ -89,7 +89,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <PageContainer className="py-6 pb-28 lg:pb-6">
+      <PageContainer className="pt-6 pb-28 lg:pt-8 lg:pb-8">
         {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
             (2026-09-29). Раньше они лежали в отдельной обёртке с собственным
             `py-3`, и её нижний отступ складывался с верхним отступом

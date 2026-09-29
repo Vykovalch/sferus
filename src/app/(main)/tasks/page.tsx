@@ -83,7 +83,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <PageContainer className="py-6">
+      <PageContainer className="py-6 lg:py-8">
         {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
             (2026-09-29). Раньше они лежали в отдельной обёртке с собственным
             `py-3`, и её нижний отступ складывался с верхним отступом

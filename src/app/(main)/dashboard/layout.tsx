@@ -14,7 +14,7 @@ import { PageContainer } from "@/components/shared/PageContainer";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <PageContainer className="py-8">
+      <PageContainer className="py-6 lg:py-8">
         <div className="mx-auto max-w-2xl">{children}</div>
       </PageContainer>
     </div>
