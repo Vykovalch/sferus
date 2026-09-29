@@ -94,6 +94,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
     const totalPages = pageCount(total);
     const pageParams = serviceCatalogSearchParams(filters);
+    const hasActiveFilters = Boolean(filters.cityName || filters.executorType);
 
     // Фильтры поиска устроены так же, как на странице категории: сайдбар,
     // шторка на мобильном и плашки над сеткой. Без них город, пришедший
@@ -212,7 +213,9 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                       вверху страницы и само поле поиска. Когда включены
                       фильтры, над плашкой стоят их метки со «Сбросить всё». */}
                   <p className="text-base font-medium text-foreground">
-                    По запросу «{filters.query}» ничего не нашлось
+                    {hasActiveFilters
+                      ? "По выбранным фильтрам ничего не нашлось"
+                      : `По запросу «${filters.query}» ничего не нашлось`}
                   </p>
                 </div>
               ) : (
