@@ -146,27 +146,13 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             {/* Список карточек */}
             {tasks.length === 0 ? (
               <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
-                {hasActiveFilters ? (
-                  <p className="text-sm font-medium text-foreground">
-                    По заданным фильтрам ничего не нашлось
-                  </p>
-                ) : (
-                  <>
-                    <p className="text-sm font-medium text-foreground mb-1">
-                      Заданий с таким статусом пока нет
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      Станьте первым — разместите задание для исполнителей
-                    </p>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
-                    >
-                      <Link href="/tasks/new">Создать задание</Link>
-                    </Button>
-                  </>
-                )}
+                {/* Только сообщение, без призыва и кнопки создания (решение
+                    владельца, 2026-09-29). */}
+                <p className="text-sm font-medium text-foreground">
+                  {hasActiveFilters
+                    ? "По заданным фильтрам ничего не нашлось"
+                    : "Заданий с таким статусом пока нет"}
+                </p>
               </div>
             ) : (
               <>
