@@ -33,7 +33,7 @@ export function ActiveFilterChips({ chips, clearAllHref }: ActiveFilterChipsProp
         <Link
           key={chip.label}
           href={chip.removeHref}
-          className="inline-flex items-center gap-1.5 rounded-full bg-state/5 text-state text-sm pl-3 pr-2.5 py-1.5 hover:bg-state/10 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-full bg-brand/5 text-brand text-sm pl-3 pr-2.5 py-1.5 hover:bg-brand/10 transition-colors"
         >
           {chip.label}
           <X aria-hidden="true" className="h-3.5 w-3.5" />

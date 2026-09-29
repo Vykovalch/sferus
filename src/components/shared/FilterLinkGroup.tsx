@@ -53,7 +53,7 @@ export function FilterLinkGroup({ title, options }: FilterLinkGroupProps) {
             href={option.href}
             scroll={false}
             aria-current={option.active ? "true" : undefined}
-            className={`flex items-center gap-2.5 -mx-2 px-2 py-1.5 rounded-lg text-sm leading-snug transition-colors hover:bg-muted/40 ${
+            className={`flex items-center gap-2 -mx-2 px-2 py-1.5 rounded-lg text-sm leading-snug transition-colors hover:bg-muted/40 ${
               option.active
                 ? "text-foreground font-medium"
                 : "text-muted-foreground hover:text-foreground"
@@ -66,18 +66,23 @@ export function FilterLinkGroup({ title, options }: FilterLinkGroupProps) {
                 обещать поведение, которого нет. Состояние для скринридеров
                 уже даёт aria-current выше, кружок — чисто декоративный.
 
-                12px с рамкой 1.5px, а не 14px с 2px (2026-09-29): в панели
-                кружок держался наравне с её рамкой, на голом холсте он стал
-                самой тяжёлой деталью сайдбара. Оставлен, а не убран: фильтры
-                одиночного выбора, и кружок сообщает «можно выбрать одно» —
-                без него состояние держалось бы только на цвете и начертании. */}
+                Вид и размеры сняты с нативных радиокнопок на странице
+                профиля (решение владельца, 2026-09-29): 16px, зазор 8px
+                до подписи, кольцо `--input` в покое и золото `--brand`
+                у выбранного — там это делает `accent-brand` на настоящем
+                `<input type="radio">`. Так одинаковые по смыслу элементы
+                выглядят одинаково в формах и в фильтрах.
+
+                Оставлен, а не убран: фильтры одиночного выбора, и кружок
+                сообщает «можно выбрать одно» — без него состояние держалось
+                бы только на цвете и начертании. */}
             <span
               aria-hidden="true"
-              className={`flex items-center justify-center size-3 rounded-full border-[1.5px] flex-shrink-0 ${
-                option.active ? "border-state" : "border-border"
+              className={`flex items-center justify-center size-4 rounded-full border-[1.5px] flex-shrink-0 ${
+                option.active ? "border-brand" : "border-input"
               }`}
             >
-              {option.active && <span className="size-1.5 rounded-full bg-state" />}
+              {option.active && <span className="size-2 rounded-full bg-brand" />}
             </span>
             {option.label}
           </Link>
