@@ -29,7 +29,12 @@ export function FilterLinkGroup({ title, options }: FilterLinkGroupProps) {
   return (
     <div>
       <div className="px-4 py-2.5">
-        <h3 className="text-sm font-bold text-foreground tracking-wider">{title}</h3>
+        {/* `font-semibold` без разрядки (аудит 2026-09-29). Было
+            `font-bold tracking-wider`: 700 делало заголовок группы самым
+            жирным текстом страницы — тяжелее `h1`, который идёт 600. Разрядку
+            ставят при прописных; на строчных «Исполнитель» и «Город» она
+            читается как дефект набора. */}
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       </div>
       <div className="py-1">
         {options.map((option) => (

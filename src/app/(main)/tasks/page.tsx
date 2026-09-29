@@ -126,7 +126,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
+                    className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground text-sm font-medium cursor-pointer"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Фильтры

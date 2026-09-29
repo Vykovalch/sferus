@@ -151,7 +151,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           </PageContainer>
         </div>
 
-        <PageContainer className="py-6">
+        <PageContainer className="py-6 lg:py-8">
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Поиск: «{filters.query}»</h1>
           <p className="text-sm text-muted-foreground mb-6">
             {total === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${total}`}
@@ -179,7 +179,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
+                      className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground text-sm font-medium cursor-pointer"
                     >
                       <SlidersHorizontal className="h-4 w-4" />
                       Фильтры
@@ -198,10 +198,14 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
 
               {results.length === 0 ? (
                 <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
-                  <p className="text-sm font-medium text-foreground mb-1">
+                  {/* 16 и 14, а не 14 и 12 (аудит 2026-09-29): когда поиск
+                      ничего не нашёл, эта плашка — всё содержимое экрана,
+                      и текст в ней был самым мелким на странице. Шкала та же,
+                      что в формах: 16 — то, ради чего экран, 14 — пояснение. */}
+                  <p className="text-base font-medium text-foreground mb-1">
                     По запросу «{filters.query}» ничего не нашлось
                   </p>
-                  <p className="text-xs text-muted-foreground mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     {hasActiveFilters
                       ? "Попробуйте снять фильтры, изменить запрос или выбрать категорию"
                       : "Попробуйте другие слова или выберите категорию"}
@@ -278,7 +282,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
         </PageContainer>
       </div>
 
-      <PageContainer className="py-6">
+      <PageContainer className="py-6 lg:py-8">
         <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
         {/* Зазоры симметричные — сетка карточек с рамкой (DESIGN.md, раздел 3).
             Та же сетка, что у «Популярных категорий» на главной. */}
