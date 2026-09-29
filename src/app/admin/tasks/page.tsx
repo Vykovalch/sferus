@@ -14,7 +14,7 @@ export default async function AdminTasksPage() {
 
   return (
     <>
-      <h1 className="text-xl font-medium text-foreground mb-1">Задания</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-1">Задания</h1>
       <p className="text-sm text-muted-foreground mb-6">
         Модерация опубликованных заданий: скрытие с доски и удаление
       </p>

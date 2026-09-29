@@ -106,7 +106,7 @@ export default async function PublicProfilePage({
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight">
+                    <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
                       {profile.name}
                     </h1>
                     {profile.isVerified && (

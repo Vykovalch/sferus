@@ -156,7 +156,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             </span>
           </nav>
           <h1 className="text-2xl font-semibold tracking-tight mb-1">Поиск: «{filters.query}»</h1>
-          <p className="text-sm text-muted-foreground mb-6">
+          <p className="text-sm text-muted-foreground mb-4 lg:mb-6">
             {total === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${total}`}
           </p>
           <ActiveFilterChips
@@ -286,7 +286,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             Услуги
           </span>
         </nav>
-        <h1 className="text-2xl font-semibold tracking-tight mb-6">Услуги</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Услуги</h1>
         {/* Зазоры симметричные — сетка карточек с рамкой (DESIGN.md, раздел 3).
             Та же сетка, что у «Популярных категорий» на главной. */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">

@@ -43,7 +43,7 @@ const CATEGORY_ROWS = [
   { slug: "events", name: "Мероприятия и праздники", icon: "PartyPopper", order: 9 },
   { slug: "food-and-catering", name: "Еда и кейтеринг", icon: "UtensilsCrossed", order: 10 },
   { slug: "medical", name: "Медицина", icon: "Stethoscope", order: 11 },
-  { slug: "beauty-and-wellness", name: "Красота, здоровье и фитнес", icon: "Heart", order: 12 },
+  { slug: "wellness-and-beauty", name: "Здоровье и красота", icon: "Heart", order: 12 },
   { slug: "education", name: "Образование и обучение", icon: "GraduationCap", order: 13 },
   { slug: "pets", name: "Домашние животные", icon: "PawPrint", order: 14 },
   { slug: "real-estate", name: "Недвижимость и риелторы", icon: "Building", order: 15 },

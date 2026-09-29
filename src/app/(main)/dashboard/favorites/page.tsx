@@ -27,7 +27,7 @@ export default async function FavoritesPage({ searchParams }: FavoritesPageProps
 
   return (
     <>
-      <h1 className="text-xl font-medium text-foreground mb-4">Избранное</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-4">Избранное</h1>
 
       {/* Фильтр по типу — ссылками, состояние живёт в адресной строке */}
       <nav aria-label="Тип объявления" className="flex items-center gap-1 mb-6">

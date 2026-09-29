@@ -27,7 +27,7 @@ export default function ErrorPage({ error, unstable_retry }: ErrorPageProps) {
       </p>
 
       {/* Заголовок */}
-      <h1 className="mt-4 text-2xl font-medium tracking-tight">Что-то пошло не так</h1>
+      <h1 className="mt-4 text-2xl font-semibold tracking-tight">Что-то пошло не так</h1>
 
       {/* Описание */}
       <p className="mt-2 text-sm text-muted-foreground max-w-sm leading-relaxed">

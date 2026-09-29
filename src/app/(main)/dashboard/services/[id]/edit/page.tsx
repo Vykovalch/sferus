@@ -28,7 +28,7 @@ export default async function EditServicePage({ params }: { params: Promise<{ id
 
   return (
     <>
-      <h1 className="text-xl font-medium text-foreground mb-6">Редактировать объявление</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-6">Редактировать объявление</h1>
       <CreateServiceForm
         userName={session.user.name}
         cities={cities}

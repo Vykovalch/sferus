@@ -81,9 +81,7 @@ export function LegalDoc({
 
       <PageContainer className="py-6 max-w-3xl">
         <div className="bg-background border border-border rounded-xl p-5 md:p-8 shadow-sm">
-          <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight mb-1">
-            {title}
-          </h1>
+          <h1 className="text-xl md:text-2xl font-semibold tracking-tight mb-1">{title}</h1>
           <p className="text-xs text-muted-foreground mb-6">Редакция от {updatedAt}</p>
 
           {intro && (

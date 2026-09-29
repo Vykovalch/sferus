@@ -156,7 +156,7 @@ export default async function ServiceListingPage({
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
             <div className="bg-card border border-border rounded-xl p-5 md:p-6">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
-                <h1 className="text-xl md:text-2xl font-medium text-foreground tracking-tight leading-tight">
+                <h1 className="text-xl md:text-2xl font-semibold tracking-tight leading-tight">
                   {service.title}
                 </h1>
                 <div className="flex items-start gap-3 flex-shrink-0">

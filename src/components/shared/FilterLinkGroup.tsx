@@ -58,10 +58,10 @@ export function FilterLinkGroup({ title, options }: FilterLinkGroupProps) {
             <span
               aria-hidden="true"
               className={`flex items-center justify-center w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 ${
-                option.active ? "border-brand-heading" : "border-border"
+                option.active ? "border-state" : "border-border"
               }`}
             >
-              {option.active && <span className="w-1.5 h-1.5 rounded-full bg-brand-heading" />}
+              {option.active && <span className="w-1.5 h-1.5 rounded-full bg-state" />}
             </span>
             {option.label}
           </Link>

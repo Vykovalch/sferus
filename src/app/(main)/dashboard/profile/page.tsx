@@ -22,7 +22,7 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <h1 className="text-xl font-medium text-foreground mb-6">Мой профиль</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-6">Мой профиль</h1>
 
       <div className="bg-background border border-border rounded-xl p-6 shadow-sm space-y-6">
         <AvatarUploader userName={user.name} userEmail={user.email} imageUrl={user.image ?? null} />

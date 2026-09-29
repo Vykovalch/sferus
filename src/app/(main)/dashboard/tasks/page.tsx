@@ -24,7 +24,7 @@ export default async function MyTasksPage() {
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-medium text-foreground">Мои задания</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Мои задания</h1>
         <Button
           asChild
           className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"

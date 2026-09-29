@@ -20,7 +20,7 @@ interface ActiveFilterChipsProps {
  * действие: снять один конкретный фильтр или все разом, не возвращаясь
  * взглядом к сайдбару/шторке фильтров.
  *
- * Цвет — brand-heading, не цвет бренда: та же логика, что и у радио-индикаторов
+ * Цвет — `--state`, не цвет бренда: та же логика, что и у радио-индикаторов
  * в `FilterLinkGroup` — бренд зарезервирован под кнопки и ссылки-действия,
  * а это скорее метка состояния, что и подтверждает крестик рядом с текстом.
  */
@@ -33,7 +33,7 @@ export function ActiveFilterChips({ chips, clearAllHref }: ActiveFilterChipsProp
         <Link
           key={chip.label}
           href={chip.removeHref}
-          className="inline-flex items-center gap-1.5 rounded-full bg-brand-heading/5 text-brand-heading text-sm pl-3 pr-2.5 py-1.5 hover:bg-brand-heading/10 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-full bg-state/5 text-state text-sm pl-3 pr-2.5 py-1.5 hover:bg-state/10 transition-colors"
         >
           {chip.label}
           <X aria-hidden="true" className="h-3.5 w-3.5" />

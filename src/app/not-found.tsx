@@ -15,7 +15,7 @@ export default function NotFound() {
       </p>
       
       {/* Заголовок */}
-      <h1 className="mt-4 text-2xl font-medium tracking-tight">
+      <h1 className="mt-4 text-2xl font-semibold tracking-tight">
         Страница не найдена
       </h1>
       

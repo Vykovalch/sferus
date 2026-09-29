@@ -34,7 +34,7 @@ export default function GlobalError({
             500
           </p>
 
-          <h1 className="mt-4 text-2xl font-medium tracking-tight">Сайт временно недоступен</h1>
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight">Сайт временно недоступен</h1>
 
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
             Мы уже знаем о сбое и разбираемся. Попробуйте обновить страницу через минуту.

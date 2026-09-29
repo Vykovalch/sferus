@@ -10,7 +10,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-medium text-foreground">Настройки</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">Настройки</h1>
 
       {/* Смена пароля */}
       <div className="bg-background border border-border rounded-xl p-5 shadow-sm">

@@ -129,7 +129,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             {category.name}
           </span>
         </nav>
-        <h1 className="text-2xl font-semibold tracking-tight mb-6">{category.name}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">{category.name}</h1>
         <ActiveFilterChips
           chips={filterChips}
           clearAllHref={buildCatalogHref(`/services/${slug}`, filters, {

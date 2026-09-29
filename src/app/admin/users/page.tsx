@@ -19,7 +19,7 @@ export default async function AdminUsersPage() {
 
   return (
     <>
-      <h1 className="text-xl font-medium text-foreground mb-1">Пользователи</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-1">Пользователи</h1>
       <p className="text-sm text-muted-foreground mb-6">
         Блокировка закрывает вход и завершает активные сессии. Опубликованные объявления она не
         скрывает — их убирают на вкладках «Объявления» и «Задания»

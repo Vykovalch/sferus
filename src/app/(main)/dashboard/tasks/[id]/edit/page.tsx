@@ -24,7 +24,7 @@ export default async function EditTaskPage({ params }: { params: Promise<{ id: s
 
   return (
     <>
-      <h1 className="text-xl font-medium text-foreground mb-6">Редактировать задание</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-6">Редактировать задание</h1>
       <CreateTaskForm
         cities={cities}
         categories={categories}

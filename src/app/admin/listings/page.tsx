@@ -20,7 +20,7 @@ export default async function AdminListingsPage() {
 
   return (
     <>
-      <h1 className="text-xl font-medium text-foreground mb-1">Объявления</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-1">Объявления</h1>
       <p className="text-sm text-muted-foreground mb-6">
         Модерация объявлений услуг: скрытие из каталога и удаление
       </p>

@@ -105,7 +105,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             Задания
           </span>
         </nav>
-        <h1 className="text-2xl font-semibold tracking-tight mb-6">Задания</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Задания</h1>
         <ActiveFilterChips
           chips={filterChips}
           clearAllHref={buildBoardHref(filters, { categorySlug: undefined, cityName: undefined })}
