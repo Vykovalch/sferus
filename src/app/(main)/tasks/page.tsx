@@ -153,7 +153,7 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
                     доска всегда показывает только задания со статусом open,
                     фильтра по статусу в интерфейсе нет. Прежняя надпись
                     ссылалась на условие, которого человек не выбирал. */}
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-base font-medium text-foreground">
                   {hasActiveFilters
                     ? "По выбранным фильтрам ничего не нашлось"
                     : "Заданий пока нет"}

@@ -203,7 +203,7 @@ export default async function PublicProfilePage({
 
             {services.length === 0 && tasks.length === 0 && (
               <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
-                <p className="text-sm text-muted-foreground">Пока нет объявлений</p>
+                <p className="text-base font-medium text-foreground">Пока нет объявлений</p>
               </div>
             )}
           </div>
