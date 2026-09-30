@@ -48,16 +48,14 @@ export default async function CreateServicePage() {
           </Link>
           <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground/60" />
           <span aria-current="page" className="text-foreground font-medium">
-            Разместить объявление
+            Новая услуга
           </span>
         </nav>
         {/* Заголовок страницы (2026-09-30). До этого название было только
             в хлебных крошках: единственная страница сайта без `h1`, структура
             начиналась сразу с `h2` секций формы. Кегль — по общей шкале
             ярлыков страниц, DESIGN.md «Заголовок внутренней страницы». */}
-        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">
-          Разместить объявление
-        </h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Новая услуга</h1>
         <CreateServiceForm userName={session.user.name} cities={cities} categories={categories} />
       </PageContainer>
     </div>

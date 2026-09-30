@@ -48,14 +48,14 @@ export default async function CreateTaskPage() {
           </Link>
           <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground/60" />
           <span aria-current="page" className="text-foreground font-medium">
-            Создать задание
+            Новое задание
           </span>
         </nav>
         {/* Заголовок страницы (2026-09-30). До этого название было только
             в хлебных крошках: единственная страница сайта без `h1`, структура
             начиналась сразу с `h2` секций формы. Кегль — по общей шкале
             ярлыков страниц, DESIGN.md «Заголовок внутренней страницы». */}
-        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Создать задание</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Новое задание</h1>
         <CreateTaskForm cities={cities} categories={categories} />
       </PageContainer>
     </div>

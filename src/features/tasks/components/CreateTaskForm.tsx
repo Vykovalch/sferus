@@ -293,7 +293,7 @@ export function CreateTaskForm({
                 : "Публикация..."
               : isEdit
                 ? "Сохранить изменения"
-                : "Опубликовать задание"}
+                : "Опубликовать"}
           </Button>
         </div>
       </form>

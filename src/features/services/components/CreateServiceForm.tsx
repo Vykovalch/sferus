@@ -513,7 +513,7 @@ export function CreateServiceForm({
                 : "Публикация..."
               : isEdit
                 ? "Сохранить изменения"
-                : "Опубликовать объявление"}
+                : "Опубликовать"}
           </Button>
         </div>
       </form>
