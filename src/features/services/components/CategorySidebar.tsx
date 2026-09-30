@@ -66,20 +66,28 @@ export function CategorySidebar({
     // сайдбар оставался единственным блоком с рамкой на холсте. Рамку ему
     // добавляли днём раньше — ради белого холста, теперь она не нужна вовсе.
     <div className="space-y-6">
-      <FilterLinkGroup
-        title="Исполнитель"
-        options={executorOptions.map((option) => ({
-          label: option.label,
-          href: buildCatalogHref(basePath, activeFilters, { executorType: option.value }),
-          active: executorType === option.value,
-        }))}
-      />
+      {/* Город выше исполнителя (решение владельца, 2026-09-29). На доске
+          заданий первой идёт категория — там это «что ищем», и география
+          уточняет предмет. Здесь предмет уже задан: страница категории им
+          и является, а в результатах поиска — запросом. Остаётся выбор между
+          «где» и «кто это делает», и «где» для местной площадки важнее:
+          восемь городов, и мастер из другого города чаще всего не подходит
+          вовсе, тогда как частный специалист против компании — уточнение
+          по вкусу. */}
       <FilterLinkGroup
         title="Город"
         options={cityOptions.map((option) => ({
           label: option.label,
           href: buildCatalogHref(basePath, activeFilters, { cityName: option.value }),
           active: cityName === option.value,
+        }))}
+      />
+      <FilterLinkGroup
+        title="Исполнитель"
+        options={executorOptions.map((option) => ({
+          label: option.label,
+          href: buildCatalogHref(basePath, activeFilters, { executorType: option.value }),
+          active: executorType === option.value,
         }))}
       />
     </div>

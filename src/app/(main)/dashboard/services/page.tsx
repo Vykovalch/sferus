@@ -30,7 +30,7 @@ export default async function MyServicesPage() {
       </div>
 
       {services.length === 0 ? (
-        <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
+        <div className="border border-dashed border-border rounded-xl p-10 text-center">
           <Megaphone className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-sm font-medium text-foreground mb-1">Нет опубликованных услуг</p>
           <p className="text-xs text-muted-foreground mb-4">

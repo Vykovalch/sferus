@@ -179,7 +179,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             </div>
 
             {services.length === 0 ? (
-              <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
+              <div className="border border-dashed border-border rounded-xl p-10 text-center">
                 {/* Только сообщение, без призыва и кнопки создания (решение
                     владельца, 2026-09-29). */}
                 <p className="text-base font-medium text-foreground">

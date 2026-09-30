@@ -208,7 +208,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               </div>
 
               {results.length === 0 ? (
-                <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
+                <div className="border border-dashed border-border rounded-xl p-10 text-center">
                   {/* Только сообщение: подсказка «попробуйте другие слова»
                       и кнопка «Все категории» убраны (решение владельца,
                       2026-09-29), как в пустых состояниях доски заданий

@@ -26,7 +26,7 @@ export default async function AdminListingsPage() {
       </p>
 
       {services.length === 0 ? (
-        <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center text-sm text-muted-foreground">
+        <div className="border border-dashed border-border rounded-xl p-10 text-center text-sm text-muted-foreground">
           Нет объявлений
         </div>
       ) : (

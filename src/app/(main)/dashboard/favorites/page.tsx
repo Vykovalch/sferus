@@ -51,7 +51,7 @@ export default async function FavoritesPage({ searchParams }: FavoritesPageProps
       </nav>
 
       {items.length === 0 ? (
-        <div className="bg-background border border-dashed border-border rounded-xl p-10 text-center">
+        <div className="border border-dashed border-border rounded-xl p-10 text-center">
           <Heart className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
           {filter.kind ? (
             <>
