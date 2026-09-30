@@ -82,7 +82,7 @@ export function HowItWorks() {
 
           {/* Для клиентов */}
           <div id="how-it-works-clients" className="scroll-mt-24">
-            <h3 className="text-xl font-semibold text-primary flex items-center gap-3 mb-6 lg:mb-8">
+            <h3 className="text-lg md:text-xl font-semibold text-brand flex items-center gap-3 mb-6 lg:mb-8">
               {/* Человек с лупой, а не корзина (решение владельца,
                   2026-09-25). Корзина обещает покупку, а на площадке ничего
                   не покупают: она доводит стороны до контакта и в сделку
@@ -91,10 +91,10 @@ export function HowItWorks() {
 
                   `UserSearch`, а не `UserRoundSearch`: в карточке услуги
                   автор обозначен `User` — той же квадратной головой. */}
-              <UserSearch className="h-7 w-7" />
+              <UserSearch className="size-6 md:size-7" />
               Для клиентов
             </h3>
-            <div className="relative pl-8 border-l-2 border-primary/20 space-y-8">
+            <div className="relative pl-8 border-l-2 border-brand/20 space-y-8">
               {clientSteps.map((step) => (
                 <div key={step.n} className="relative">
                   <div className="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-brand-fill ring-4 ring-background" />
@@ -116,7 +116,7 @@ export function HowItWorks() {
 
           {/* Для исполнителей */}
           <div id="how-it-works-executors" className="scroll-mt-24">
-            <h3 className="text-xl font-semibold text-secondary flex items-center gap-3 mb-6 lg:mb-8">
+            <h3 className="text-lg md:text-xl font-semibold text-secondary flex items-center gap-3 mb-6 lg:mb-8">
               {/* Портфель, а не гаечный ключ (решение владельца,
                   2026-09-25). Ключ сужает исполнителей до ручного труда,
                   а в каталоге есть «IT и Digital», дизайн, репетиторство.
@@ -124,7 +124,7 @@ export function HowItWorks() {
 
                   `Briefcase`, а не `BriefcaseBusiness`: у второго лишняя
                   поперечная линия, на 28px она превращается в шум. */}
-              <Briefcase className="h-7 w-7" />
+              <Briefcase className="size-6 md:size-7" />
               Для исполнителей
             </h3>
             <div className="relative pl-8 border-l-2 border-secondary/20 space-y-8">

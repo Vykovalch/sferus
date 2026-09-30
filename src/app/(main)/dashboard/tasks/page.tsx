@@ -23,11 +23,11 @@ export default async function MyTasksPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between gap-4 mb-4 lg:mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Мои задания</h1>
         <Button
           asChild
-          className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"
+          className="h-10 rounded-full px-5 bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground text-base font-medium cursor-pointer transition-colors"
         >
           <Link href="/tasks/new" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
@@ -46,7 +46,7 @@ export default async function MyTasksPage() {
           <Button
             asChild
             variant="outline"
-            className="border-brand text-brand hover:bg-brand/5 cursor-pointer"
+            className="h-10 rounded-full px-5 border-brand text-brand hover:bg-brand/5 text-base font-medium cursor-pointer"
           >
             <Link href="/tasks/new">Создать задание</Link>
           </Button>
@@ -57,50 +57,65 @@ export default async function MyTasksPage() {
             const isBlocked = task.moderationStatus !== "approved";
 
             return (
+              // Строка устроена как в «Моих услугах» (DESIGN.md, «Строка
+              // списка в кабинете»), только без обложки: у задания
+              // фотографий нет. Название в две строки, бюджет и состояние
+              // под ним с переносом, действия у правого края.
+              //
+              // Подсветка строки при наведении убрана: нажимается не строка,
+              // а название внутри неё, и тень с золотой рамкой обещали
+              // нажатие, которого нет.
               <div
                 key={task.id}
-                className="bg-background border border-border rounded-xl p-4 shadow-sm hover:border-brand/40 hover:shadow-md transition-all"
+                className="bg-card border border-border rounded-2xl p-4 flex flex-wrap items-start gap-3 sm:gap-4"
               >
-                <div className="flex items-start justify-between gap-4 mb-2">
+                <div className="flex-1 min-w-0">
                   <Link
                     href={`/tasks/${task.id}`}
-                    className="text-sm font-medium text-foreground leading-snug hover:text-brand transition-colors"
+                    className="text-sm font-medium text-foreground leading-snug hover:text-brand transition-colors line-clamp-2"
                   >
                     {task.title}
                   </Link>
-                  <span className="text-sm font-bold text-brand whitespace-nowrap flex-shrink-0">
-                    {formatTaskBudget(task.budget, task.isNegotiable)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  {isBlocked ? (
-                    <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-destructive/10 text-destructive">
-                      Заблокировано
-                    </span>
-                  ) : (
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[task.status]}`}
-                    >
-                      {TASK_STATUSES[task.status]}
-                    </span>
-                  )}
 
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    {!isBlocked && task.status === "open" && <TaskStatusActions taskId={task.id} />}
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      asChild
-                      className="h-8 w-8 text-muted-foreground hover:text-brand cursor-pointer"
-                    >
-                      <Link
-                        href={`/dashboard/tasks/${task.id}/edit`}
-                        aria-label="Редактировать задание"
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="text-xs text-muted-foreground">
+                      {formatTaskBudget(task.budget, task.isNegotiable)}
+                    </span>
+
+                    {isBlocked ? (
+                      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-destructive/10 text-destructive">
+                        Заблокировано
+                      </span>
+                    ) : (
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[task.status]}`}
                       >
-                        <Edit3 className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                        {TASK_STATUSES[task.status]}
+                      </span>
+                    )}
                   </div>
+                </div>
+
+                {/* До 640px действия встают отдельной строкой у правого края:
+                    рядом с названием они забирали 128px из 311 доступных,
+                    и на название оставалось 171. Своей строкой они отдают
+                    название всю ширину — 279px. Так же устроены свои списки
+                    в приложениях Авито и Озона. */}
+                <div className="w-full sm:w-auto flex items-center justify-end gap-1 flex-shrink-0">
+                  {!isBlocked && task.status === "open" && <TaskStatusActions taskId={task.id} />}
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    asChild
+                    className="h-10 w-10 text-muted-foreground hover:text-brand cursor-pointer"
+                  >
+                    <Link
+                      href={`/dashboard/tasks/${task.id}/edit`}
+                      aria-label="Редактировать задание"
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
               </div>
             );

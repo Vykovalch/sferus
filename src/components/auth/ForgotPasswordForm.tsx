@@ -42,7 +42,9 @@ export function ForgotPasswordForm() {
           </div>
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Письмо отправлено</h2>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">
+          Письмо отправлено
+        </h1>
         <p className="text-sm md:text-base text-muted-foreground mb-2 leading-relaxed">
           Если аккаунт с адресом <span className="font-medium text-foreground">{email}</span>{" "}
           существует — вы получите письмо со ссылкой для сброса пароля.
@@ -65,14 +67,17 @@ export function ForgotPasswordForm() {
   return (
     <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Забыли пароль?</h2>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">Забыли пароль?</h1>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Введите email — мы отправим ссылку для сброса пароля
         </p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+        <div
+          role="alert"
+          className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+        >
           {error}
         </div>
       )}
@@ -90,7 +95,7 @@ export function ForgotPasswordForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="pl-10 rounded-full"
+              className="pl-10"
             />
           </div>
         </div>
@@ -100,7 +105,7 @@ export function ForgotPasswordForm() {
           disabled={loading}
           className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-base font-medium transition-colors"
         >
-          {loading ? "Отправляем..." : "Отправить ссылку"}
+          {loading ? "Отправляем…" : "Отправить ссылку"}
         </Button>
       </form>
 

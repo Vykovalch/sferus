@@ -10,7 +10,6 @@ import { compressAvatar, IMAGE_UPLOAD } from "@/lib/images";
 
 interface AvatarUploaderProps {
   userName: string;
-  userEmail: string;
   /** Текущий аватар из сессии: `user.image`. */
   imageUrl: string | null;
 }
@@ -23,7 +22,7 @@ interface AvatarUploaderProps {
  * формы вызывается из кода сразу после загрузки: отдельная кнопка
  * «Сохранить» здесь была бы лишним шагом — выбор файла и есть намерение.
  */
-export function AvatarUploader({ userName, userEmail, imageUrl }: AvatarUploaderProps) {
+export function AvatarUploader({ userName, imageUrl }: AvatarUploaderProps) {
   const [state, formAction, pending] = useActionState<ActionState<void>, FormData>(
     updateAvatar,
     idleState,
@@ -94,9 +93,15 @@ export function AvatarUploader({ userName, userEmail, imageUrl }: AvatarUploader
       <form ref={formRef} action={formAction} className="contents">
         <input ref={urlInputRef} type="hidden" name="imageUrl" defaultValue="" />
 
+        {/* `sr-only`, а не `hidden` (2026-09-30): со скрытым через
+            `display: none` полем файла до смены фотографии нельзя было
+            добраться табом вообще — отказ по WCAG 2.1.1. Теперь поле остаётся
+            в потоке фокуса, а обводку рисует `focus-within` на ярлыке. */}
+        {/* Подпись поля стоит на самом поле: `aria-label` на `<label>` имени
+            не даёт — у элемента нет роли, и вместо подписи скринридер прочёл
+            бы alt аватара, то есть имя пользователя. */}
         <label
-          className={`relative cursor-pointer ${busy ? "pointer-events-none opacity-60" : ""}`}
-          aria-label="Изменить фотографию профиля"
+          className={`relative cursor-pointer rounded-full focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-state ${busy ? "pointer-events-none opacity-60" : ""}`}
         >
           <Avatar className="w-16 h-16">
             <AvatarImage src={preview ?? undefined} alt={userName} />
@@ -109,17 +114,21 @@ export function AvatarUploader({ userName, userEmail, imageUrl }: AvatarUploader
           </span>
           <input
             type="file"
+            aria-label="Изменить фотографию профиля"
             accept={IMAGE_UPLOAD.allowedTypes.join(",")}
             onChange={handleSelect}
             disabled={busy}
-            className="hidden"
+            className="sr-only"
           />
         </label>
       </form>
 
+      {/* Подпись и подсказка, а не имя с email (2026-09-30): те же имя
+          и email стояли полями формы сразу под этим блоком — одно и то же
+          дважды в пределах 200px. */}
       <div className="min-w-0">
-        <p className="text-sm font-medium text-foreground truncate">{userName}</p>
-        <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+        <p className="text-sm font-medium text-foreground">Фотография профиля</p>
+        <p className="text-xs text-muted-foreground">JPG, PNG или WebP, до 10 МБ</p>
 
         {errorMessage ? (
           <p role="alert" className="text-xs text-destructive mt-1">

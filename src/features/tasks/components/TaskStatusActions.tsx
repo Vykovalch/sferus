@@ -33,7 +33,7 @@ export function TaskStatusActions({ taskId }: TaskStatusActionsProps) {
           disabled={completePending || cancelPending}
           title="Отметить выполненным"
           aria-label="Отметить выполненным"
-          className="h-8 w-8 text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer"
+          className="h-10 w-10 text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer"
         >
           <CheckCircle2 className="h-4 w-4" />
         </Button>
@@ -51,7 +51,7 @@ export function TaskStatusActions({ taskId }: TaskStatusActionsProps) {
           disabled={completePending || cancelPending}
           title="Отменить задание"
           aria-label="Отменить задание"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
+          className="h-10 w-10 text-muted-foreground hover:text-destructive cursor-pointer"
         >
           <XCircle className="h-4 w-4" />
         </Button>

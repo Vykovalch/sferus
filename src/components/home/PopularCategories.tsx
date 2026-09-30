@@ -14,10 +14,12 @@ const POPULAR_COUNT = 5;
 
 /**
  * Популярные категории — те, в которых реально есть объявления, по убыванию их
- * числа. Пока объявлений нет, вместо карточек выводится сообщение: показывать
- * произвольные категории и называть их популярными — та же выдумка, что и моки.
+ * числа. Показывать произвольные категории и называть их популярными — та же
+ * выдумка, что и моки.
  *
- * Карточки появятся сами, как только опубликуют первую услугу.
+ * **Пока объявлений нет, секции нет вовсе** (решение владельца, 2026-09-30):
+ * до этого на месте карточек стоял абзац «Категорий с объявлениями пока нет».
+ * Секция появится сама, как только опубликуют первую услугу.
  */
 export async function PopularCategories() {
   const [categories, counts] = await Promise.all([getCategories(), getServiceCountsByCategory()]);
@@ -27,6 +29,8 @@ export async function PopularCategories() {
     .filter((category) => category.count > 0)
     .sort((a, b) => b.count - a.count)
     .slice(0, POPULAR_COUNT);
+
+  if (popular.length === 0) return null;
 
   return (
     <section className="py-10 sm:py-12 lg:py-16 bg-background">
@@ -82,7 +86,7 @@ export async function PopularCategories() {
               ссылки шеврон — единственный признак перехода помимо цвета. */}
           <Link
             href="/services"
-            className="group ml-auto inline-flex items-center gap-1.5 text-base font-medium text-primary hover:underline underline-offset-4 transition-colors"
+            className="group ml-auto inline-flex items-center gap-1.5 text-base font-medium text-brand hover:underline underline-offset-4 transition-colors"
           >
             Все категории
             <ChevronRight
@@ -92,34 +96,30 @@ export async function PopularCategories() {
           </Link>
         </div>
 
-        {popular.length === 0 ? (
-          <p className="text-muted-foreground">Категорий с объявлениями пока нет</p>
-        ) : (
-          // Сетка совпадает со страницей всех категорий (app/(main)/services/page.tsx):
-          // карточки одной ширины и с одинаковыми зазорами в обоих местах.
-          //
-          // Зазоры правлены 2026-09-28: здесь оставались 12px с тех времён,
-          // когда у карточки услуги была рамка, хотя те же категории
-          // на /services уже стояли на 16/24. Один компонент в одинаковой
-          // сетке шёл с разными зазорами на двух страницах.
-          //
-          // У карточек с рамкой зазоры симметричные (решение владельца,
-          // 2026-09-28): по горизонтали столько же, сколько у карточек услуг,
-          // по вертикали — столько же, сколько по горизонтали. Довод
-          // за больший вертикальный зазор относится только к карточкам
-          // без контейнера, где под фотографией идёт подпись; здесь рамка
-          // разделяет сама. Подробности в DESIGN.md, раздел 3.
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
-            {popular.map((category) => (
-              <CategoryCard
-                key={category.slug}
-                name={category.name}
-                slug={category.slug}
-                count={category.count}
-              />
-            ))}
-          </div>
-        )}
+        {/* Сетка совпадает со страницей всех категорий (app/(main)/services/page.tsx):
+            карточки одной ширины и с одинаковыми зазорами в обоих местах.
+
+            Зазоры правлены 2026-09-28: здесь оставались 12px с тех времён,
+            когда у карточки услуги была рамка, хотя те же категории
+            на /services уже стояли на 16/24. Один компонент в одинаковой
+            сетке шёл с разными зазорами на двух страницах.
+
+            У карточек с рамкой зазоры симметричные (решение владельца,
+            2026-09-28): по горизонтали столько же, сколько у карточек услуг,
+            по вертикали — столько же, сколько по горизонтали. Довод
+            за больший вертикальный зазор относится только к карточкам
+            без контейнера, где под фотографией идёт подпись; здесь рамка
+            разделяет сама. Подробности в DESIGN.md, раздел 3. */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+          {popular.map((category) => (
+            <CategoryCard
+              key={category.slug}
+              name={category.name}
+              slug={category.slug}
+              count={category.count}
+            />
+          ))}
+        </div>
       </PageContainer>
     </section>
   );

@@ -75,8 +75,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   const filters = parseServiceCatalogFilters(params);
   const page = parsePageParam(params.page);
 
-  const categories = await getCategories();
-
   if (filters.query) {
     const session = await auth.api.getSession({ headers: await headers() });
     // Выборка и подсчёт идут вместе: подсчёт задаёт число страниц, и без него
@@ -120,8 +118,11 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       // страницы — карточки услуг, а у них нет контейнера, форму задаёт сама
       // фотография. Такие карточки кладут на белое — так устроены Ozon, Avito,
       // Airbnb, Etsy, и так же уже сделана секция «Новые объявления» на главной
-      // (`bg-card`). Серый холст остаётся там, где карточка белая и с рамкой:
-      // каталог категорий, доска заданий, профиль.
+      // (`bg-card`). Серым остался только каталог категорий на этом же
+      // адресе: там плитки белые и с рамкой, и одна и та же плитка не должна
+      // стоять на разных холстах в двух местах сайта. Доска заданий и профиль
+      // тоже белые — решение того же дня (DESIGN.md, «Холст страниц
+      // со списками»).
       <div className="bg-card min-h-screen">
         <PageContainer className="py-6 lg:py-8">
           {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
@@ -161,10 +162,21 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               Поиск: «{filters.query}»
             </span>
           </nav>
-          <h1 className="text-2xl font-semibold tracking-tight mb-1">Поиск: «{filters.query}»</h1>
-          <p className="text-sm text-muted-foreground mb-4 lg:mb-6">
-            {total === 0 ? "Ничего не нашлось" : `Найдено объявлений: ${total}`}
-          </p>
+          {/* Подзаголовок несёт счётчик, поэтому при нуле результатов его нет
+              (2026-09-30): иначе на экране стояли два сообщения об одном —
+              «Ничего не нашлось» здесь и «По запросу «…» ничего не нашлось»
+              в плашке ниже. Отступ под заголовком в этом случае берёт
+              на себя сам заголовок. */}
+          <h1
+            className={`text-2xl font-semibold tracking-tight ${total === 0 ? "mb-4 lg:mb-6" : "mb-1"}`}
+          >
+            Поиск: «{filters.query}»
+          </h1>
+          {total > 0 && (
+            <p className="text-sm text-muted-foreground mb-4 lg:mb-6">
+              Найдено объявлений: {total}
+            </p>
+          )}
           <ActiveFilterChips
             chips={filterChips}
             clearAllHref={buildCatalogHref("/services", filters, {
@@ -181,14 +193,13 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             {/* Контентная область */}
             <div className="flex-1 min-w-0">
               {/* Панель фильтров */}
-              <div className="flex items-center justify-between lg:hidden mb-4">
+              <div className="flex items-center lg:hidden mb-4">
                 <Sheet>
                   <SheetTrigger asChild>
                     <Button
                       type="button"
                       variant="outline"
-                      size="sm"
-                      className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground text-sm font-medium cursor-pointer"
+                      className="h-10 rounded-full px-4 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground text-sm font-medium cursor-pointer"
                     >
                       <SlidersHorizontal className="h-4 w-4" />
                       Фильтры
@@ -265,7 +276,11 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
     );
   }
 
-  const counts = await getServiceCountsByCategory();
+  // Справочник категорий и счётчики нужны только этой ветке: у результатов
+  // поиска категорий в разметке нет, а сайдбару хватает городов и фильтров.
+  // До 2026-09-30 `getCategories()` стоял до разветвления и на каждом поиске
+  // делал лишний запрос.
+  const [categories, counts] = await Promise.all([getCategories(), getServiceCountsByCategory()]);
 
   return (
     // Серый холст, как у секции «Популярные категории» на главной (решение

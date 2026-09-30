@@ -364,6 +364,9 @@ export async function getMyServices(userId: string) {
       isActive: services.isActive,
       moderationStatus: services.moderationStatus,
       categorySlug: categories.slug,
+      // Обложка для строки списка — тот же подзапрос, что у карточек каталога:
+      // второго запроса не нужно, а владелец узнаёт своё объявление по снимку.
+      imageUrl: previewImageUrl,
     })
     .from(services)
     .innerJoin(categories, eq(services.categoryId, categories.id))

@@ -105,7 +105,18 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             Задания
           </span>
         </nav>
-        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Задания</h1>
+        {/* Счётчик под заголовком (2026-09-30) — как на странице категории
+            и на результатах поиска. При нуле строки нет: сообщение остаётся
+            в плашке, и отступ под заголовком берёт на себя сам заголовок.
+            DESIGN.md, «Счётчик под заголовком списка». */}
+        <h1
+          className={`text-2xl font-semibold tracking-tight ${total === 0 ? "mb-4 lg:mb-6" : "mb-1"}`}
+        >
+          Задания
+        </h1>
+        {total > 0 && (
+          <p className="text-sm text-muted-foreground mb-4 lg:mb-6">Заданий: {total}</p>
+        )}
         <ActiveFilterChips
           chips={filterChips}
           clearAllHref={buildBoardHref(filters, { categorySlug: undefined, cityName: undefined })}
@@ -116,17 +127,19 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             <TasksSidebar cities={cities} categories={categories} {...filters} />
           </aside>
 
-          {/* Контентная область */}
-          <div className="flex-1 min-w-0 max-w-5xl">
+          {/* Контентная область. `max-w-5xl` убран (2026-09-30): он никогда
+              не срабатывал. Контейнер страницы ограничен 1280px, из них
+              боковые поля 64, сайдбар 224 и зазор 24 — колонке достаётся
+              не больше 968px, то есть меньше 1024 при любой ширине экрана. */}
+          <div className="flex-1 min-w-0">
             {/* Панель фильтров */}
-            <div className="flex items-center justify-between lg:hidden mb-4">
+            <div className="flex items-center lg:hidden mb-4">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
-                    className="h-9 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground text-sm font-medium cursor-pointer"
+                    className="h-10 rounded-full px-4 gap-2 border-input text-muted-foreground hover:bg-muted hover:text-foreground text-sm font-medium cursor-pointer"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
                     Фильтры

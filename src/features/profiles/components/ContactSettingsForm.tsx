@@ -73,10 +73,6 @@ export function ContactSettingsForm({ initialValues }: ContactSettingsFormProps)
 
   return (
     <form action={formAction} className="space-y-5">
-      <p className="text-xs text-muted-foreground -mt-1">
-        Клиенты увидят отмеченные контакты по кнопке «Показать контакты» на ваших объявлениях
-      </p>
-
       {errorMessage && (
         <div
           role="alert"
@@ -112,11 +108,10 @@ export function ContactSettingsForm({ initialValues }: ContactSettingsFormProps)
           onChange={(e) => setPhone(e.target.value)}
           maxLength={64}
           aria-invalid={Boolean(fieldError("phone"))}
-          className="border-input focus-visible:ring-brand"
         />
         {fieldError("phone") && <p className="text-xs text-destructive">{fieldError("phone")}</p>}
 
-        <fieldset disabled={!hasPhone} className="disabled:opacity-40 pt-1">
+        <fieldset disabled={!hasPhone} className="disabled:opacity-50 pt-1">
           <legend className="text-xs text-muted-foreground mb-2">
             Как с вами связаться по этому номеру
           </legend>
@@ -165,13 +160,12 @@ export function ContactSettingsForm({ initialValues }: ContactSettingsFormProps)
           onChange={(e) => setTelegram(e.target.value)}
           maxLength={64}
           aria-invalid={Boolean(fieldError("telegram"))}
-          className="border-input focus-visible:ring-brand"
         />
         {fieldError("telegram") && (
           <p className="text-xs text-destructive">{fieldError("telegram")}</p>
         )}
 
-        <fieldset disabled={!hasTelegram} className="disabled:opacity-40 pt-1">
+        <fieldset disabled={!hasTelegram} className="disabled:opacity-50 pt-1">
           <VisibilityCheckbox
             name="telegramVisible"
             label="Показывать клиентам"
@@ -190,7 +184,7 @@ export function ContactSettingsForm({ initialValues }: ContactSettingsFormProps)
       <Button
         type="submit"
         disabled={pending}
-        className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"
+        className="h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground text-base font-medium cursor-pointer transition-colors"
       >
         {pending ? "Сохранение…" : "Сохранить контакты"}
       </Button>

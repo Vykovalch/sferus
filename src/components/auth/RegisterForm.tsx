@@ -77,14 +77,17 @@ export function RegisterForm() {
   return (
     <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Создать аккаунт</h2>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">Создать аккаунт</h1>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Зарегистрируйтесь, чтобы найти специалиста или предложить услуги
         </p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+        <div
+          role="alert"
+          className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+        >
           {error}
         </div>
       )}
@@ -114,7 +117,7 @@ export function RegisterForm() {
               />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
-            Подключение...
+            Подключение…
           </span>
         ) : (
           <>
@@ -146,7 +149,7 @@ export function RegisterForm() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-muted-foreground">или</span>
+          <span className="bg-card px-2 text-muted-foreground">или</span>
         </div>
       </div>
 
@@ -166,7 +169,7 @@ export function RegisterForm() {
               // это ещё и WCAG 1.3.5.
               autoComplete="given-name"
               required
-              className="pl-10 rounded-full"
+              className="pl-10"
             />
           </div>
         </div>
@@ -182,7 +185,7 @@ export function RegisterForm() {
               placeholder="your@email.com"
               autoComplete="email"
               required
-              className="pl-10 rounded-full"
+              className="pl-10"
             />
           </div>
         </div>
@@ -199,7 +202,7 @@ export function RegisterForm() {
               autoComplete="new-password"
               required
               minLength={8}
-              className="pl-10 pr-10 rounded-full"
+              className="pl-10 pr-10"
             />
             <button
               type="button"
@@ -223,7 +226,7 @@ export function RegisterForm() {
               placeholder="Повторите пароль"
               autoComplete="new-password"
               required
-              className="pl-10 pr-10 rounded-full"
+              className="pl-10 pr-10"
             />
             <button
               type="button"
@@ -241,7 +244,7 @@ export function RegisterForm() {
           disabled={loading || googleLoading}
           className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-base font-medium transition-colors"
         >
-          {loading ? "Регистрация..." : "Зарегистрироваться"}
+          {loading ? "Регистрация…" : "Зарегистрироваться"}
         </Button>
       </form>
 

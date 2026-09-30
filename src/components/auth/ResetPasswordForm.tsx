@@ -29,9 +29,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           </div>
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2 text-center">
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2 text-center">
           Ссылка недействительна
-        </h2>
+        </h1>
         <p className="text-sm md:text-base text-muted-foreground text-center mb-8 leading-relaxed">
           Ссылка для сброса пароля устарела или уже была использована. Запросите новую.
         </p>
@@ -87,14 +87,17 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   return (
     <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Новый пароль</h2>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">Новый пароль</h1>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Придумайте надёжный пароль для вашего аккаунта
         </p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+        <div
+          role="alert"
+          className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+        >
           {error}
           {error.includes("устарела") && (
             <Link href="/forgot-password" className="block mt-1 underline font-medium">
@@ -117,7 +120,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               autoComplete="new-password"
               required
               minLength={8}
-              className="pl-10 pr-10 rounded-full"
+              className="pl-10 pr-10"
             />
             <button
               type="button"
@@ -141,7 +144,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               placeholder="Повторите пароль"
               autoComplete="new-password"
               required
-              className="pl-10 pr-10 rounded-full"
+              className="pl-10 pr-10"
             />
             <button
               type="button"
@@ -159,7 +162,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           disabled={loading}
           className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-base font-medium transition-colors"
         >
-          {loading ? "Сохраняем..." : "Сохранить пароль"}
+          {loading ? "Сохраняем…" : "Сохранить пароль"}
         </Button>
       </form>
     </div>

@@ -1,11 +1,71 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { changePassword } from "@/features/profiles/actions";
 import { type ActionState, idleState } from "@/lib/action-state";
+
+interface PasswordFieldProps {
+  /** Служит и `id`, и `name`: имена полей формы совпадают с ключами схемы. */
+  id: string;
+  label: string;
+  autoComplete: string;
+  placeholder: string;
+  minLength?: number;
+  error?: string;
+}
+
+/**
+ * Поле пароля с кнопкой показа символов.
+ *
+ * Приём тот же, что на экранах входа и регистрации: кнопка внутри поля справа,
+ * `Eye` / `EyeOff` 16px, подпись меняется вместе с состоянием. `type="button"`
+ * обязателен — иначе кнопка отправляла бы форму.
+ *
+ * Видимость живёт в самом поле, а не в форме: три поля показываются
+ * и скрываются независимо, как пароль и его подтверждение на регистрации.
+ */
+function PasswordField({
+  id,
+  label,
+  autoComplete,
+  placeholder,
+  minLength,
+  error,
+}: PasswordFieldProps) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="relative">
+        <Input
+          id={id}
+          name={id}
+          type={visible ? "text" : "password"}
+          autoComplete={autoComplete}
+          required
+          minLength={minLength}
+          placeholder={placeholder}
+          aria-invalid={Boolean(error)}
+          className="pr-10"
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? "Скрыть пароль" : "Показать пароль"}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  );
+}
 
 /**
  * Смена пароля в кабинете.
@@ -20,19 +80,30 @@ export function ChangePasswordForm() {
   );
 
   const formRef = useRef<HTMLFormElement>(null);
+  // Счётчик успешных смен меняет `key` полей: они пересоздаются, и вместе
+  // со значением сбрасывается показ символов. Иначе поле осталось бы
+  // открытым — пустым, но открытым.
+  const [resetCount, setResetCount] = useState(0);
 
   // Очистка — побочный эффект, а не часть рендера: оставлять введённые пароли
   // в полях после успешной смены незачем.
+  //
+  // Зависимость от всего `state`, а не от `state.status`: `useActionState`
+  // отдаёт новый объект на каждый ответ, а статус двух успешных смен подряд
+  // один и тот же — по `state.status` вторая очистка не сработала бы.
   useEffect(() => {
-    if (state.status === "success") formRef.current?.reset();
-  }, [state.status]);
+    if (state.status === "success") {
+      formRef.current?.reset();
+      setResetCount((count) => count + 1);
+    }
+  }, [state]);
 
   const errorMessage = state.status === "error" ? state.message : null;
   const fieldError = (field: string) =>
     state.status === "error" ? state.fieldErrors?.[field]?.[0] : undefined;
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-3">
+    <form ref={formRef} action={formAction} className="space-y-5">
       {errorMessage && (
         <div
           role="alert"
@@ -48,59 +119,38 @@ export function ChangePasswordForm() {
         </output>
       )}
 
-      <div className="space-y-1.5">
-        <Label htmlFor="currentPassword">Текущий пароль</Label>
-        <Input
-          id="currentPassword"
-          name="currentPassword"
-          type="password"
-          autoComplete="current-password"
-          required
-          placeholder="••••••••"
-          aria-invalid={Boolean(fieldError("currentPassword"))}
-        />
-        {fieldError("currentPassword") && (
-          <p className="text-xs text-destructive">{fieldError("currentPassword")}</p>
-        )}
-      </div>
+      <PasswordField
+        key={`currentPassword-${resetCount}`}
+        id="currentPassword"
+        label="Текущий пароль"
+        autoComplete="current-password"
+        placeholder="••••••••"
+        error={fieldError("currentPassword")}
+      />
 
-      <div className="space-y-1.5">
-        <Label htmlFor="newPassword">Новый пароль</Label>
-        <Input
-          id="newPassword"
-          name="newPassword"
-          type="password"
-          autoComplete="new-password"
-          required
-          minLength={8}
-          placeholder="Минимум 8 символов"
-          aria-invalid={Boolean(fieldError("newPassword"))}
-        />
-        {fieldError("newPassword") && (
-          <p className="text-xs text-destructive">{fieldError("newPassword")}</p>
-        )}
-      </div>
+      <PasswordField
+        key={`newPassword-${resetCount}`}
+        id="newPassword"
+        label="Новый пароль"
+        autoComplete="new-password"
+        placeholder="Минимум 8 символов"
+        minLength={8}
+        error={fieldError("newPassword")}
+      />
 
-      <div className="space-y-1.5">
-        <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
-        <Input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          required
-          placeholder="Повторите пароль"
-          aria-invalid={Boolean(fieldError("confirmPassword"))}
-        />
-        {fieldError("confirmPassword") && (
-          <p className="text-xs text-destructive">{fieldError("confirmPassword")}</p>
-        )}
-      </div>
+      <PasswordField
+        key={`confirmPassword-${resetCount}`}
+        id="confirmPassword"
+        label="Подтвердите пароль"
+        autoComplete="new-password"
+        placeholder="Повторите пароль"
+        error={fieldError("confirmPassword")}
+      />
 
       <Button
         type="submit"
         disabled={pending}
-        className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"
+        className="h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground text-base font-medium cursor-pointer transition-colors"
       >
         {pending ? "Сохранение…" : "Изменить пароль"}
       </Button>

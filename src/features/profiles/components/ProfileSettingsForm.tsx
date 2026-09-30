@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import type { CityOption } from "@/features/cities/queries";
 import { updateProfile } from "@/features/profiles/actions";
 import { PROFILE_TYPE_LABELS } from "@/features/profiles/schemas";
@@ -62,7 +64,7 @@ export function ProfileSettingsForm({
     state.status === "error" ? state.fieldErrors?.[field]?.[0] : undefined;
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       {errorMessage && (
         <div
           role="alert"
@@ -145,13 +147,12 @@ export function ProfileSettingsForm({
 
       <div className="space-y-1.5">
         <Label htmlFor="cityId">Город</Label>
-        <select
+        <NativeSelect
           id="cityId"
           name="cityId"
           value={cityId}
           onChange={(e) => setCityId(e.target.value)}
           aria-invalid={Boolean(fieldError("cityId"))}
-          className="w-full h-10 px-3 py-1 text-base bg-background text-foreground border border-input rounded-md focus-visible:outline-none focus-visible:border-state/60 transition-colors cursor-pointer"
         >
           <option value="">Выберите город</option>
           {cities.map((city) => (
@@ -159,7 +160,7 @@ export function ProfileSettingsForm({
               {city.name}
             </option>
           ))}
-        </select>
+        </NativeSelect>
         {fieldError("cityId") && <p className="text-xs text-destructive">{fieldError("cityId")}</p>}
       </div>
 
@@ -189,16 +190,18 @@ export function ProfileSettingsForm({
 
       <div className="space-y-1.5">
         <Label htmlFor="bio">О себе</Label>
-        <textarea
+        {/* Поле из кита: у ручного были 14px вместо общих 16, серая заливка,
+            скругление 6px и фокус в золото при общем `--state`. */}
+        <Textarea
           id="bio"
           name="bio"
-          rows={3}
+          rows={4}
           maxLength={1000}
           placeholder="Расскажите о себе, опыте, специализации..."
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           aria-invalid={Boolean(fieldError("bio"))}
-          className="w-full px-3 py-2 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand placeholder:text-muted-foreground resize-none transition-colors"
+          className="min-h-32 resize-y"
         />
         {fieldError("bio") ? (
           <p className="text-xs text-destructive">{fieldError("bio")}</p>
@@ -210,7 +213,7 @@ export function ProfileSettingsForm({
       <Button
         type="submit"
         disabled={pending}
-        className="bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer"
+        className="h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground text-base font-medium cursor-pointer transition-colors"
       >
         {pending ? "Сохранение…" : "Сохранить изменения"}
       </Button>

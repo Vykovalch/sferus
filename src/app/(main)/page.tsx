@@ -23,7 +23,7 @@ export default async function HomePage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
   return (
-    <div className="">
+    <div>
       <HeroSection />
       <PopularCategories />
       <TopListings />

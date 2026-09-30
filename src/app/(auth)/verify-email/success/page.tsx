@@ -10,29 +10,31 @@ export const metadata: Metadata = {
 
 export default function VerifyEmailSuccessPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white md:bg-background md:items-center md:justify-center md:px-4 md:py-12">
+    <div className="min-h-screen flex flex-col bg-card md:bg-background md:items-center md:justify-center md:px-4 md:py-12">
       <div className="flex justify-center pt-10 pb-6 md:pt-0 md:pb-8">
         <Link href="/" className="transition-opacity hover:opacity-80">
           <LogoMark className="h-12" />
         </Link>
       </div>
 
-      <div className="w-full md:max-w-[420px] text-center animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border md:shadow-sm bg-white">
+      <div className="w-full md:max-w-[420px] text-center animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border bg-card">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
             <CheckCircle className="h-8 w-8 text-emerald-500" />
           </div>
         </div>
 
-        <h2 className="text-2xl font-medium tracking-tight mb-2">Email подтверждён!</h2>
-        <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">
+          Email подтверждён!
+        </h1>
+        <p className="text-sm md:text-base text-muted-foreground mb-8 leading-relaxed">
           Ваш аккаунт активирован. Теперь вы можете войти и пользоваться всеми возможностями
           платформы.
         </p>
 
         <Button
           asChild
-          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 font-medium cursor-pointer"
+          className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full text-base font-medium cursor-pointer transition-colors"
         >
           <Link href="/login">Войти в аккаунт</Link>
         </Button>

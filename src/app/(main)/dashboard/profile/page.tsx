@@ -22,10 +22,18 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight mb-6">Мой профиль</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Мой профиль</h1>
 
-      <div className="bg-background border border-border rounded-xl p-6 shadow-sm space-y-6">
-        <AvatarUploader userName={user.name} userEmail={user.email} imageUrl={user.image ?? null} />
+      {/* Панели приведены к рецепту карточки формы (2026-09-30, известная
+          проблема 43): до этого стояли `bg-background` на холсте
+          `bg-background` — заливка панели совпадала с фоном страницы,
+          и держали её только рамка и тень, которой нет больше нигде
+          на сайте. Скругление было 12px против общих 16.
+
+          Первая панель без заголовка намеренно: она и есть содержимое
+          страницы, её называет `h1`. Заголовок нужен только второй теме. */}
+      <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-6">
+        <AvatarUploader userName={user.name} imageUrl={user.image ?? null} />
 
         <div className="border-t border-border" />
 
@@ -43,8 +51,14 @@ export default async function ProfilePage() {
       </div>
 
       {/* Контакты для клиентов */}
-      <div className="bg-background border border-border rounded-xl p-6 shadow-sm mt-6">
-        <h2 className="text-sm font-medium text-foreground mb-1">Контакты для клиентов</h2>
+      <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 mt-6">
+        <h2 className="text-base font-semibold text-foreground mb-1.5">Контакты для клиентов</h2>
+        {/* Пояснение стоит под заголовком панели, а не внутри формы: раньше
+            оно было первой строкой формы и поднималось к заголовку
+            отрицательным отступом. */}
+        <p className="text-xs text-muted-foreground mb-5">
+          Клиенты увидят отмеченные контакты по кнопке «Показать контакты» на ваших объявлениях
+        </p>
         <ContactSettingsForm initialValues={toContactFormValues(contacts)} />
       </div>
     </>

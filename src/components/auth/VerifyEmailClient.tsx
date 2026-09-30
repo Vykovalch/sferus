@@ -53,7 +53,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
       </div>
 
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Проверьте почту</h2>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">Проверьте почту</h1>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Мы отправили письмо с ссылкой для подтверждения на{" "}
           {email ? <span className="font-medium text-foreground">{email}</span> : "ваш email"}
@@ -92,7 +92,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
             {resendStatus === "loading" ? (
               <>
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Отправляем...
+                Отправляем…
               </>
             ) : cooldown > 0 ? (
               `Отправить повторно (${cooldown}с)`
@@ -103,7 +103,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
         )}
 
         {resendStatus === "error" && (
-          <p className="text-sm text-destructive text-center">
+          <p role="alert" className="text-sm text-destructive text-center">
             Не удалось отправить письмо. Попробуйте позже.
           </p>
         )}

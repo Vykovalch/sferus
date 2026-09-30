@@ -29,7 +29,7 @@ export function ServiceVisibilityToggle({ serviceId, isActive }: ServiceVisibili
         disabled={pending}
         title={isActive ? "Скрыть объявление" : "Опубликовать объявление"}
         aria-label={isActive ? "Скрыть объявление" : "Опубликовать объявление"}
-        className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
+        className="h-10 w-10 text-muted-foreground hover:text-foreground cursor-pointer"
       >
         {isActive ? <PowerOff className="h-4 w-4" /> : <Power className="h-4 w-4" />}
       </Button>

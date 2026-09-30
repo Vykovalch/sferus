@@ -9,6 +9,13 @@ import { formatServicePrice } from "@/lib/format";
 /**
  * Белый фон — стандарт витрин маркетплейсов: карточки товаров ставят на белое,
  * а роль визуального якоря берёт на себя фото объявления, а не заливка карточки.
+ *
+ * **Пока объявлений нет, секции нет вовсе** (решение владельца, 2026-09-30).
+ * Раньше на их месте стоял абзац «Объявлений пока нет» — пустая витрина
+ * на главной хуже её отсутствия, и так поступают площадки на старте.
+ * Плашка с пунктирной рамкой здесь тоже не нужна: она уместна там, куда
+ * человек пришёл за списком сам — каталог, результаты поиска, — а не
+ * на витрине.
  */
 export async function TopListings() {
   // Совпадает с числом колонок сетки на широком экране — блок занимает ровно
@@ -19,6 +26,8 @@ export async function TopListings() {
     getFavoriteTargetIds(session?.user.id),
   ]);
 
+  if (listings.length === 0) return null;
+
   return (
     <section className="py-10 sm:py-12 lg:py-16 bg-card">
       <PageContainer>
@@ -26,27 +35,23 @@ export async function TopListings() {
           <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Новые объявления</h2>
         </div>
 
-        {listings.length === 0 ? (
-          <p className="text-muted-foreground">Объявлений пока нет</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 md:gap-5">
-            {listings.map((listing) => (
-              <ServiceCard
-                key={listing.id}
-                id={listing.id}
-                title={listing.title}
-                categorySlug={listing.categorySlug}
-                city={listing.cityName}
-                price={formatServicePrice(listing.price, listing.isNegotiable, listing.priceUnit)}
-                authorName={listing.authorName}
-                authorType={listing.authorType}
-                imageUrl={listing.imageUrl}
-                isFavorite={favorites.serviceIds.has(listing.id)}
-                isAuthenticated={Boolean(session)}
-              />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 md:gap-5">
+          {listings.map((listing) => (
+            <ServiceCard
+              key={listing.id}
+              id={listing.id}
+              title={listing.title}
+              categorySlug={listing.categorySlug}
+              city={listing.cityName}
+              price={formatServicePrice(listing.price, listing.isNegotiable, listing.priceUnit)}
+              authorName={listing.authorName}
+              authorType={listing.authorType}
+              imageUrl={listing.imageUrl}
+              isFavorite={favorites.serviceIds.has(listing.id)}
+              isAuthenticated={Boolean(session)}
+            />
+          ))}
+        </div>
       </PageContainer>
     </section>
   );

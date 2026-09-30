@@ -32,6 +32,12 @@ export function LoginForm() {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       callbackURL: callbackUrl,
+      // Галочка «Запомнить меня» до 2026-09-30 не передавалась вовсе: она
+      // стояла в разметке и ни на что не влияла. Снятая теперь означает то,
+      // что и обещает подпись, — сессия до закрытия браузера.
+      // Невыбранный чекбокс в `FormData` отсутствует, поэтому сравнение
+      // с "on", а не приведение к булеву.
+      rememberMe: formData.get("remember") === "on",
     });
 
     if (error) {
@@ -66,14 +72,19 @@ export function LoginForm() {
   return (
     <div className="w-full bg-card text-foreground animate-in fade-in duration-300 px-6 pb-10 md:pt-10 md:px-8 md:pb-8 md:rounded-2xl md:border md:border-border">
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight mb-2">Добро пожаловать!</h2>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-2">
+          Добро пожаловать!
+        </h1>
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
           Войдите в аккаунт для размещения объявлений и заданий
         </p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+        <div
+          role="alert"
+          className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+        >
           {error}
         </div>
       )}
@@ -103,7 +114,7 @@ export function LoginForm() {
               />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
-            Подключение...
+            Подключение…
           </span>
         ) : (
           <>
@@ -135,7 +146,7 @@ export function LoginForm() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-muted-foreground">или</span>
+          <span className="bg-card px-2 text-muted-foreground">или</span>
         </div>
       </div>
 
@@ -151,7 +162,7 @@ export function LoginForm() {
               placeholder="your@email.com"
               autoComplete="email"
               required
-              className="pl-10 rounded-full"
+              className="pl-10"
             />
           </div>
         </div>
@@ -167,7 +178,7 @@ export function LoginForm() {
               placeholder="Введите пароль"
               autoComplete="current-password"
               required
-              className="pl-10 pr-10 rounded-full"
+              className="pl-10 pr-10"
             />
             <button
               type="button"
@@ -182,7 +193,12 @@ export function LoginForm() {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Checkbox id="remember" name="remember" className="cursor-pointer" />
+            {/* Отмечена по умолчанию: до 2026-09-30 параметр не передавался
+                вовсе, а `rememberMe` в better-auth по умолчанию включён —
+                то есть вход и так запоминался. Снятая галочка теперь честно
+                сокращает сессию до закрытия браузера, но само поведение
+                по умолчанию не меняется. */}
+            <Checkbox id="remember" name="remember" defaultChecked className="cursor-pointer" />
             <Label
               htmlFor="remember"
               className="text-sm font-normal text-muted-foreground cursor-pointer select-none"
@@ -203,7 +219,7 @@ export function LoginForm() {
           disabled={loading || googleLoading}
           className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground h-10 rounded-full cursor-pointer text-base font-medium transition-colors"
         >
-          {loading ? "Вход..." : "Войти"}
+          {loading ? "Вход…" : "Войти"}
         </Button>
       </form>
 

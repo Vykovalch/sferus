@@ -1,6 +1,7 @@
 import "server-only";
 
 import { asc } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "@/lib/db";
 import { categories } from "@/lib/db/schema";
 
@@ -12,9 +13,14 @@ import { categories } from "@/lib/db/schema";
  * живёт в lib/constants.ts: цвет относится к дизайн-системе, а не к данным,
  * и хранить Tailwind-классы в БД нельзя — они не попадут в сборку CSS.
  *
- * Про отсутствие React `cache()` — см. комментарий в features/cities/queries.ts.
+ * Обёрнута в React `cache()` (2026-09-30) по той же причине, что `getCities`
+ * и `getServiceDetail`: на `/services/[slug]` и `/services` список просят
+ * дважды за один запрос — сначала `generateMetadata`, чтобы найти название
+ * категории по slug, потом сама страница. Без обёртки это два одинаковых
+ * SELECT в одном рендере. Кеш живёт в пределах запроса — дедупликация,
+ * а не хранение между посетителями.
  */
-export async function getCategories() {
+export const getCategories = cache(async () => {
   return db
     .select({
       id: categories.id,
@@ -24,7 +30,7 @@ export async function getCategories() {
     })
     .from(categories)
     .orderBy(asc(categories.order), asc(categories.name));
-}
+});
 
 /** То, что видит UI. Источник истины — возврат запроса, а не ручной интерфейс. */
 export type CategoryOption = Awaited<ReturnType<typeof getCategories>>[number];

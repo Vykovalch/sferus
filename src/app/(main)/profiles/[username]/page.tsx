@@ -1,6 +1,7 @@
-import { Building2, CheckCircle2, MapPin, User } from "lucide-react";
+import { Building2, CheckCircle2, ChevronRight, MapPin, User } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactRevealButton } from "@/components/shared/ContactRevealButton";
 import { PageContainer } from "@/components/shared/PageContainer";
@@ -85,11 +86,31 @@ export default async function PublicProfilePage({
   return (
     <div className="min-h-screen bg-card text-foreground">
       <PageContainer className="pt-6 pb-24 lg:pt-8 lg:pb-8">
+        {/* Хлебные крошки (2026-09-30). До этого профиль был единственной
+            страницей-объектом без них: у объявления и задания они есть.
+            Звеньев два — вести сюда больше некуда, списка профилей
+            на площадке нет. Отступ `mb-3`, как на остальных страницах
+            (DESIGN.md, «Хлебные крошки — часть шапки страницы»). */}
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap mb-3"
+        >
+          <Link href="/" className="hover:text-brand transition-colors cursor-pointer font-medium">
+            Главная
+          </Link>
+          <ChevronRight
+            aria-hidden="true"
+            className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground/60"
+          />
+          <span aria-current="page" className="text-foreground font-medium line-clamp-1">
+            {profile.name}
+          </span>
+        </nav>
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
           <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
             {/* Карточка профиля */}
-            <div className="bg-background border border-border rounded-xl p-5 md:p-6 shadow-sm">
+            <div className="bg-card border border-border rounded-2xl p-5 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                 <Avatar className="w-16 h-16 flex-shrink-0">
                   <AvatarImage src={profile.image ?? undefined} alt={profile.name} />
@@ -109,10 +130,13 @@ export default async function PublicProfilePage({
                     <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
                       {profile.name}
                     </h1>
+                    {/* У значка `role="img"` обязателен: без роли подпись
+                        на `<svg>` объявляется ненадёжно. */}
                     {profile.isVerified && (
                       <CheckCircle2
-                        className="h-5 w-5 text-brand flex-shrink-0"
+                        role="img"
                         aria-label="Проверенный аккаунт"
+                        className="h-5 w-5 text-brand flex-shrink-0"
                       />
                     )}
                   </div>
@@ -154,8 +178,8 @@ export default async function PublicProfilePage({
 
             {/* Услуги */}
             {services.length > 0 && (
-              <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-                <h2 className="text-sm font-medium text-foreground mb-3">
+              <div className="bg-card border border-border rounded-2xl p-5 sm:p-6">
+                <h2 className="text-base font-semibold text-foreground mb-3">
                   Объявления ({services.length})
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-6 md:gap-5">
@@ -184,8 +208,8 @@ export default async function PublicProfilePage({
 
             {/* Задания */}
             {tasks.length > 0 && (
-              <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
-                <h2 className="text-sm font-medium text-foreground mb-3">
+              <div className="bg-card border border-border rounded-2xl p-5 sm:p-6">
+                <h2 className="text-base font-semibold text-foreground mb-3">
                   Открытые задания ({tasks.length})
                 </h2>
                 <div className="flex flex-col gap-3">
@@ -208,9 +232,14 @@ export default async function PublicProfilePage({
             )}
           </div>
 
-          {/* Сайдбар — контакты */}
-          <div className="hidden lg:flex flex-col gap-4 w-60 flex-shrink-0 sticky top-6">
-            <div className="bg-background border border-border rounded-xl p-5 shadow-sm">
+          {/* Сайдбар — контакты.
+              `lg:w-80` — как панели на страницах объявления и задания
+              (было 240px против 320). `lg:top-24` — 96px: высота шапки 72
+              (`HEADER_HEIGHT_PX`) плюс 24 воздуха. При `top-6` закреплённая
+              панель прилипала под закреплённой шапкой, и её верх скрывался
+              за ней. */}
+          <div className="hidden lg:flex flex-col gap-4 lg:w-80 flex-shrink-0 lg:sticky lg:top-24">
+            <div className="bg-card border border-border rounded-2xl p-5 sm:p-6">
               <p className="text-xs text-muted-foreground mb-3">
                 {isCompany ? "Свяжитесь с компанией" : "Свяжитесь с исполнителем"}
               </p>
@@ -218,7 +247,7 @@ export default async function PublicProfilePage({
                 target={{ kind: "profile", id: profile.profileId }}
                 isAuthenticated={Boolean(session)}
                 loginCallbackUrl={profilePath}
-                className="w-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors"
+                className="w-full h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors"
               />
             </div>
           </div>
@@ -226,7 +255,11 @@ export default async function PublicProfilePage({
       </PageContainer>
 
       {/* Мобильная закреплённая панель */}
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-background border-t border-border px-4 py-3 flex items-center gap-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+      {/* Мобильная закреплённая панель — тот же вид, что на страницах
+          объявления и задания: `bg-card` и одна верхняя граница. Своя тень
+          `shadow-[0_-4px_16px_rgba(0,0,0,0.08)]` убрана: это была единственная
+          такая запись в проекте, и заливка была серой, а не белой. */}
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3 flex items-center gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-foreground truncate">{profile.name}</p>
         </div>
@@ -234,7 +267,7 @@ export default async function PublicProfilePage({
           target={{ kind: "profile", id: profile.profileId }}
           isAuthenticated={Boolean(session)}
           loginCallbackUrl={profilePath}
-          className="flex-shrink-0 bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors"
+          className="flex-shrink-0 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors"
         />
       </div>
     </div>
