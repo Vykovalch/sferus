@@ -173,7 +173,7 @@ export function CtaSection({ isAuthenticated }: CtaSectionProps) {
                 href={isAuthenticated ? "/services/new" : "/register"}
                 className="inline-block rounded-full border border-white bg-cta-performer-button px-6 py-3 sm:px-8 sm:py-4 font-semibold text-white transition-[background-color,color,transform] duration-200 ease-out hover:bg-cta-performer-paper hover:text-foreground active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
               >
-                Создать услугу
+                Разместить услугу
               </Link>
             </div>
           </div>

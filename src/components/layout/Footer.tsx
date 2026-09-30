@@ -42,7 +42,7 @@ export function Footer() {
                 className="text-sm text-neutral-300 hover:text-white transition-colors"
                 href="/tasks/new"
               >
-                Создать задание
+                Разместить задание
               </Link>
               <Link
                 className="text-sm text-neutral-300 hover:text-white transition-colors"
@@ -61,7 +61,7 @@ export function Footer() {
                 className="text-sm text-neutral-300 hover:text-white transition-colors"
                 href="/services/new"
               >
-                Создать услугу
+                Разместить услугу
               </Link>
               <Link
                 className="text-sm text-neutral-300 hover:text-white transition-colors"

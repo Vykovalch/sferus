@@ -140,7 +140,7 @@ export async function HeroSection() {
                 <Plus aria-hidden="true" className="size-3.5" />
               </span>
               <span className="decoration-brand underline-offset-4 transition-all group-hover:underline group-focus-visible:underline">
-                Создать задание
+                Разместить задание
               </span>
             </Link>
           </div>
