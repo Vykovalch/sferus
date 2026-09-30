@@ -22,7 +22,7 @@ export default async function CreateServicePage() {
   return (
     // Изменено: Установлены системные цвета фона и текста (как в CreateTaskPage)
     <div className="min-h-screen bg-background text-foreground">
-      <PageContainer className="py-6 lg:py-8 max-w-4xl">
+      <PageContainer className="py-6 lg:py-8 max-w-2xl">
         {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
             (2026-09-29). Раньше они лежали в отдельной обёртке с собственным
             `py-3`, и её нижний отступ складывался с верхним отступом
@@ -56,7 +56,7 @@ export default async function CreateServicePage() {
             начиналась сразу с `h2` секций формы. Кегль — по общей шкале
             ярлыков страниц, DESIGN.md «Заголовок внутренней страницы». */}
         <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">Новая услуга</h1>
-        <CreateServiceForm userName={session.user.name} cities={cities} categories={categories} />
+        <CreateServiceForm cities={cities} categories={categories} />
       </PageContainer>
     </div>
   );
