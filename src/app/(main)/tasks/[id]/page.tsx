@@ -87,6 +87,23 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
     />
   );
 
+  // Карточка заказчика: ссылкой, если у него есть публичный профиль.
+  // Раньше при отсутствии `username` в разметке оставался `href="#"` —
+  // ссылка в никуда.
+  const authorCard = (
+    <>
+      <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-base font-bold text-brand flex-shrink-0">
+        {authorInitials}
+      </div>
+      <div>
+        <p className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-brand transition-colors">
+          {task.authorName}
+        </p>
+        <p className="text-xs text-muted-foreground mt-0.5">Заказчик</p>
+      </div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <PageContainer className="pt-6 pb-28 lg:pt-8 lg:pb-8">
@@ -124,26 +141,30 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
             {task.title}
           </span>
         </nav>
+        {/* Порядок в разметке и есть порядок на телефоне: сначала задание,
+            потом панель заказчика (2026-09-30). До этого у них стояли
+            `order-1` / `order-2`, и на телефоне первым шёл блок заказчика —
+            аватар, имя и счётчик заданий. Кнопка контактов в нём на телефоне
+            скрыта (она в закреплённой полосе внизу), то есть блок без действия
+            отодвигал заголовок и описание вниз. На широком экране порядок
+            тот же: содержимое слева, панель справа. */}
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
-          <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
-            <div className="bg-card border border-border rounded-xl p-5 md:p-6">
-              {/* Заголовок + бюджет */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
+            <div className="bg-card border border-border rounded-2xl p-5 md:p-6">
+              {/* В строке заголовка остались заголовок и отметка «в избранное».
+                  Бюджет переехал в панель действия: там он стоит рядом
+                  с кнопкой, как в закреплённой полосе на телефоне. */}
+              <div className="flex items-start justify-between gap-4 mb-4">
                 <h1 className="text-xl md:text-2xl font-semibold tracking-tight leading-tight">
                   {task.title}
                 </h1>
-                <div className="flex items-start gap-3 flex-shrink-0">
-                  <div className="sm:text-right">
-                    <div className="text-2xl font-bold text-foreground">{budgetLabel}</div>
-                  </div>
-                  <FavoriteButton
-                    target={{ kind: "task", id: task.id }}
-                    isFavorite={isFavorite}
-                    isAuthenticated={!!session}
-                    className="p-2 rounded-full border border-border hover:border-brand/50 transition-colors"
-                  />
-                </div>
+                <FavoriteButton
+                  target={{ kind: "task", id: task.id }}
+                  isFavorite={isFavorite}
+                  isAuthenticated={!!session}
+                  className="flex-shrink-0 p-2 rounded-full border border-border hover:border-brand/50 transition-colors"
+                />
               </div>
 
               {/* Категория — простой текст, не бейдж: единственное место на
@@ -151,15 +172,17 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
                   нет, в отличие от услуги). */}
               <p className="text-sm text-muted-foreground mb-6">{task.categoryName}</p>
 
-              {/* Описание */}
-              <h2 className="text-sm font-medium text-foreground mb-2">Описание задания</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6 whitespace-pre-line">
+              {/* Описание — главный текст страницы, поэтому 16px основным
+                  цветом (2026-09-30). До этого стояли 14px `--muted-foreground`,
+                  то есть стиль служебной подписи. */}
+              <h2 className="text-base font-semibold text-foreground mb-2">Описание задания</h2>
+              <p className="text-base text-foreground leading-relaxed mb-6 whitespace-pre-line">
                 {task.description}
               </p>
 
               {/* Детали */}
               <div className="border-t border-border pt-5">
-                <h2 className="text-sm font-medium text-foreground mb-3">Детали</h2>
+                <h2 className="text-base font-semibold text-foreground mb-3">Детали</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Статус</p>
@@ -182,46 +205,60 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
             </div>
           </div>
 
-          {/* Заказчик — в потоке на мобильном, закреплённый сайдбар на десктопе */}
-          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
-            <div className="bg-card border border-border rounded-xl p-5">
-              <Link
-                href={task.authorUsername ? `/profiles/${task.authorUsername}` : "#"}
-                className="flex items-center gap-3 mb-4 group cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-base font-bold text-brand flex-shrink-0">
-                  {authorInitials}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-brand transition-colors">
-                    {task.authorName}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Заказчик</p>
-                </div>
-              </Link>
-
-              <div className="flex items-center gap-3 text-xs text-muted-foreground border-t border-border pt-3 mb-4">
-                <span>
-                  Заданий: <span className="font-medium text-foreground">{authorStats.total}</span>
-                </span>
-                <span>
-                  Завершено:{" "}
-                  <span className="font-medium text-foreground">{authorStats.completed}</span>
-                </span>
+          {/* Бюджет, действие и заказчик.
+              `lg:top-24` — 96px: высота шапки 72 (`HEADER_HEIGHT_PX`,
+              `lg:h-[72px]` в `Header.tsx`) плюс 24 воздуха. При прежних
+              `lg:top-6` закреплённая панель прилипала под закреплённой шапкой,
+              и её верхние 48px скрывались за ней. */}
+          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-24">
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <div className="text-2xl font-semibold text-foreground leading-tight">
+                {budgetLabel}
               </div>
 
               {contactButton(
-                "hidden lg:flex w-full h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors",
+                "mt-4 hidden lg:flex w-full h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors",
               )}
+
+              <div className="mt-4 pt-4 border-t border-border">
+                {task.authorUsername ? (
+                  <Link
+                    href={`/profiles/${task.authorUsername}`}
+                    className="flex items-center gap-3 group cursor-pointer"
+                  >
+                    {authorCard}
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-3">{authorCard}</div>
+                )}
+
+                <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>
+                    Заданий:{" "}
+                    <span className="font-medium text-foreground">{authorStats.total}</span>
+                  </span>
+                  <span>
+                    Завершено:{" "}
+                    <span className="font-medium text-foreground">{authorStats.completed}</span>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </PageContainer>
 
-      {/* Мобильная закреплённая панель: основное действие */}
-      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3">
+      {/* Мобильная закреплённая панель. Бюджет добавлен в неё вместе
+          с переносом его в панель действия (2026-09-30): иначе на телефоне
+          сумма оказалась бы в самом низу страницы, под описанием и деталями.
+          Теперь полоса устроена так же, как на странице услуги: сумма слева,
+          кнопка справа. */}
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3 flex items-center gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="text-lg font-semibold text-foreground leading-tight">{budgetLabel}</div>
+        </div>
         {contactButton(
-          "w-full h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors",
+          "flex-shrink-0 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors",
         )}
       </div>
     </div>

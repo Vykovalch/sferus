@@ -97,12 +97,46 @@ export default async function ServiceListingPage({
   const listingPath = `/services/${service.categorySlug}/${service.id}`;
   const priceLabel = formatServicePrice(service.price, service.isNegotiable, service.priceUnit);
 
+  // Кнопка стоит в двух местах: в панели на десктопе и в закреплённой полосе
+  // на телефоне. Классы у них разные, поэтому приходят параметром.
+  const contactButton = (className: string) => (
+    <ContactRevealButton
+      target={{ kind: "service", id: service.id }}
+      isAuthenticated={Boolean(session)}
+      loginCallbackUrl={listingPath}
+      className={className}
+    />
+  );
+
   const authorInitials = service.authorName
     .split(" ")
     .map((n) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  // Карточка исполнителя: ссылкой, если у него есть публичный профиль.
+  // Раньше при отсутствии `username` в разметке оставался `href="#"` —
+  // ссылка в никуда.
+  const authorCard = (
+    <>
+      <div
+        className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-bold flex-shrink-0 ${
+          isCompany ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" : "bg-brand/10 text-brand"
+        }`}
+      >
+        {authorInitials}
+      </div>
+      <div>
+        <p className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-brand transition-colors">
+          {service.authorName}
+        </p>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {isCompany ? "Компания" : "Частный специалист"}
+        </p>
+      </div>
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -151,25 +185,30 @@ export default async function ServiceListingPage({
             {service.title}
           </span>
         </nav>
+        {/* Порядок в разметке и есть порядок на телефоне: сначала объявление,
+            потом панель исполнителя (2026-09-30). До этого у них стояли
+            `order-1` / `order-2`, и на телефоне первым шёл блок исполнителя —
+            аватар, имя и «На платформе с …». Кнопка контактов в нём на телефоне
+            скрыта (она в закреплённой полосе внизу), то есть блок без действия
+            отодвигал заголовок и фотографии вниз. На широком экране порядок
+            тот же: содержимое слева, панель справа. */}
         <div className="flex flex-col lg:flex-row gap-6 items-start">
           {/* Основной контент */}
-          <div className="flex-1 min-w-0 w-full flex flex-col gap-4 order-2 lg:order-1">
-            <div className="bg-card border border-border rounded-xl p-5 md:p-6">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
+            <div className="bg-card border border-border rounded-2xl p-5 md:p-6">
+              {/* В строке заголовка остались заголовок и отметка «в избранное».
+                  Цена переехала в панель действия: там она стоит рядом
+                  с кнопкой, как в закреплённой полосе на телефоне. */}
+              <div className="flex items-start justify-between gap-4 mb-4">
                 <h1 className="text-xl md:text-2xl font-semibold tracking-tight leading-tight">
                   {service.title}
                 </h1>
-                <div className="flex items-start gap-3 flex-shrink-0">
-                  <div className="sm:text-right">
-                    <div className="text-2xl font-bold text-foreground">{priceLabel}</div>
-                  </div>
-                  <FavoriteButton
-                    target={{ kind: "service", id: service.id }}
-                    isFavorite={isFavorite}
-                    isAuthenticated={!!session}
-                    className="p-2 rounded-full border border-border hover:border-brand/50 transition-colors"
-                  />
-                </div>
+                <FavoriteButton
+                  target={{ kind: "service", id: service.id }}
+                  isFavorite={isFavorite}
+                  isAuthenticated={!!session}
+                  className="flex-shrink-0 p-2 rounded-full border border-border hover:border-brand/50 transition-colors"
+                />
               </div>
 
               {/* Галерея. Компонент был написан ещё до 1.1 и всё это время
@@ -180,28 +219,23 @@ export default async function ServiceListingPage({
                 </div>
               )}
 
-              {/* Описание */}
-              <h2 className="text-sm font-medium text-foreground mb-2">Описание услуги</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6 whitespace-pre-line">
+              {/* Описание — главный текст страницы, поэтому 16px основным
+                  цветом (2026-09-30). До этого стояли 14px `--muted-foreground`,
+                  то есть стиль служебной подписи. */}
+              <h2 className="text-base font-semibold text-foreground mb-2">Описание услуги</h2>
+              <p className="text-base text-foreground leading-relaxed mb-6 whitespace-pre-line">
                 {service.description}
               </p>
 
-              {/* Детали */}
+              {/* Детали услуги. Опыт работы отсюда убран: это свойство
+                  исполнителя, и его место в панели рядом с «На платформе с». */}
               <div className="border-t border-border pt-5">
-                <h2 className="text-sm font-medium text-foreground mb-3">Детали</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <h2 className="text-base font-semibold text-foreground mb-3">Детали</h2>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Город</p>
                     <p className="text-sm font-medium text-foreground">{service.cityName}</p>
                   </div>
-                  {service.authorExperienceYears !== null && (
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-0.5">Опыт работы</p>
-                      <p className="text-sm font-medium text-foreground">
-                        {formatYears(service.authorExperienceYears)}
-                      </p>
-                    </div>
-                  )}
                   <div>
                     <p className="text-xs text-muted-foreground mb-0.5">Выезд на дом</p>
                     <p className="text-sm font-medium text-foreground">
@@ -212,23 +246,25 @@ export default async function ServiceListingPage({
               </div>
             </div>
 
-            {/* Другие объявления исполнителя */}
+            {/* Другие объявления исполнителя. Строки без собственных рамок:
+                рамка внутри рамки давала коробку в коробке. Подсветка
+                при наведении — тем же приёмом, что в сайдбаре фильтров. */}
             {otherServices.length > 0 && (
-              <div className="bg-card border border-border rounded-xl p-5">
-                <h2 className="text-sm font-medium text-foreground mb-3">
+              <div className="bg-card border border-border rounded-2xl p-5">
+                <h2 className="text-base font-semibold text-foreground mb-2">
                   Другие объявления этого исполнителя
                 </h2>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                   {otherServices.map((other) => (
                     <Link
                       key={other.id}
                       href={`/services/${other.categorySlug}/${other.id}`}
-                      className="flex items-center justify-between px-4 py-3 border border-border rounded-lg hover:border-brand/50 bg-card/30 hover:bg-card/50 transition-all group cursor-pointer"
+                      className="flex items-center justify-between gap-4 -mx-2 px-2 py-2.5 rounded-lg hover:bg-muted/40 transition-colors group cursor-pointer"
                     >
-                      <span className="text-sm text-muted-foreground group-hover:text-brand transition-colors">
+                      <span className="text-sm text-foreground group-hover:text-brand transition-colors">
                         {other.title}
                       </span>
-                      <span className="text-sm font-medium text-foreground flex-shrink-0 ml-4">
+                      <span className="text-sm text-muted-foreground flex-shrink-0">
                         {other.isNegotiable || other.price === null
                           ? "Договорная"
                           : `от ${formatAmount(other.price)} руб.`}
@@ -240,44 +276,47 @@ export default async function ServiceListingPage({
             )}
           </div>
 
-          {/* Исполнитель */}
-          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-6 order-1 lg:order-2">
-            <div className="bg-card border border-border rounded-xl p-5">
-              <Link
-                href={service.authorUsername ? `/profiles/${service.authorUsername}` : "#"}
-                className="flex items-center gap-3 mb-4 group cursor-pointer"
-              >
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-base font-bold flex-shrink-0 ${
-                    isCompany
-                      ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                      : "bg-brand/10 text-brand"
-                  }`}
-                >
-                  {authorInitials}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-brand transition-colors">
-                    {service.authorName}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {isCompany ? "Компания" : "Частный специалист"}
-                  </p>
-                </div>
-              </Link>
+          {/* Цена, действие и исполнитель.
+              `lg:top-24` — 96px: высота шапки 72 (`HEADER_HEIGHT_PX`,
+              `lg:h-[72px]` в `Header.tsx`) плюс 24 воздуха. При прежних
+              `lg:top-6` закреплённая панель прилипала под закреплённой шапкой,
+              и её верхние 48px скрывались за ней. */}
+          <div className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-24">
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <div className="text-2xl font-semibold text-foreground leading-tight">
+                {priceLabel}
+              </div>
 
-              {service.authorCreatedAt && (
-                <p className="text-xs text-muted-foreground border-t border-border pt-3 mb-4">
-                  На платформе с {formatMonthYear(service.authorCreatedAt)}
-                </p>
+              {contactButton(
+                "mt-4 hidden lg:flex w-full h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors",
               )}
 
-              <ContactRevealButton
-                target={{ kind: "service", id: service.id }}
-                isAuthenticated={Boolean(session)}
-                loginCallbackUrl={listingPath}
-                className="hidden lg:flex w-full h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors"
-              />
+              <div className="mt-4 pt-4 border-t border-border">
+                {service.authorUsername ? (
+                  <Link
+                    href={`/profiles/${service.authorUsername}`}
+                    className="flex items-center gap-3 group cursor-pointer"
+                  >
+                    {authorCard}
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-3">{authorCard}</div>
+                )}
+
+                <div className="mt-3 flex flex-col gap-1 text-xs text-muted-foreground">
+                  {service.authorExperienceYears !== null && (
+                    <p>
+                      Опыт работы:{" "}
+                      <span className="font-medium text-foreground">
+                        {formatYears(service.authorExperienceYears)}
+                      </span>
+                    </p>
+                  )}
+                  {service.authorCreatedAt && (
+                    <p>На платформе с {formatMonthYear(service.authorCreatedAt)}</p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -286,14 +325,11 @@ export default async function ServiceListingPage({
       {/* Мобильная закреплённая панель */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-card border-t border-border px-4 py-3 flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <div className="text-lg font-bold text-foreground leading-tight">{priceLabel}</div>
+          <div className="text-lg font-semibold text-foreground leading-tight">{priceLabel}</div>
         </div>
-        <ContactRevealButton
-          target={{ kind: "service", id: service.id }}
-          isAuthenticated={Boolean(session)}
-          loginCallbackUrl={listingPath}
-          className="flex-shrink-0 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors"
-        />
+        {contactButton(
+          "flex-shrink-0 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors",
+        )}
       </div>
     </div>
   );
