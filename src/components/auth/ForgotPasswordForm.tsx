@@ -90,7 +90,7 @@ export function ForgotPasswordForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="pl-10 h-10 rounded-full"
+              className="pl-10 rounded-full"
             />
           </div>
         </div>

@@ -151,7 +151,7 @@ export function ProfileSettingsForm({
           value={cityId}
           onChange={(e) => setCityId(e.target.value)}
           aria-invalid={Boolean(fieldError("cityId"))}
-          className="w-full h-9 px-3 py-1 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand transition-colors cursor-pointer"
+          className="w-full h-10 px-3 py-1 text-base bg-background text-foreground border border-input rounded-md focus-visible:outline-none focus-visible:border-state/60 transition-colors cursor-pointer"
         >
           <option value="">Выберите город</option>
           {cities.map((city) => (

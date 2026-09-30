@@ -1,7 +1,7 @@
 "use client";
 
 import { upload } from "@vercel/blob/client";
-import { CheckCircle, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -171,7 +171,7 @@ export function CreateServiceForm({
 
         {/* Основная информация */}
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
+          <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Основная информация
           </h2>
           <div className="space-y-4">
@@ -215,7 +215,7 @@ export function CreateServiceForm({
                 minLength={20}
                 rows={5}
                 aria-invalid={Boolean(fieldError("description"))}
-                className="flex w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
+                className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-state/60 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
               />
               {fieldError("description") ? (
                 <p className="text-xs text-destructive mt-1">{fieldError("description")}</p>
@@ -230,7 +230,7 @@ export function CreateServiceForm({
 
         {/* Категория и город */}
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
+          <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Категория и местоположение
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -248,7 +248,7 @@ export function CreateServiceForm({
                 onChange={(e) => setCategory(e.target.value)}
                 required
                 aria-invalid={Boolean(fieldError("categoryId"))}
-                className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:border-state/60 cursor-pointer"
               >
                 <option value="" className="bg-background">
                   Выберите категорию
@@ -274,7 +274,7 @@ export function CreateServiceForm({
                 onChange={(e) => setCity(e.target.value)}
                 required
                 aria-invalid={Boolean(fieldError("cityId"))}
-                className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:border-state/60 cursor-pointer"
               >
                 <option value="" className="bg-background">
                   Выберите город
@@ -294,7 +294,7 @@ export function CreateServiceForm({
 
         {/* Стоимость */}
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
+          <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
             Стоимость услуги
           </h2>
           <div className="space-y-4">
@@ -322,7 +322,7 @@ export function CreateServiceForm({
                   aria-label="Единица измерения цены"
                   value={priceUnit}
                   onChange={(e) => setPriceUnit(e.target.value)}
-                  className="flex h-9 rounded-md border border-border bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:border-brand cursor-pointer flex-shrink-0"
+                  className="flex h-10 rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:border-state/60 cursor-pointer flex-shrink-0"
                 >
                   {PRICE_UNITS.map((value) => (
                     <option key={value} value={value} className="bg-background">
@@ -357,46 +357,50 @@ export function CreateServiceForm({
               )}
             </div>
 
-            <div>
-              <Label className="text-sm font-medium text-foreground mb-2 block">
+            {/* Настоящая радиогруппа, а не пара кнопок (2026-09-30). Раньше
+                это были `<button aria-pressed>` со скрытым полем: скринридер
+                объявлял «кнопка, нажата» вместо «выбрано 1 из 2», стрелками
+                между вариантами перейти было нельзя, и вид — две крупные
+                коробки — не совпадал ни с чем на сайте.
+
+                Разметка и классы взяты у «Типа профиля» в настройках:
+                нативный `<input type="radio">` 16px с `accent-brand`, подпись
+                `text-sm`, зазор 8px, весь `<label>` кликабельный. Схема
+                принимает "true"/"false" (`booleanField`), поэтому значения
+                радиокнопок уходят в `FormData` напрямую и скрытое поле
+                больше не нужно. */}
+            <fieldset>
+              <legend className="text-sm font-medium text-foreground mb-2">
                 Выезд на дом / объект
-              </Label>
-              {/* Переключатель сделан кнопками, поэтому значение уходит скрытым полем */}
-              <input type="hidden" name="homeVisit" value={homeVisit ? "true" : "false"} />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              </legend>
+              <div className="flex flex-wrap gap-x-5 gap-y-2">
                 {[
                   { value: true, label: "Да, выезжаю" },
                   { value: false, label: "Только у себя" },
                 ].map((opt) => (
-                  <button
+                  <label
                     key={String(opt.value)}
-                    type="button"
-                    onClick={() => setHomeVisit(opt.value)}
-                    aria-pressed={homeVisit === opt.value}
-                    className={`flex items-center gap-2.5 px-4 py-3 border rounded-lg text-sm transition-all cursor-pointer ${
-                      homeVisit === opt.value
-                        ? "border-brand bg-brand/5 text-brand font-medium"
-                        : "border-border text-muted-foreground hover:border-border/80 hover:bg-card/50"
-                    }`}
+                    className="flex items-center gap-2 cursor-pointer select-none"
                   >
-                    <div
-                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                        homeVisit === opt.value ? "border-brand" : "border-border"
-                      }`}
-                    >
-                      {homeVisit === opt.value && <div className="w-2 h-2 rounded-full bg-brand" />}
-                    </div>
-                    {opt.label}
-                  </button>
+                    <input
+                      type="radio"
+                      name="homeVisit"
+                      value={String(opt.value)}
+                      checked={homeVisit === opt.value}
+                      onChange={() => setHomeVisit(opt.value)}
+                      className="h-4 w-4 border-input text-brand accent-brand cursor-pointer"
+                    />
+                    <span className="text-sm text-foreground">{opt.label}</span>
+                  </label>
                 ))}
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
 
         {/* Фото работ */}
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-foreground mb-1 pb-3 border-b border-border/60">
+          <h2 className="text-base font-semibold text-foreground mb-1 pb-3 border-b border-border/60">
             Фото работ
           </h2>
           <p className="text-xs text-muted-foreground mt-3 mb-3">
@@ -492,7 +496,7 @@ export function CreateServiceForm({
             type="button"
             variant="outline"
             asChild
-            className="h-10 rounded-full border-border text-muted-foreground hover:text-foreground cursor-pointer font-medium"
+            className="h-10 rounded-full border-input text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer font-medium"
           >
             <Link href={cancelHref}>Отмена</Link>
           </Button>
@@ -501,7 +505,7 @@ export function CreateServiceForm({
             // Пока фото не долетело, сохранять нельзя: его адреса ещё нет
             // в форме, и объявление сохранилось бы без него.
             disabled={pending || uploadingCount > 0}
-            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer font-medium transition-colors"
+            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer text-base font-medium transition-colors"
           >
             {pending
               ? isEdit
@@ -543,35 +547,14 @@ export function CreateServiceForm({
                 </span>
               </div>
               <div className="flex items-center justify-between border-t border-border/60 pt-2 gap-1">
-                <span className="text-[11px] font-bold text-brand truncate max-w-[65%]">
+                <span className="text-xs font-bold text-brand truncate max-w-[65%]">
                   {priceDisplay}
                 </span>
                 {cityName && (
-                  <span className="text-[11px] text-muted-foreground flex-shrink-0">
-                    {cityName}
-                  </span>
+                  <span className="text-xs text-muted-foreground flex-shrink-0">{cityName}</span>
                 )}
               </div>
             </div>
-          </div>
-
-          <div className="bg-brand/5 rounded-lg p-3 border border-brand/10">
-            <p className="text-xs font-semibold text-brand mb-2">Советы</p>
-            <ul className="space-y-1.5">
-              {[
-                "Укажите опыт и гарантии на работу",
-                "Реалистичная цена привлечёт больше откликов",
-                "Подробное описание отвечает на вопросы заранее",
-              ].map((tip) => (
-                <li
-                  key={tip}
-                  className="flex items-start gap-1.5 text-xs text-muted-foreground leading-normal"
-                >
-                  <CheckCircle className="h-3 w-3 text-brand flex-shrink-0 mt-0.5" />
-                  <span>{tip}</span>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>

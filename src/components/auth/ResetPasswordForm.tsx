@@ -117,7 +117,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               autoComplete="new-password"
               required
               minLength={8}
-              className="pl-10 pr-10 h-10 rounded-full"
+              className="pl-10 pr-10 rounded-full"
             />
             <button
               type="button"
@@ -141,7 +141,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               placeholder="Повторите пароль"
               autoComplete="new-password"
               required
-              className="pl-10 pr-10 h-10 rounded-full"
+              className="pl-10 pr-10 rounded-full"
             />
             <button
               type="button"

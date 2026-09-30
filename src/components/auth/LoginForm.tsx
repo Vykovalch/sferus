@@ -151,7 +151,7 @@ export function LoginForm() {
               placeholder="your@email.com"
               autoComplete="email"
               required
-              className="pl-10 h-10 rounded-full"
+              className="pl-10 rounded-full"
             />
           </div>
         </div>
@@ -167,7 +167,7 @@ export function LoginForm() {
               placeholder="Введите пароль"
               autoComplete="current-password"
               required
-              className="pl-10 pr-10 h-10 rounded-full"
+              className="pl-10 pr-10 rounded-full"
             />
             <button
               type="button"

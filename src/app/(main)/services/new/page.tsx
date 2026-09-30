@@ -51,6 +51,13 @@ export default async function CreateServicePage() {
             Разместить объявление
           </span>
         </nav>
+        {/* Заголовок страницы (2026-09-30). До этого название было только
+            в хлебных крошках: единственная страница сайта без `h1`, структура
+            начиналась сразу с `h2` секций формы. Кегль — по общей шкале
+            ярлыков страниц, DESIGN.md «Заголовок внутренней страницы». */}
+        <h1 className="text-2xl font-semibold tracking-tight mb-4 lg:mb-6">
+          Разместить объявление
+        </h1>
         <CreateServiceForm userName={session.user.name} cities={cities} categories={categories} />
       </PageContainer>
     </div>

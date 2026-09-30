@@ -166,7 +166,7 @@ export function RegisterForm() {
               // это ещё и WCAG 1.3.5.
               autoComplete="given-name"
               required
-              className="pl-10 h-10 rounded-full"
+              className="pl-10 rounded-full"
             />
           </div>
         </div>
@@ -182,7 +182,7 @@ export function RegisterForm() {
               placeholder="your@email.com"
               autoComplete="email"
               required
-              className="pl-10 h-10 rounded-full"
+              className="pl-10 rounded-full"
             />
           </div>
         </div>
@@ -199,7 +199,7 @@ export function RegisterForm() {
               autoComplete="new-password"
               required
               minLength={8}
-              className="pl-10 pr-10 h-10 rounded-full"
+              className="pl-10 pr-10 rounded-full"
             />
             <button
               type="button"
@@ -223,7 +223,7 @@ export function RegisterForm() {
               placeholder="Повторите пароль"
               autoComplete="new-password"
               required
-              className="pl-10 pr-10 h-10 rounded-full"
+              className="pl-10 pr-10 rounded-full"
             />
             <button
               type="button"

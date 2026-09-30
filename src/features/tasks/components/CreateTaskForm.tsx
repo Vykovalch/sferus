@@ -1,6 +1,5 @@
 "use client";
 
-import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -101,7 +100,7 @@ export function CreateTaskForm({
 
         {/* Блок: Основная информация */}
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-medium text-foreground mb-4 pb-3 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border">
             Основная информация
           </h2>
 
@@ -121,7 +120,7 @@ export function CreateTaskForm({
                 minLength={10}
                 maxLength={100}
                 aria-invalid={Boolean(fieldError("title"))}
-                className="border-input focus-visible:ring-brand"
+                className="border-input"
               />
               {fieldError("title") ? (
                 <p className="text-xs text-destructive mt-1">{fieldError("title")}</p>
@@ -147,7 +146,7 @@ export function CreateTaskForm({
                 minLength={20}
                 rows={5}
                 aria-invalid={Boolean(fieldError("description"))}
-                className="w-full px-3 py-2 text-sm bg-background text-foreground border border-input rounded-md focus-visible:outline-none focus:border-brand focus:ring-1 focus:ring-brand placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
+                className="w-full px-3 py-2 text-base bg-background text-foreground border border-input rounded-md focus-visible:outline-none focus-visible:border-state/60 placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
               />
               {fieldError("description") ? (
                 <p className="text-xs text-destructive mt-1">{fieldError("description")}</p>
@@ -162,7 +161,7 @@ export function CreateTaskForm({
 
         {/* Блок: Категория и город */}
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-medium text-foreground mb-4 pb-3 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border">
             Категория и местоположение
           </h2>
 
@@ -181,7 +180,7 @@ export function CreateTaskForm({
                 onChange={(e) => setCategory(e.target.value)}
                 required
                 aria-invalid={Boolean(fieldError("categoryId"))}
-                className="w-full h-9 px-3 py-1 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand disabled:cursor-not-allowed disabled:opacity-50 transition-colors cursor-pointer"
+                className="w-full h-10 px-3 py-1 text-base bg-background text-foreground border border-input rounded-md focus-visible:outline-none focus-visible:border-state/60 disabled:cursor-not-allowed disabled:opacity-50 transition-colors cursor-pointer"
               >
                 <option value="" className="text-muted-foreground">
                   Выберите категорию
@@ -208,7 +207,7 @@ export function CreateTaskForm({
                 onChange={(e) => setCity(e.target.value)}
                 required
                 aria-invalid={Boolean(fieldError("cityId"))}
-                className="w-full h-9 px-3 py-1 text-sm bg-background text-foreground border border-input rounded-md focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand disabled:cursor-not-allowed disabled:opacity-50 transition-colors cursor-pointer"
+                className="w-full h-10 px-3 py-1 text-base bg-background text-foreground border border-input rounded-md focus-visible:outline-none focus-visible:border-state/60 disabled:cursor-not-allowed disabled:opacity-50 transition-colors cursor-pointer"
               >
                 <option value="" className="text-muted-foreground">
                   Выберите город
@@ -228,7 +227,7 @@ export function CreateTaskForm({
 
         {/* Блок: Бюджет */}
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-sm font-medium text-foreground mb-4 pb-3 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border">
             Бюджет
           </h2>
 
@@ -248,7 +247,7 @@ export function CreateTaskForm({
                 disabled={isNegotiable}
                 required={!isNegotiable}
                 aria-invalid={Boolean(fieldError("budget"))}
-                className="border-input focus-visible:ring-brand disabled:opacity-40"
+                className="border-input"
               />
               <span className="text-sm text-muted-foreground flex-shrink-0">руб.</span>
             </div>
@@ -279,14 +278,14 @@ export function CreateTaskForm({
             type="button"
             variant="outline"
             asChild
-            className="h-10 rounded-full border-input text-muted-foreground hover:bg-muted hover:text-foreground font-medium cursor-pointer"
+            className="h-10 rounded-full border-input text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer font-medium"
           >
             <Link href={cancelHref}>Отмена</Link>
           </Button>
           <Button
             type="submit"
             disabled={pending}
-            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground font-medium cursor-pointer transition-colors"
+            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground text-base font-medium cursor-pointer transition-colors"
           >
             {pending
               ? isEdit
@@ -304,7 +303,7 @@ export function CreateTaskForm({
         <div className="bg-card border border-border rounded-xl p-4 space-y-4">
           {/* Виджет предпросмотра */}
           <div>
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2.5">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2.5">
               Предпросмотр
             </p>
             <div className="border border-border rounded-lg p-3 bg-card/40">
@@ -315,11 +314,11 @@ export function CreateTaskForm({
                 {description || "Описание задания появится здесь..."}
               </p>
               <div className="flex flex-wrap gap-1 mb-3">
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
                   Открыто
                 </span>
                 {categoryName && (
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
                     {categoryName}
                   </span>
                 )}
@@ -331,26 +330,6 @@ export function CreateTaskForm({
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Блок с подсказками */}
-          <div className="bg-brand/5 border border-brand/10 rounded-lg p-3.5">
-            <p className="text-xs font-medium text-brand mb-2 flex items-center gap-1">Советы</p>
-            <ul className="space-y-2">
-              {[
-                "Укажите конкретный результат",
-                "Добавьте примеры или референсы",
-                "Реалистичный бюджет привлечёт больше откликов",
-              ].map((tip) => (
-                <li
-                  key={tip}
-                  className="flex items-start gap-1.5 text-xs text-muted-foreground leading-snug"
-                >
-                  <CheckCircle className="h-3.5 w-3.5 text-brand flex-shrink-0 mt-0.5" />
-                  <span>{tip}</span>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>
