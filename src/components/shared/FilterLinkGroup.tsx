@@ -120,14 +120,21 @@ export function FilterLinkGroup({ title, options }: FilterLinkGroupProps) {
             пролистать весь рубрикатор. Так свёрнуты рубрикаторы у Avito,
             Ozon и Booking.
 
+            `<summary>` обязан быть первым ребёнком `<details>` — иначе
+            браузер не считает его переключателем. Поэтому в раскрытом виде
+            он оказывался посреди списка, между видимыми и скрытыми
+            вариантами. Лечится порядком: `<details>` — колонка флексбокса,
+            у `<summary>` `order-last`, и в разметке он остаётся первым,
+            а на экране уходит под список.
+
             `<details>`, а не состояние React: сворачивание остаётся частью
             разметки, компонент не становится клиентским, раскрытие работает
             без JS и с клавиатуры — `<summary>` фокусируется и открывается
             пробелом сам по себе. Прокрутку внутри группы не делаем: в шторке
             это прокрутка внутри прокрутки, палец не понимает, что листает. */}
         {hiddenOptions.length > 0 && (
-          <details className="group" open={hasActiveHidden}>
-            <summary className="-mx-2 mt-0.5 flex cursor-pointer list-none items-center rounded-lg px-2 py-1.5 text-sm font-medium text-brand transition-colors hover:bg-muted/40 [&::-webkit-details-marker]:hidden">
+          <details className="group flex flex-col" open={hasActiveHidden}>
+            <summary className="order-last -mx-2 mt-0.5 flex cursor-pointer list-none items-center rounded-lg px-2 py-1.5 text-sm font-medium text-brand transition-colors hover:bg-muted/40 [&::-webkit-details-marker]:hidden">
               {/* Отступ слева равен ширине кружка и зазору у вариантов:
                   16 + 8 = 24px, чтобы подпись встала в ту же колонку. */}
               <span className="pl-6 group-open:hidden">Показать все ({options.length})</span>
