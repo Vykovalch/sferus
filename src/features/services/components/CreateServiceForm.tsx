@@ -7,6 +7,8 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
 import { createService, updateService } from "@/features/services/actions";
@@ -36,6 +38,27 @@ interface CreateServiceFormProps {
   initialValues?: ServiceFormValues;
 }
 
+/**
+ * Форма объявления об услуге.
+ *
+ * **Одна карточка без секционных заголовков** (2026-09-30), как в форме
+ * задания. До этого поля лежали в четырёх обрамлённых секциях, и заголовок
+ * «Стоимость услуги» стоял над подписью «Цена» — то же слово дважды.
+ *
+ * **Порядок:** заголовок → описание → фото → категория и город → выезд
+ * на дом → цена.
+ *
+ * Фотографии подняты с последнего места на третье. Причин три: карточка
+ * в каталоге построена вокруг снимка, и обложку незачем просить в самом конце;
+ * загрузка идёт асинхронно, а кнопка публикации заблокирована, пока файл летит
+ * в хранилище, — начатая раньше, она успевает закончиться; так устроены формы
+ * там, где снимок решает (у Etsy блок фотографий первый). Первым полем фото
+ * всё же не стоят: открывать форму выбором файла на телефоне — тяжёлый вход.
+ *
+ * «Выезд на дом» переехал из блока цены к городу: это условие работы,
+ * а не свойство цены, и на странице объявления он стоит в «Деталях» рядом
+ * с городом.
+ */
 export function CreateServiceForm({
   cities,
   categories,
@@ -139,6 +162,7 @@ export function CreateServiceForm({
     <form action={formAction} className="flex flex-col gap-4">
       {isEdit && initialValues && <input type="hidden" name="id" value={initialValues.id} />}
 
+      {/* Плашка отказа — над карточкой: она относится ко всей форме */}
       {errorMessage && (
         <div
           role="alert"
@@ -155,15 +179,13 @@ export function CreateServiceForm({
         </div>
       )}
 
-      {/* Основная информация */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
-          Основная информация
-        </h2>
-        <div className="space-y-4">
+      <div className="bg-card border border-border rounded-2xl p-5 sm:p-6">
+        {/* 20px между полями: подсказка под полем отбита на 4px, и при 16px
+            до следующей подписи оставалось 12 — группы сливались. */}
+        <div className="space-y-5">
           <div>
             <Label htmlFor="title" className="text-sm font-medium text-foreground mb-1.5 block">
-              Заголовок объявления <span className="text-destructive">*</span>
+              Заголовок объявления
             </Label>
             <Input
               id="title"
@@ -176,7 +198,6 @@ export function CreateServiceForm({
               minLength={10}
               maxLength={100}
               aria-invalid={Boolean(fieldError("title"))}
-              className="border-border focus-visible:border-brand"
             />
             {fieldError("title") ? (
               <p className="text-xs text-destructive mt-1">{fieldError("title")}</p>
@@ -184,14 +205,19 @@ export function CreateServiceForm({
               <p className="text-xs text-muted-foreground mt-1">{title.length}/100 символов</p>
             )}
           </div>
+
           <div>
             <Label
               htmlFor="description"
               className="text-sm font-medium text-foreground mb-1.5 block"
             >
-              Описание <span className="text-destructive">*</span>
+              Описание
             </Label>
-            <textarea
+            {/* Поле из кита, а не собственное: у ручного были свой радиус,
+                своя тень и никакого состояния ошибки. `rows` оставлен
+                для браузеров без `field-sizing`, `min-h-32` держит ту же
+                высоту в пять строк, `resize-y` позволяет растянуть. */}
+            <Textarea
               id="description"
               name="description"
               placeholder="Подробно опишите услугу: что входит, ваш опыт, преимущества, гарантии..."
@@ -201,7 +227,7 @@ export function CreateServiceForm({
               minLength={20}
               rows={5}
               aria-invalid={Boolean(fieldError("description"))}
-              className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-state/60 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-colors"
+              className="min-h-32 resize-y"
             />
             {fieldError("description") ? (
               <p className="text-xs text-destructive mt-1">{fieldError("description")}</p>
@@ -211,150 +237,175 @@ export function CreateServiceForm({
               </p>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Категория и город */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
-          Категория и местоположение
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Фото работ — третьим блоком, а не последним (2026-09-30).
+              Подпись группы, а не заголовок секции: загрузчику нужна подпись,
+              как любому полю. */}
           <div>
-            <Label
-              htmlFor="categoryId"
-              className="text-sm font-medium text-foreground mb-1.5 block"
-            >
-              Категория <span className="text-destructive">*</span>
-            </Label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-              aria-invalid={Boolean(fieldError("categoryId"))}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:border-state/60 cursor-pointer"
-            >
-              <option value="" className="bg-background">
-                Выберите категорию
-              </option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id} className="bg-background">
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            {fieldError("categoryId") && (
-              <p className="text-xs text-destructive mt-1">{fieldError("categoryId")}</p>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="cityId" className="text-sm font-medium text-foreground mb-1.5 block">
-              Город <span className="text-destructive">*</span>
-            </Label>
-            <select
-              id="cityId"
-              name="cityId"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              required
-              aria-invalid={Boolean(fieldError("cityId"))}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:border-state/60 cursor-pointer"
-            >
-              <option value="" className="bg-background">
-                Выберите город
-              </option>
-              {cities.map((c) => (
-                <option key={c.id} value={c.id} className="bg-background">
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            {fieldError("cityId") && (
-              <p className="text-xs text-destructive mt-1">{fieldError("cityId")}</p>
-            )}
-          </div>
-        </div>
-      </div>
+            <p className="text-sm font-medium text-foreground mb-1.5">Фото работ</p>
+            <p className="text-xs text-muted-foreground mb-3">
+              До {IMAGE_UPLOAD.maxFiles} фотографий. Первая станет обложкой объявления в каталоге.
+            </p>
 
-      {/* Стоимость */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <h2 className="text-base font-semibold text-foreground mb-4 pb-3 border-b border-border/60">
-          Стоимость услуги
-        </h2>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="price" className="text-sm font-medium text-foreground mb-1.5 block">
-              Цена {!isNegotiable && <span className="text-destructive">*</span>}
-            </Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="price"
-                name="price"
-                type="number"
-                min={1}
-                placeholder="например 80"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                disabled={isNegotiable}
-                required={!isNegotiable}
-                aria-invalid={Boolean(fieldError("price"))}
-                className="border-border focus-visible:border-brand disabled:opacity-40"
-              />
-              <span className="text-sm text-muted-foreground flex-shrink-0">руб.</span>
-              <select
-                name="priceUnit"
-                aria-label="Единица измерения цены"
-                value={priceUnit}
-                onChange={(e) => setPriceUnit(e.target.value)}
-                className="flex h-10 rounded-md border border-input bg-background px-3 py-1 text-base shadow-sm transition-colors focus-visible:outline-none focus-visible:border-state/60 cursor-pointer flex-shrink-0"
-              >
-                {PRICE_UNITS.map((value) => (
-                  <option key={value} value={value} className="bg-background">
-                    {PRICE_UNIT_LABELS[value]}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Адреса уходят в FormData повторяющимся ключом — схема принимает
+                и одно значение, и массив. */}
+            {photos.map((url) => (
+              <input key={url} type="hidden" name="imageUrls" value={url} />
+            ))}
 
-            <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none w-fit">
-              <input
-                type="checkbox"
-                name="isNegotiable"
-                checked={isNegotiable}
-                onChange={(e) => {
-                  setIsNegotiable(e.target.checked);
-                  if (e.target.checked) setPrice("");
-                }}
-                className="h-4 w-4 rounded border-border text-brand accent-brand cursor-pointer"
-              />
-              <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Цена договорная
-              </span>
-            </label>
-
-            {fieldError("price") ? (
-              <p className="text-xs text-destructive mt-1">{fieldError("price")}</p>
-            ) : (
-              <p className="text-xs text-muted-foreground mt-1">
-                Клиент увидит: <span className="text-foreground font-medium">{priceDisplay}</span>
+            {uploadError && (
+              <p role="alert" className="text-xs text-destructive mb-3">
+                {uploadError}
               </p>
             )}
+
+            {fieldError("imageUrls") && (
+              <p className="text-xs text-destructive mb-3">{fieldError("imageUrls")}</p>
+            )}
+
+            {photos.length < IMAGE_UPLOAD.maxFiles && (
+              // `sr-only`, а не `hidden` (2026-09-30): со скрытым через
+              // `display: none` полем файла до загрузки нельзя было добраться
+              // табом вообще — отказ по WCAG 2.1.1. Теперь поле остаётся
+              // в потоке фокуса, а рамку подсвечивает `focus-within`.
+              <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-border rounded-xl py-8 cursor-pointer hover:border-brand hover:bg-brand/5 focus-within:border-state/60 focus-within:ring-3 focus-within:ring-state/20 transition-all group">
+                <Upload className="h-8 w-8 text-muted-foreground/60 mb-2 group-hover:text-brand transition-colors" />
+                <span className="text-sm text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+                  Нажмите для загрузки фото
+                </span>
+                <span className="text-xs text-muted-foreground/60">
+                  JPG, PNG или WebP, до 10 МБ
+                </span>
+                <input
+                  type="file"
+                  aria-label="Загрузить фотографии"
+                  accept={IMAGE_UPLOAD.allowedTypes.join(",")}
+                  multiple
+                  onChange={handlePhotoUpload}
+                  className="sr-only"
+                />
+              </label>
+            )}
+
+            {(photos.length > 0 || uploadingCount > 0) && (
+              <div className="flex gap-2 flex-wrap mt-3">
+                {photos.map((photo, index) => (
+                  <div
+                    key={photo}
+                    className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group"
+                  >
+                    {/* biome-ignore lint/performance/noImgElement: превью в форме — оптимизировать нечего */}
+                    <img
+                      src={photo}
+                      alt={`Фото ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {/* На сенсорных ширинах крестик виден всегда: наведения
+                        там нет, и удалить снимок было нечем. С 640px
+                        появляется при наведении на миниатюру и при фокусе. */}
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center cursor-pointer transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                      aria-label={`Удалить фото ${index + 1}`}
+                    >
+                      <X className="h-3 w-3 text-white" />
+                    </button>
+                  </div>
+                ))}
+
+                {Array.from({ length: uploadingCount }).map((_, index) => (
+                  <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: плейсхолдеры без собственной сущности
+                    key={`uploading-${index}`}
+                    role="img"
+                    aria-label="Фотография загружается"
+                    className="w-20 h-20 rounded-lg border border-border bg-muted animate-pulse"
+                  />
+                ))}
+
+                {photos.length + uploadingCount < IMAGE_UPLOAD.maxFiles && (
+                  <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-brand hover:bg-brand/5 focus-within:border-state/60 focus-within:ring-3 focus-within:ring-state/20 text-muted-foreground/60 hover:text-brand transition-all">
+                    <span className="text-2xl font-light">+</span>
+                    <input
+                      type="file"
+                      aria-label="Добавить ещё фотографии"
+                      accept={IMAGE_UPLOAD.allowedTypes.join(",")}
+                      multiple
+                      onChange={handlePhotoUpload}
+                      className="sr-only"
+                    />
+                  </label>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5">
+            <div>
+              <Label
+                htmlFor="categoryId"
+                className="text-sm font-medium text-foreground mb-1.5 block"
+              >
+                Категория
+              </Label>
+              <NativeSelect
+                id="categoryId"
+                name="categoryId"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+                aria-invalid={Boolean(fieldError("categoryId"))}
+              >
+                <option value="">Выберите категорию</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </NativeSelect>
+              {fieldError("categoryId") && (
+                <p className="text-xs text-destructive mt-1">{fieldError("categoryId")}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="cityId" className="text-sm font-medium text-foreground mb-1.5 block">
+                Город
+              </Label>
+              <NativeSelect
+                id="cityId"
+                name="cityId"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                required
+                aria-invalid={Boolean(fieldError("cityId"))}
+              >
+                <option value="">Выберите город</option>
+                {cities.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </NativeSelect>
+              {fieldError("cityId") && (
+                <p className="text-xs text-destructive mt-1">{fieldError("cityId")}</p>
+              )}
+            </div>
           </div>
 
           {/* Настоящая радиогруппа, а не пара кнопок (2026-09-30). Раньше
-                это были `<button aria-pressed>` со скрытым полем: скринридер
-                объявлял «кнопка, нажата» вместо «выбрано 1 из 2», стрелками
-                между вариантами перейти было нельзя, и вид — две крупные
-                коробки — не совпадал ни с чем на сайте.
+              это были `<button aria-pressed>` со скрытым полем: скринридер
+              объявлял «кнопка, нажата» вместо «выбрано 1 из 2», стрелками
+              между вариантами перейти было нельзя, и вид — две крупные
+              коробки — не совпадал ни с чем на сайте.
 
-                Разметка и классы взяты у «Типа профиля» в настройках:
-                нативный `<input type="radio">` 16px с `accent-brand`, подпись
-                `text-sm`, зазор 8px, весь `<label>` кликабельный. Схема
-                принимает "true"/"false" (`booleanField`), поэтому значения
-                радиокнопок уходят в `FormData` напрямую и скрытое поле
-                больше не нужно. */}
+              Разметка и классы взяты у «Типа профиля» в настройках:
+              нативный `<input type="radio">` 16px с `accent-brand`, подпись
+              `text-sm`, зазор 8px, весь `<label>` кликабельный. Схема
+              принимает "true"/"false" (`booleanField`), поэтому значения
+              радиокнопок уходят в `FormData` напрямую и скрытое поле
+              больше не нужно. */}
           <fieldset>
             <legend className="text-sm font-medium text-foreground mb-2">
               Выезд на дом / объект
@@ -381,122 +432,93 @@ export function CreateServiceForm({
               ))}
             </div>
           </fieldset>
-        </div>
-      </div>
 
-      {/* Фото работ */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <h2 className="text-base font-semibold text-foreground mb-1 pb-3 border-b border-border/60">
-          Фото работ
-        </h2>
-        <p className="text-xs text-muted-foreground mt-3 mb-3">
-          До {IMAGE_UPLOAD.maxFiles} фотографий. Первая станет обложкой объявления в каталоге.
-        </p>
-
-        {/* Адреса уходят в FormData повторяющимся ключом — схема принимает
-              и одно значение, и массив. */}
-        {photos.map((url) => (
-          <input key={url} type="hidden" name="imageUrls" value={url} />
-        ))}
-
-        {uploadError && (
-          <p role="alert" className="text-xs text-destructive mb-3">
-            {uploadError}
-          </p>
-        )}
-
-        {fieldError("imageUrls") && (
-          <p className="text-xs text-destructive mb-3">{fieldError("imageUrls")}</p>
-        )}
-
-        {photos.length < IMAGE_UPLOAD.maxFiles && (
-          <label className="flex flex-col items-center justify-center w-full border-2 border-dashed border-border rounded-xl py-8 cursor-pointer hover:border-brand hover:bg-brand/5 transition-all group">
-            <Upload className="h-8 w-8 text-muted-foreground/60 mb-2 group-hover:text-brand transition-colors" />
-            <span className="text-sm text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
-              Нажмите для загрузки фото
-            </span>
-            <span className="text-xs text-muted-foreground/60">JPG, PNG или WebP, до 10 МБ</span>
-            <input
-              type="file"
-              accept={IMAGE_UPLOAD.allowedTypes.join(",")}
-              multiple
-              onChange={handlePhotoUpload}
-              className="hidden"
-            />
-          </label>
-        )}
-
-        {(photos.length > 0 || uploadingCount > 0) && (
-          <div className="flex gap-2 flex-wrap mt-3">
-            {photos.map((photo, index) => (
-              <div
-                key={photo}
-                className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group"
-              >
-                {/* biome-ignore lint/performance/noImgElement: превью в форме — оптимизировать нечего */}
-                <img src={photo} alt={`Фото ${index + 1}`} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removePhoto(index)}
-                  className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  aria-label="Удалить фото"
-                >
-                  <X className="h-3 w-3 text-white" />
-                </button>
-              </div>
-            ))}
-
-            {Array.from({ length: uploadingCount }).map((_, index) => (
-              <div
-                // biome-ignore lint/suspicious/noArrayIndexKey: плейсхолдеры без собственной сущности
-                key={`uploading-${index}`}
-                role="img"
-                aria-label="Фотография загружается"
-                className="w-20 h-20 rounded-lg border border-border bg-muted animate-pulse"
+          <div>
+            <Label htmlFor="price" className="text-sm font-medium text-foreground mb-1.5 block">
+              Цена
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="price"
+                name="price"
+                type="number"
+                min={1}
+                placeholder="например 80"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                disabled={isNegotiable}
+                required={!isNegotiable}
+                aria-invalid={Boolean(fieldError("price"))}
               />
-            ))}
+              <span className="text-sm text-muted-foreground flex-shrink-0">руб.</span>
+              <NativeSelect
+                name="priceUnit"
+                aria-label="Единица измерения цены"
+                value={priceUnit}
+                onChange={(e) => setPriceUnit(e.target.value)}
+                className="w-auto flex-shrink-0"
+              >
+                {PRICE_UNITS.map((value) => (
+                  <option key={value} value={value}>
+                    {PRICE_UNIT_LABELS[value]}
+                  </option>
+                ))}
+              </NativeSelect>
+            </div>
 
-            {photos.length + uploadingCount < IMAGE_UPLOAD.maxFiles && (
-              <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-brand hover:bg-brand/5 text-muted-foreground/60 hover:text-brand transition-all">
-                <span className="text-2xl font-light">+</span>
-                <input
-                  type="file"
-                  accept={IMAGE_UPLOAD.allowedTypes.join(",")}
-                  multiple
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
-              </label>
+            <label className="flex items-center gap-2 mt-2.5 cursor-pointer select-none w-fit">
+              <input
+                type="checkbox"
+                name="isNegotiable"
+                checked={isNegotiable}
+                onChange={(e) => {
+                  setIsNegotiable(e.target.checked);
+                  if (e.target.checked) setPrice("");
+                }}
+                className="h-4 w-4 rounded border-input text-brand accent-brand cursor-pointer"
+              />
+              <span className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Цена договорная
+              </span>
+            </label>
+
+            {fieldError("price") ? (
+              <p className="text-xs text-destructive mt-1">{fieldError("price")}</p>
+            ) : (
+              <p className="text-xs text-muted-foreground mt-1">
+                Клиент увидит: <span className="text-foreground font-medium">{priceDisplay}</span>
+              </p>
             )}
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Кнопки */}
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          asChild
-          className="h-10 rounded-full border-input text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer font-medium"
-        >
-          <Link href={cancelHref}>Отмена</Link>
-        </Button>
-        <Button
-          type="submit"
-          // Пока фото не долетело, сохранять нельзя: его адреса ещё нет
-          // в форме, и объявление сохранилось бы без него.
-          disabled={pending || uploadingCount > 0}
-          className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer text-base font-medium transition-colors"
-        >
-          {pending
-            ? isEdit
-              ? "Сохранение..."
-              : "Публикация..."
-            : isEdit
-              ? "Сохранить изменения"
-              : "Опубликовать"}
-        </Button>
+        {/* Кнопки внутри карточки, как в профиле и на экранах входа: на сером
+            холсте они висели отдельно от того, что отправляют. */}
+        <div className="flex items-center gap-3 mt-6 pt-5 border-t border-border">
+          <Button
+            type="button"
+            variant="outline"
+            asChild
+            className="h-10 rounded-full border-input text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer font-medium"
+          >
+            <Link href={cancelHref}>Отмена</Link>
+          </Button>
+          <Button
+            type="submit"
+            // Пока фото не долетело, сохранять нельзя: его адреса ещё нет
+            // в форме, и объявление сохранилось бы без него.
+            disabled={pending || uploadingCount > 0}
+            className="flex-1 h-10 rounded-full bg-brand-fill hover:bg-brand-fill/90 text-brand-fill-foreground cursor-pointer text-base font-medium transition-colors"
+          >
+            {pending
+              ? isEdit
+                ? "Сохранение..."
+                : "Публикация..."
+              : isEdit
+                ? "Сохранить изменения"
+                : "Опубликовать"}
+          </Button>
+        </div>
       </div>
     </form>
   );

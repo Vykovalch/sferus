@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 import type { CategoryOption } from "@/features/categories/queries";
 import type { CityOption } from "@/features/cities/queries";
@@ -28,18 +29,6 @@ interface CreateTaskFormProps {
   mode?: "create" | "edit";
   initialValues?: TaskFormValues;
 }
-
-/**
- * Селект размечен руками: нативного `<select>` в ките нет, а компонент radix
- * потянул бы выпадающий список поверх страницы ради двух справочников.
- *
- * Классы повторяют поле из `ui/input.tsx` — тот же радиус 8px, тот же
- * прозрачный фон, то же состояние ошибки (2026-09-30). До этого селекты были
- * скруглены на 6px и залиты `--background`: на белой карточке они выходили
- * серыми рядом с белыми полями, а `aria-invalid` на них ничего не рисовал.
- */
-const SELECT_CLASS =
-  "h-10 w-full min-w-0 cursor-pointer rounded-lg border border-input bg-transparent px-3 py-1 text-base outline-none transition-colors focus-visible:border-state/60 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20";
 
 /**
  * Форма задания.
@@ -181,14 +170,13 @@ export function CreateTaskForm({
               >
                 Категория
               </Label>
-              <select
+              <NativeSelect
                 id="categoryId"
                 name="categoryId"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
                 aria-invalid={Boolean(fieldError("categoryId"))}
-                className={SELECT_CLASS}
               >
                 <option value="">Выберите категорию</option>
                 {categories.map((cat) => (
@@ -196,7 +184,7 @@ export function CreateTaskForm({
                     {cat.name}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
               {fieldError("categoryId") && (
                 <p className="text-xs text-destructive mt-1">{fieldError("categoryId")}</p>
               )}
@@ -206,14 +194,13 @@ export function CreateTaskForm({
               <Label htmlFor="cityId" className="text-sm font-medium text-foreground mb-1.5 block">
                 Город
               </Label>
-              <select
+              <NativeSelect
                 id="cityId"
                 name="cityId"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 required
                 aria-invalid={Boolean(fieldError("cityId"))}
-                className={SELECT_CLASS}
               >
                 <option value="">Выберите город</option>
                 {cities.map((c) => (
@@ -221,7 +208,7 @@ export function CreateTaskForm({
                     {c.name}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
               {fieldError("cityId") && (
                 <p className="text-xs text-destructive mt-1">{fieldError("cityId")}</p>
               )}
