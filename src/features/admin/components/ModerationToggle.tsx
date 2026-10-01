@@ -38,7 +38,7 @@ export function ModerationToggle({ target, isBlocked }: ModerationToggleProps) {
         disabled={pending}
         title={isBlocked ? "Вернуть в каталог" : "Скрыть из каталога"}
         aria-label={isBlocked ? "Вернуть в каталог" : "Скрыть из каталога"}
-        className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
+        className="h-10 w-10 text-muted-foreground hover:text-foreground cursor-pointer"
       >
         {isBlocked ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
       </Button>

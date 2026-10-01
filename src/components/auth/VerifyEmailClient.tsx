@@ -87,7 +87,7 @@ export function VerifyEmailClient({ email }: VerifyEmailClientProps) {
             variant="outline"
             onClick={handleResend}
             disabled={!email || resendStatus === "loading" || cooldown > 0}
-            className="w-full border-input text-muted-foreground hover:text-foreground text-base font-medium cursor-pointer"
+            className="w-full h-10 rounded-full border-input text-muted-foreground hover:bg-muted hover:text-foreground text-base font-medium cursor-pointer transition-colors"
           >
             {resendStatus === "loading" ? (
               <>

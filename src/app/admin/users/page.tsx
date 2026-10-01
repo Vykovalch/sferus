@@ -20,7 +20,7 @@ export default async function AdminUsersPage() {
   return (
     <>
       <h1 className="text-2xl font-semibold tracking-tight mb-1">Пользователи</h1>
-      <p className="text-sm text-muted-foreground mb-6">
+      <p className="text-sm text-muted-foreground mb-4 lg:mb-6">
         Блокировка закрывает вход и завершает активные сессии. Опубликованные объявления она не
         скрывает — их убирают на вкладках «Объявления» и «Задания»
       </p>
@@ -43,9 +43,13 @@ export default async function AdminUsersPage() {
             const isBanned = Boolean(user.banned);
 
             return (
+              // Строка по общим правилам списков кабинета. Дата регистрации
+              // и состояние ушли в ту же строку, что email: до 2026-10-01
+              // аватар, имя, дата, плашка и кнопка стояли в один ряд, и на
+              // 375px имени с адресом оставалось около 70px.
               <div
                 key={user.id}
-                className="bg-background border border-border rounded-xl p-4 flex items-center gap-4 shadow-sm"
+                className="bg-card border border-border rounded-2xl p-4 flex flex-wrap items-start gap-3 sm:gap-4"
               >
                 <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-sm font-bold text-brand flex-shrink-0">
                   {initials}
@@ -61,36 +65,31 @@ export default async function AdminUsersPage() {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                  {isBanned && user.banReason && (
-                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                      Причина: {user.banReason}
-                    </p>
-                  )}
+
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                    <span>{formatShortDate(user.createdAt)}</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full font-medium ${
+                        isBanned
+                          ? "bg-destructive/10 text-destructive"
+                          : "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
+                      }`}
+                    >
+                      {isBanned ? "Заблокирован" : "Активен"}
+                    </span>
+                    {isBanned && user.banReason && <span>Причина: {user.banReason}</span>}
+                  </div>
                 </div>
-
-                <span className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">
-                  {formatShortDate(user.createdAt)}
-                </span>
-
-                <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-                    isBanned
-                      ? "bg-destructive/10 text-destructive"
-                      : "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
-                  }`}
-                >
-                  {isBanned ? "Заблокирован" : "Активен"}
-                </span>
 
                 {/* Себя заблокировать нельзя — это запрещает и плагин, и действие.
                     Кнопку не показываем, чтобы не предлагать невозможное. */}
-                {isSelf ? (
-                  <span className="text-xs text-muted-foreground flex-shrink-0 w-8 text-center">
-                    вы
-                  </span>
-                ) : (
-                  <UserBanToggle userId={user.id} isBanned={isBanned} />
-                )}
+                <div className="w-full sm:w-auto flex items-center justify-end flex-shrink-0">
+                  {isSelf ? (
+                    <span className="text-xs text-muted-foreground w-10 text-center">вы</span>
+                  ) : (
+                    <UserBanToggle userId={user.id} isBanned={isBanned} />
+                  )}
+                </div>
               </div>
             );
           })}

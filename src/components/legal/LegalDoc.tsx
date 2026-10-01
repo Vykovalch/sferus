@@ -19,8 +19,15 @@ export function Fill({ children }: { children: React.ReactNode }) {
 export function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="border-t border-border pt-5">
-      <h2 className="text-sm font-semibold text-foreground mb-3">{title}</h2>
-      <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">{children}</div>
+      {/* 16px `semibold` — принятая ступень заголовка блока (2026-10-01).
+          Было 14px, то есть ровно как текст под ним. */}
+      <h2 className="text-base font-semibold text-foreground mb-3">{title}</h2>
+      {/* Текст документа — 16px основным цветом, а не 14px серым: это главное
+          содержимое страницы, а `--muted-foreground` остаётся второстепенному.
+          Заодно длина строки приходит в норму: в контейнере `max-w-3xl`
+          при 14px в строку влезало около 90 знаков, при 16px — около 80,
+          то есть верхняя граница удобного чтения, а не за ней. */}
+      <div className="space-y-3 text-base text-foreground leading-relaxed">{children}</div>
     </section>
   );
 }
@@ -55,9 +62,14 @@ export function LegalDoc({
 }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Хлебные крошки */}
-      <div className="bg-background">
-        <PageContainer className="py-3">
+      <PageContainer className="py-6 lg:py-8 max-w-3xl">
+        {/* Хлебные крошки — в том же контейнере, что заголовок и содержимое
+            (2026-10-01; на остальных страницах так с 2026-09-29). До этого они
+            лежали в отдельной обёртке с собственным `py-3` и фоном
+            `bg-background`, совпадавшим с фоном страницы: обёртка ничего
+            не давала, а её нижний отступ складывался с верхним отступом
+            содержимого. Это было последнее такое место в проекте. */}
+        <div className="mb-3">
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap"
@@ -76,18 +88,20 @@ export function LegalDoc({
               {title}
             </span>
           </nav>
-        </PageContainer>
-      </div>
+        </div>
 
-      <PageContainer className="py-6 max-w-3xl">
-        <div className="bg-background border border-border rounded-xl p-5 md:p-8 shadow-sm">
-          <h1 className="text-xl md:text-2xl font-semibold tracking-tight mb-1">{title}</h1>
-          <p className="text-xs text-muted-foreground mb-6">Редакция от {updatedAt}</p>
+        {/* Панель по общему рецепту (`bg-card`, рамка, скругление 16px,
+            без тени), но с внутренним отступом 20 / 32 вместо 20 / 24:
+            это поверхность для чтения, а не карточка формы, и на широком
+            экране документу нужны поля шире. */}
+        <div className="bg-card border border-border rounded-2xl p-5 md:p-8">
+          {/* Кегль не адаптивный: это ярлык страницы, а не имя объекта
+              (DESIGN.md, «Заголовок внутренней страницы»). */}
+          <h1 className="text-2xl font-semibold tracking-tight mb-1">{title}</h1>
+          <p className="text-sm text-muted-foreground mb-6">Редакция от {updatedAt}</p>
 
           {intro && (
-            <div className="text-sm text-muted-foreground leading-relaxed mb-6 space-y-3">
-              {intro}
-            </div>
+            <div className="text-base text-foreground leading-relaxed mb-6 space-y-3">{intro}</div>
           )}
 
           <div className="space-y-6">{children}</div>

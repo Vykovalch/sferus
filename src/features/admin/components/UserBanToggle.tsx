@@ -35,7 +35,7 @@ export function UserBanToggle({ userId, isBanned }: UserBanToggleProps) {
         disabled={pending}
         title={isBanned ? "Разблокировать" : "Заблокировать"}
         aria-label={isBanned ? "Разблокировать пользователя" : "Заблокировать пользователя"}
-        className={`h-8 w-8 cursor-pointer flex-shrink-0 ${
+        className={`h-10 w-10 cursor-pointer flex-shrink-0 ${
           isBanned
             ? "text-muted-foreground hover:text-foreground"
             : "text-muted-foreground hover:text-destructive"

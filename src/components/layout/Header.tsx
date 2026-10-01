@@ -222,7 +222,7 @@ export function Header({ session, cities }: HeaderProps) {
                   ref={mobileSearchInputRef}
                   id="mobile-header-search"
                   {...searchInputProps}
-                  className="w-full h-10 pl-9 pr-3 text-sm bg-card border border-secondary/40 rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-state/60 transition-colors"
+                  className="w-full h-10 pl-9 pr-3 text-base bg-card border border-secondary/40 rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-state/60 transition-colors"
                 />
               </div>
               <div className="order-last basis-full flex gap-2 md:order-none md:basis-auto">
@@ -335,16 +335,20 @@ export function Header({ session, cities }: HeaderProps) {
                 и это читалось как поломка. Теперь нехватка места видна честно —
                 строка выходит за контейнер, а не притворяется двухэтажной.
 
-                Навигация (Inter, 14px, ховер перекрашивает в цвет бренда
-                --primary). Цвет бренда только на hover, не как индикатор текущей
-                страницы — Услуги/Задания не должны гореть цветом бренда постоянно
-                после перехода. */}
+                Навигация: 16px, ховер перекрашивает в `--brand`. Цвет бренда
+                только на ховере, не как индикатор текущей страницы —
+                «Услуги» и «Задания» не должны гореть им постоянно после
+                перехода.
+
+                `--brand`, а не `--primary` (2026-10-01): значение у токенов
+                одно, но `--primary` берут компоненты кита под свои умолчания,
+                а в нашей разметке пишем `--brand` (DESIGN.md, раздел 1). */}
             <nav className="hidden xl:flex items-center gap-6 ml-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="whitespace-nowrap text-base font-medium tracking-[0.01em] text-foreground hover:text-primary transition-colors"
+                  className="whitespace-nowrap text-base font-medium tracking-[0.01em] text-foreground hover:text-brand transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -419,7 +423,7 @@ export function Header({ session, cities }: HeaderProps) {
                 <input
                   id="header-search"
                   {...searchInputProps}
-                  className="min-w-0 flex-1 h-full pl-4 pr-3 text-sm bg-transparent rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
+                  className="min-w-0 flex-1 h-full pl-4 pr-3 text-base bg-transparent rounded-full text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
                 />
                 <div className="flex items-center shrink-0 pr-1">
                   <div aria-hidden="true" className="h-5 w-px bg-border mr-1" />
@@ -540,7 +544,7 @@ export function Header({ session, cities }: HeaderProps) {
               ) : (
                 <Link
                   href="/login"
-                  className="relative tap-target flex h-10 items-center rounded-full px-3 text-base font-semibold text-foreground hover:bg-accent hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="relative tap-target flex h-10 items-center rounded-full px-3 text-base font-semibold text-foreground hover:bg-accent hover:text-brand transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Войти
                 </Link>

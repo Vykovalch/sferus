@@ -19,7 +19,7 @@ export function AdminSidebar() {
       {/* Десктоп: вертикальный сайдбар */}
       <nav
         aria-label="Админ-панель"
-        className="hidden lg:flex flex-col gap-1 bg-background border border-border rounded-xl p-2 shadow-sm"
+        className="hidden lg:flex flex-col gap-1 bg-card border border-border rounded-2xl p-2"
       >
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;

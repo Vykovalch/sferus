@@ -15,7 +15,7 @@ export default async function AdminTasksPage() {
   return (
     <>
       <h1 className="text-2xl font-semibold tracking-tight mb-1">Задания</h1>
-      <p className="text-sm text-muted-foreground mb-6">
+      <p className="text-sm text-muted-foreground mb-4 lg:mb-6">
         Модерация опубликованных заданий: скрытие с доски и удаление
       </p>
 
@@ -29,37 +29,42 @@ export default async function AdminTasksPage() {
             const isBlocked = task.moderationStatus === "blocked";
 
             return (
+              // Строка по общим правилам списков кабинета — как в модерации
+              // объявлений (DESIGN.md, «Строка списка в кабинете»).
               <div
                 key={task.id}
-                className="bg-background border border-border rounded-xl p-4 flex items-center gap-4 shadow-sm"
+                className="bg-card border border-border rounded-2xl p-4 flex flex-wrap items-start gap-3 sm:gap-4"
               >
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/tasks/${task.id}`}
-                    className="text-sm font-medium text-foreground hover:text-brand transition-colors line-clamp-1"
+                    className="text-sm font-medium text-foreground hover:text-brand transition-colors line-clamp-2"
                   >
                     {task.title}
                   </Link>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {task.authorName} · {task.cityName}
-                  </p>
+
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                    <span>
+                      {task.authorName} · {task.cityName}
+                    </span>
+
+                    {/* У задания вместо выключателя владельца — жизненный цикл,
+                        который ведёт автор: open → completed / cancelled. */}
+                    <span
+                      className={`px-2 py-0.5 rounded-full font-medium ${
+                        isBlocked
+                          ? "bg-destructive/10 text-destructive"
+                          : task.status === "open"
+                            ? "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
+                            : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {isBlocked ? "Скрыто модератором" : TASK_STATUSES[task.status]}
+                    </span>
+                  </div>
                 </div>
 
-                {/* У задания вместо выключателя владельца — жизненный цикл,
-                    который ведёт автор: open → completed / cancelled. */}
-                <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
-                    isBlocked
-                      ? "bg-destructive/10 text-destructive"
-                      : task.status === "open"
-                        ? "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
-                        : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {isBlocked ? "Скрыто модератором" : TASK_STATUSES[task.status]}
-                </span>
-
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="w-full sm:w-auto flex items-center justify-end gap-1 flex-shrink-0">
                   <ModerationToggle target={{ kind: "task", id: task.id }} isBlocked={isBlocked} />
                   <DeleteListingButton target={{ kind: "task", id: task.id }} title={task.title} />
                 </div>

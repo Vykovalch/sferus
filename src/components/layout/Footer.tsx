@@ -17,6 +17,10 @@ export function Footer() {
             и 40px делили бы группы ссылок шире, чем отступ под заголовком
             секции на той же ширине. С 768px колонки идут в ряд, и 40px
             работают по горизонтали, где воздух дешевле. */}
+        {/* Заголовки колонок — `h2`, а не `h4` (2026-10-01). На страницах
+            со списками перед подвалом есть только `h1`, и структура прыгала
+            с первого уровня на четвёртый. Кегль и начертание не менялись:
+            14px `font-semibold`. */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-10 mb-4">
           {/* Логотип и описание */}
           <div className="space-y-4">
@@ -30,7 +34,7 @@ export function Footer() {
 
           {/* Клиентам */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-white">Клиентам</h4>
+            <h2 className="text-sm font-semibold text-white">Клиентам</h2>
             <nav className="flex flex-col gap-2">
               <Link
                 className="text-sm text-neutral-300 hover:text-white transition-colors"
@@ -55,7 +59,7 @@ export function Footer() {
 
           {/* Исполнителям */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-white">Исполнителям</h4>
+            <h2 className="text-sm font-semibold text-white">Исполнителям</h2>
             <nav className="flex flex-col gap-2">
               <Link
                 className="text-sm text-neutral-300 hover:text-white transition-colors"
@@ -81,7 +85,7 @@ export function Footer() {
 
           {/* Контакты */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-white">Контакты</h4>
+            <h2 className="text-sm font-semibold text-white">Контакты</h2>
             <div className="flex flex-col gap-3">
               <Link
                 className="flex items-center gap-2 text-sm text-neutral-300 hover:text-white transition-colors"

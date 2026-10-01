@@ -45,7 +45,7 @@ export function DeleteListingButton({ target, title }: DeleteListingButtonProps)
           variant="ghost"
           title="Удалить безвозвратно"
           aria-label="Удалить безвозвратно"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
+          className="h-10 w-10 text-muted-foreground hover:text-destructive cursor-pointer"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
@@ -72,7 +72,7 @@ export function DeleteListingButton({ target, title }: DeleteListingButtonProps)
             type="button"
             variant="outline"
             onClick={() => setOpen(false)}
-            className="cursor-pointer"
+            className="h-10 rounded-full px-5 cursor-pointer font-medium"
           >
             Отмена
           </Button>
@@ -82,7 +82,7 @@ export function DeleteListingButton({ target, title }: DeleteListingButtonProps)
               type="submit"
               variant="destructive"
               disabled={pending}
-              className="cursor-pointer"
+              className="h-10 rounded-full px-5 cursor-pointer font-medium"
             >
               {pending ? "Удаление…" : "Удалить"}
             </Button>
